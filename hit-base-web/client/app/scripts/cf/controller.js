@@ -716,16 +716,16 @@ angular.module('cf')
       return array;
     };
 
-    Array.prototype.move = function (old_index, new_index) {
-      if (new_index >= this.length) {
-        var k = new_index - this.length;
-        while ((k--) + 1) {
-          this.push(undefined);
-        }
-      }
-      this.splice(new_index, 0, this.splice(old_index, 1)[0]);
-      return this; // for testing purposes
-    };
+    // Array.prototype.move = function (old_index, new_index) {
+    //   if (new_index >= this.length) {
+    //     var k = new_index - this.length;
+    //     while ((k--) + 1) {
+    //       this.push(undefined);
+    //     }
+    //   }
+    //   this.splice(new_index, 0, this.splice(old_index, 1)[0]);
+    //   return this; // for testing purposes
+    // };
 
 
     // $scope.setPositions = function(array){
@@ -761,13 +761,15 @@ angular.module('cf')
     // };
 
     $scope.filterMessages = function (array) {
+      // for (var index = 0; index < array.length; index++) {
+      //   array[index].position = parseInt(array[index].position);
+      // }
+
       array = _.reject(array, function (item) {
         return item.removed == true;
       });
       // array = $filter('orderBy')(array, 'position');
-      // for (var index = 0; index < array.length; index++) {
-      //   array[index].position = index + 1;
-      // }
+
       array = $filter('orderBy')(array, 'position');
       return array;
     };
@@ -1283,6 +1285,8 @@ angular.module('cf')
     };
 
     $scope.publishGroup = function () {
+      $scope.error =null;
+      $scope.executionError =null;
       var modalInstance = $modal.open({
         templateUrl: 'views/cf/manage/confirm-publish-group.html',
         controller: 'ConfirmDialogCtrl',
@@ -1303,6 +1307,11 @@ angular.module('cf')
                 $scope.uploaded = false;
                 $scope.profileMessages = [];
                 $scope.oldProfileMessages = [];
+                $scope.tmpNewMessages = [];
+                $scope.tmpOldMessages = [];
+                $scope.originalOldProfileMessages = [];
+                $scope.originalProfileMessages = [];
+
                 $scope.token = null;
 
                 CFTestPlanManager.publishGroup($scope.testcase.groupId).then(function (result) {
@@ -1381,6 +1390,8 @@ angular.module('cf')
 
     $scope.saveGroup = function () {
       $scope.loading = true;
+      $scope.error =null;
+      $scope.executionError =null;
       CFTestPlanManager.saveGroup("hl7v2", $scope.testcase.scope, $scope.token, $scope.getUpdatedProfiles(), $scope.getRemovedProfiles(), $scope.getAddedProfiles(), $scope.testcase).then(function (result) {
         if (result.status === "SUCCESS") {
           $scope.selectedNode['name'] = $scope.testcase['name'];
@@ -1404,6 +1415,11 @@ angular.module('cf')
           $scope.uploaded = false;
           $scope.profileMessages = [];
           $scope.oldProfileMessages = [];
+          $scope.tmpNewMessages = [];
+          $scope.tmpOldMessages = [];
+          $scope.originalOldProfileMessages = [];
+          $scope.originalProfileMessages = [];
+
           $scope.token = null;
           $scope.selectGroup($scope.selectedNode);
           // if($scope.uploaded == true){
@@ -1444,6 +1460,8 @@ angular.module('cf')
     };
 
     $scope.reset = function () {
+      $scope.error =null;
+      $scope.executionError =null;
 
       var modalInstance = $modal.open({
         templateUrl: 'views/cf/manage/confirm-reset-group.html',
@@ -1479,6 +1497,9 @@ angular.module('cf')
     };
 
     $scope.cancelToken = function () {
+      $scope.error =null;
+      $scope.executionError =null;
+
       if ($scope.token != null) {
         CFTestPlanManager.deleteToken($scope.token).then(function (result) {
           $scope.token = null;
@@ -1762,7 +1783,6 @@ angular.module('cf')
         $scope.profileValidationErrors = angular.fromJson(response.errors);
       } else {
         $scope.profileMessages = response.profiles;
-        $scope.tmpNewMessages = $scope.filterMessages($scope.profileMessages);
 
       }
 
@@ -1847,8 +1867,6 @@ angular.module('cf')
               }
             } else {
               $scope.profileMessages = response.profiles;
-              $scope.tmpNewMessages = $scope.filterMessages($scope.profileMessages);
-
               $scope.addSelectedTestCases();
             }
           },
