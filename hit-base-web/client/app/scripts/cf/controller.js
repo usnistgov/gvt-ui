@@ -607,9 +607,9 @@ angular.module('cf')
             $scope.tError = null;
             $scope.mError = null;
             $scope.vError = null;
-            if(!$scope.editor){
-	            $scope.initCodemirror();
-	            $scope.refreshEditor();
+            if (!$scope.editor || $scope.editor  === null) {
+                $scope.initCodemirror();
+                $scope.refreshEditor();
             }
             $scope.$on('cf:testCaseLoaded', function (event, testCase) {
                 $scope.testCase = testCase;
@@ -618,9 +618,9 @@ angular.module('cf')
                     $scope.nodelay = true;
                     $scope.mError = null;
                     $timeout(function () {
-                        if(!$scope.editor){
-                        		$scope.initCodemirror();
-                             $scope.refreshEditor();
+                        if (!$scope.editor || $scope.editor  === null) {
+                            $scope.initCodemirror();
+                            $scope.refreshEditor();
                         }
                         $scope.cf.editor = ServiceDelegator.getEditor($scope.testCase.testContext.format);
                         $scope.cf.editor.instance = $scope.editor;
