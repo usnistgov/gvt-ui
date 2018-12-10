@@ -143,9 +143,17 @@ app.config(function ($routeProvider, $httpProvider, localStorageServiceProvider,
         .when('/uploadTokens', {
             templateUrl: 'views/home.html',
             controller: 'UploadTokenCheckCtrl'
-        })
+        })        
         .when('/addprofiles', {
             redirectTo: '/cf'
+        })
+        .when('/saveCBTokens', {
+            templateUrl: 'views/home.html',
+            controller: 'UploadCBTokenCheckCtrl'
+        })
+        .when('/addcbprofiles', {
+        		templateUrl: 'views/home.html',
+            controller: 'UploadCBTokenCheckCtrl'
         })
         .when('/domains', {
             templateUrl: 'views/domains/domains.html'
@@ -542,7 +550,9 @@ app.run(function (Session, $rootScope, $location, $modal, TestingSettings, AppIn
                     var rs = angular.fromJson(result.data);
                     initUser(rs);
                     $rootScope.$broadcast('event:loginConfirmed');
-                    $location.url(path);
+                    if (path !== undefined){                    	
+                        $location.url(path);
+                    }
                 } else {
                     userInfoService.setCurrentUser(null);
                 }
@@ -741,8 +751,9 @@ app.run(function (Session, $rootScope, $location, $modal, TestingSettings, AppIn
 
 
     $rootScope.isDomainsManagementSupported = function () {
-        return $rootScope.getAppInfo().options && ($rootScope.getAppInfo().options['DOMAIN_MANAGEMENT_SUPPORTED'] === "true");
+        return $rootScope.getAppInfo().options && ($rootScope.getAppInfo().options['DOMAIN_MANAGEMENT_SUPPORTED'] === "true") || userInfoService.isAdmin() || userInfoService.isSupervisor() || userInfoService.isDeployer();
     };
+
 
 
     $rootScope.isLoggedIn = function () {

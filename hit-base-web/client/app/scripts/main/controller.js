@@ -95,6 +95,9 @@ angular.module('main').controller('MainCtrl',
         $scope.isAdmin = function () {
             return userInfoService.isAdmin();
         };
+        $scope.isPublisher = function () {
+            return userInfoService.isPublisher();
+        };
 
         $scope.getRoleAsString = function () {
             if ($scope.isTester() === true) {
@@ -711,9 +714,8 @@ angular.module('main').controller('MainCtrl',
 
 
         $rootScope.canPublish = function () {
-            return userInfoService.isAuthenticated() && (userInfoService.isAdmin() || (userInfoService.isSupervisor() && $rootScope.domain != null && $rootScope.domain.owner === userInfoService.getUsername()));
+            return $rootScope.hasWriteAccess() && (userInfoService.isAdmin() || userInfoService.isPublisher());
         };
-
 
         $rootScope.createDomain = function () {
             var modalInstance = $modal.open({
@@ -741,6 +743,22 @@ angular.module('main').controller('MainCtrl',
                 });
         };
 
+        $rootScope.domainsByOwner = {
+            'my': [],
+            'others':[]
+        };
+
+
+        $rootScope.initDomainsByOwner = function(){
+            for (var i = 0; i < $rootScope.appInfo.domains.length; i++) {
+                if ($rootScope.appInfo.domains[i].owner === userInfoService.getUsername()) {
+                    $rootScope.domainsByOwner['my'].push($rootScope.appInfo.domains[i]);
+                }else{
+                    $rootScope.domainsByOwner['others'].push($rootScope.appInfo.domains[i]);
+                }
+            }
+        };
+
 
         AppInfo.get().then(function (appInfo) {
                 $rootScope.loadingDomain = true;
@@ -761,9 +779,14 @@ angular.module('main').controller('MainCtrl',
                 var domainFound = null;
                 $rootScope.domain = null;
                 $rootScope.appInfo.selectedDomain = null;
+                $rootScope.domainsByOwner = {
+                    'my': [],
+                    'others':[]
+                };
                 DomainsManager.getDomains().then(function (domains) {
                     $rootScope.appInfo.domains = domains;
                     if ($rootScope.appInfo.domains != null) {
+                    		$rootScope.initDomainsByOwner();
                         if ($rootScope.appInfo.domains.length === 1) {
                             domainFound = $rootScope.appInfo.domains[0].domain;
                         } else if (storedDomain != null) {
@@ -781,52 +804,54 @@ angular.module('main').controller('MainCtrl',
                             domainFound = $rootScope.appInfo.domains[0].domain;
                         }
 
+
                         if (domainFound == null) {
-                            $rootScope.openUnknownDomainDlg();
-                        } else {
-                            $rootScope.clearDomainSession();
-                            DomainsManager.getDomainByKey(domainFound).then(function (result) {
-                                $rootScope.appInfo.selectedDomain = result.domain;
-                                StorageService.set(StorageService.APP_SELECTED_DOMAIN, result.domain);
-                                $rootScope.domain = result;
-                                $rootScope.loadingDomain = false;
-                                $timeout(function () {
-                                    Transport.configs = {};
-                                    Transport.getDomainForms($rootScope.domain.domain).then(function (transportForms) {
-                                        $rootScope.transportSupported = transportForms != null && transportForms.length > 0;
-                                        if ($rootScope.transportSupported) {
-                                            angular.forEach(transportForms, function (transportForm) {
-                                                var protocol = transportForm.protocol;
-                                                if (!Transport.configs[protocol]) {
-                                                    Transport.configs[protocol] = {};
-                                                }
-                                                if (!Transport.configs[protocol]['forms']) {
-                                                    Transport.configs[protocol]['forms'] = {};
-                                                }
-                                                Transport.configs[protocol]['forms'] = transportForm;
-                                                Transport.configs[protocol]['error'] = null;
-                                                Transport.configs[protocol]['description'] = transportForm.description;
-                                                Transport.configs[protocol]['key'] = transportForm.protocol;
-                                                Transport.getConfigData($rootScope.domain.domain, protocol).then(function (data) {
-                                                    Transport.configs[protocol]['data'] = data;
-                                                    Transport.configs[protocol]['open'] = {
-                                                        ta: true,
-                                                        sut: false
-                                                    };
-                                                }, function (error) {
-                                                    Transport.configs[protocol]['error'] = error.data;
-                                                });
-                                            });
-                                        }
-                                    }, function (error) {
-                                        $scope.error = "No transport configs found.";
-                                    });
-                                }, 500);
-                            }, function (error) {
-                                $rootScope.loadingDomain = true;
-                                $rootScope.openUnknownDomainDlg();
-                            });
+                            //$rootScope.openUnknownDomainDlg();
+                            domainFound = "default";
                         }
+
+                        $rootScope.clearDomainSession();
+                        DomainsManager.getDomainByKey(domainFound).then(function (result) {
+                            $rootScope.appInfo.selectedDomain = result.domain;
+                            StorageService.set(StorageService.APP_SELECTED_DOMAIN, result.domain);
+                            $rootScope.domain = result;
+                            $rootScope.loadingDomain = false;
+                            $timeout(function () {
+                                Transport.configs = {};
+                                Transport.getDomainForms($rootScope.domain.domain).then(function (transportForms) {
+                                    $rootScope.transportSupported = transportForms != null && transportForms.length > 0;
+                                    if ($rootScope.transportSupported) {
+                                        angular.forEach(transportForms, function (transportForm) {
+                                            var protocol = transportForm.protocol;
+                                            if (!Transport.configs[protocol]) {
+                                                Transport.configs[protocol] = {};
+                                            }
+                                            if (!Transport.configs[protocol]['forms']) {
+                                                Transport.configs[protocol]['forms'] = {};
+                                            }
+                                            Transport.configs[protocol]['forms'] = transportForm;
+                                            Transport.configs[protocol]['error'] = null;
+                                            Transport.configs[protocol]['description'] = transportForm.description;
+                                            Transport.configs[protocol]['key'] = transportForm.protocol;
+                                            Transport.getConfigData($rootScope.domain.domain, protocol).then(function (data) {
+                                                Transport.configs[protocol]['data'] = data;
+                                                Transport.configs[protocol]['open'] = {
+                                                    ta: true,
+                                                    sut: false
+                                                };
+                                            }, function (error) {
+                                                Transport.configs[protocol]['error'] = error.data;
+                                            });
+                                        });
+                                    }
+                                }, function (error) {
+                                    $scope.error = "No transport configs found.";
+                                });
+                            }, 500);
+                        }, function (error) {
+                            $rootScope.loadingDomain = true;
+                            $rootScope.openUnknownDomainDlg();
+                        });
                     } else {
                         $rootScope.openCriticalErrorDlg("No Tool scope found. Please contact the administrator");
                     }
@@ -841,7 +866,19 @@ angular.module('main').controller('MainCtrl',
             });
 
 
+        $rootScope.displayOwnership = function(dom){
+            return dom.owner === userInfoService.getUsername() ? "My Tool Scopes": "Others Tool Scopes";
+        };
+
+        $rootScope.orderOwnership = function(dom){
+            return dom.owner === userInfoService.getUsername() ? 0: 1;
+        };
+
+
+
     });
+
+
 
 
 angular.module('main').controller('LoginCtrl', ['$scope', '$modalInstance', 'user', '$location', function ($scope, $modalInstance, user, $location) {
