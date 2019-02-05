@@ -191,11 +191,11 @@
                                     <i class="fa fa-check"></i>Save
                                 </button>
 
-              <button title="Make Public" ng-if="userDomain.scope === 'USER' && canPublish()" type="button" ng-disabled="domainForm.$invalid || (!isAdmin() && !isPublisher())" class="btn btn-md btn-info" ng-click="saveAndPublishDomain()">
+              <button title="Make Public" ng-if="userDomain.scope === 'USER' && canPublish(userDomain)" type="button" ng-disabled="domainForm.$invalid || (!isAdmin() && !isPublisher())" class="btn btn-md btn-info" ng-click="saveAndPublishDomain()">
                                     <i class="fa fa-check"></i>Make Public
               </button>
 
-                <button title="Make Private" ng-if="userDomain.scope === 'GLOBAL' && canPublish()" type="button" ng-disabled="domainForm.$invalid || (!isAdmin() && !isPublisher())" class="btn btn-md btn-info" ng-click="saveAndUnpublishDomain()">
+                <button title="Make Private" ng-if="userDomain.scope === 'GLOBAL' && canPublish(userDomain)" type="button" ng-disabled="domainForm.$invalid || (!isAdmin() && !isPublisher())" class="btn btn-md btn-info" ng-click="saveAndUnpublishDomain()">
                                     <i class="fa fa-check"></i>Make Private
               </button>
 
