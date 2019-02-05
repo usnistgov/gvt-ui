@@ -21,11 +21,11 @@
 
         <span class="pull-right" style="margin-top:10px" ng-show="appInfo.domains != null && appInfo.domains.length > 0">
 
-            <span ng-if="isAuthenticated()">
+        <span ng-if="isAuthenticated()">
         <label style="color:white">Tool Scope:</label>
 
-                <div class="btn-group" ng-class="{open: open}">
-    <button class="btn btn-sm" ng-click="open=!open">
+        <div class="btn-group" ng-class="{open: open}">
+        <button class="btn btn-sm" ng-click="open=!open">
             {{domain.name}}
     </button>
     <button class="btn btn-sm dropdown-toggle" data-toggle="dropdown" ng-click="open=!open">
@@ -33,7 +33,7 @@
     </button>
     <ul class="dropdown-menu">
         <li class="dropdown-header" ng-if="domainsByOwner['my'].length > 0">My Tool Scopes</li>
-        <li ng-show="domainsByOwner['my'].length > 0" ng-click="appInfo.selectedDomain = dom.domain; selectDomain(appInfo.selectedDomain)" ng-class="{'domain-selected': domain.domain === dom.domain, 'disabled': domain.domain === dom.domain}" ng-repeat="dom in domainsByOwner['my']"><a href="#">
+		<li ng-show="domainsByOwner['my'].length > 0" ng-click="appInfo.selectedDomain = dom.domain; selectDomain(appInfo.selectedDomain)" ng-class="{'domain-selected': domain.domain === dom.domain, 'disabled': domain.domain === dom.domain}" ng-repeat="dom in domainsByOwner['my']"><a href="#">
             <span style="color: #438007" ng-show="dom.scope === 'GLOBAL'"><i class="fa fa-circle fa-fw"></i></span>
             <span style="color: #ff240b" ng-show="dom.scope === 'USER'"><i class="fa fa-circle fa-fw"></i></span>
             {{dom.name}}</a></li>
@@ -87,7 +87,7 @@
             <!--<span title="Transport Configuration" class="label label-danger label-icon">T</span>-->
             <!--<i class="fa fa-exchange"></i>-->
             <!--Transport Settings</a></li>-->
-            <li ng-show="isAuthenticated()" ng-class="{'active':isActive('/profilevalidation')}"><a href="#/profilevalidation"><i class="fa fa-check-square-o"></i>Profile Verification</a></li>
+            <!--<li ng-show="isAuthenticated()" ng-class="{'active':isActive('/profilevalidation')}"><a href="#/profileverification"><i class="fa fa-book"></i>Profile Verification</a></li>-->
             <li ng-class="{'active':isActive('/doc')}"><a href="#/doc"><i class="fa fa-book"></i>Documentation</a></li>
             <li ng-class="{'active':isActive('/about')}"><a href="#/about"><i class="fa fa-question-circle"></i>About</a></li>
             <!--<li ng-class="{'active':isActive('/contact')}"><a href="#/contact"><i class="fa fa-phone-square"></i>Contact Us</a></li>-->
@@ -119,11 +119,11 @@
                     <li><a ng-click="showSettings()"><i class="fa fa-cog"></i>&nbsp; Validation Settings</a>
                     </li>
 
+                    <li role="separator" class="divider"></li>
+
+                    <li ng-if="isDomainsManagementSupported()" ng-class="isActive('/domains')"><a class="point" href="#/domains"><i class="fa fa-cog"></i> Tool Scopes Settings</a></li>
+
                     <li ng-if="isDomainsManagementSupported()" role="separator" class="divider"></li>
-
-                    <li ng-if="isDomainsManagementSupported() && hasWriteAccess()" ng-class="isActive('/domains')"><a class="point" href="#/domains"><i class="fa fa-cog"></i> Tool Scopes Settings</a></li>
-
-                    <li ng-if="isDomainsManagementSupported() && hasWriteAccess()" role="separator" class="divider"></li>
 
                     <li ng-show="isAdmin()" ng-class="isActive('/logs')"><a class="point" href="#/logs"><i class="fa fa-cog"></i>&nbsp; Admin Logs</a></li>
                     <li ng-show="isAdmin()" role="separator" class="divider"></li>
