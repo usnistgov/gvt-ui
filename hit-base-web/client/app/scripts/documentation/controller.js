@@ -1496,22 +1496,22 @@ angular.module('doc')
       $scope.scope = scope;
       $scope.domain = domain;
 
-      DocumentationManager.getTestCaseDocuments(domain, scope).then(function (data) {
-        $scope.error = null;
-        $scope.context = data;
-        $scope.data = [];
-        if (data != null) {
-          for (var index = 0; index < data.length; index++) {
-            $scope.data.push(angular.fromJson($scope.context[index].json));
+      DocumentationManager.getTestCaseDocuments(domain, 'GLOBALANDUSER').then(function (data) {
+          $scope.error = null;
+          $scope.context = data;
+          $scope.data = [];
+          if (data != null) {
+            for (var index = 0; index < data.length; index++) {
+              $scope.data.push(angular.fromJson($scope.context[index].json));
+            }
+            // $scope.data = angular.fromJson($scope.context.json);
           }
-          // $scope.data = angular.fromJson($scope.context.json);
-        }
-        $scope.params.refresh();
-        $scope.loading = false;
-      }, function (error) {
-        $scope.loading = false;
-        $scope.error = "Sorry, failed to load the documents";
-      });
+          $scope.params.refresh();
+          $scope.loading = false;
+        }, function (error) {
+          $scope.loading = false;
+          $scope.error = "Sorry, failed to load the documents";
+        });
     };
 
 
