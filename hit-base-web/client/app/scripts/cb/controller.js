@@ -1,39 +1,70 @@
 'use strict';
 
 angular.module('cb')
-  .controller('CBTestingCtrl', ['$scope', '$window', '$rootScope', 'CB', 'StorageService', '$timeout', 'TestCaseService', 'TestStepService', function ($scope, $window, $rootScope, CB, StorageService, $timeout, TestCaseService, TestStepService) {
+  .controller('CBTestingCtrl', ['$scope', '$window', '$rootScope', 'CB', 'StorageService', '$timeout', 'TestCaseService', 'TestStepService','$routeParams','userInfoService', function ($scope, $window, $rootScope, CB, StorageService, $timeout, TestCaseService, TestStepService,$routeParams,userInfoService) {
 
     $scope.testCase = null;
-
+    $scope.token = $routeParams.x;
+    $scope.domain = $routeParams.d;
+    
+   
+    
     $scope.initTesting = function () {
-      var tab = StorageService.get(StorageService.ACTIVE_SUB_TAB_KEY);
-      if (tab == null || tab != '/cb_execution') tab = '/cb_testcase';
-      $rootScope.setSubActive(tab);
+    	
+    	 if ($routeParams.scope !== undefined && $routeParams.group !== undefined){
+    	       
+    	        		StorageService.set(StorageService.CB_SELECTED_TESTPLAN_ID_KEY, $routeParams.group);
+    	            StorageService.set(StorageService.CB_SELECTED_TESTPLAN_SCOPE_KEY, $routeParams.scope);    	                	                	           
+    	            $scope.setSubActive("/cb_testcase",$routeParams.scope,$routeParams.group);    	            
+    	        
+    	  }else{
+    		  var tab = StorageService.get(StorageService.ACTIVE_SUB_TAB_KEY);
+    	      if (tab == null || (tab !== '/cb_execution' && tab !== '/cb_management') ) tab = '/cb_testcase';
+    	      $scope.setSubActive(tab);
+    	  }
+    	
+     
       $scope.$on('cb:testCaseLoaded', function (event, testCase, tab) {
         $scope.testCase = testCase;
       });
-//            $scope.$on("$destroy", function () {
-//                var previousId = StorageService.get(StorageService.CB_LOADED_TESTCASE_ID_KEY);
-//                if (previousId != null)TestCaseService.clearRecords(previousId);
-//                previousId = StorageService.get(StorageService.CB_LOADED_TESTSTEP_ID_KEY);
-//                if (previousId != null)TestStepService.clearRecords(previousId);
-//            });
 
+    	
     };
+    
+  
 
 
-    $scope.setSubActive = function (tab) {
+    $scope.setSubActive = function (tab,scope,group) {    	
       $rootScope.setSubActive(tab);
+      $timeout(function () {
       if (tab === '/cb_execution') {
         $scope.$broadcast('cb:refreshEditor');
-      }
+      } else if (tab === '/cb_testcase') {
+        if (scope !== undefined && group !== undefined){
+        		$scope.$broadcast('event:cb:initTestCase',{ scope: scope, group: group}); 
+        }else{
+        		$scope.$broadcast('event:cb:initTestCase');
+        }
+        
+      } else if (tab === '/cb_management') {
+        $scope.$broadcast('event:cb:initManagement');
+      } 
+      });
+
     };
+    
+    
+    
+    
+    
+    
+
 
   }]);
 
 
 angular.module('cb')
-  .controller('CBExecutionCtrl', ['$scope', '$window', '$rootScope', 'CB', '$modal', 'TestExecutionClock', 'Endpoint', 'TestExecutionService', '$timeout', 'StorageService', 'User', 'ReportService', 'TestCaseDetailsService', '$compile', 'Transport', '$filter', function ($scope, $window, $rootScope, CB, $modal, TestExecutionClock, Endpoint, TestExecutionService, $timeout, StorageService, User, ReportService, TestCaseDetailsService, $compile, Transport, $filter) {
+  .controller('CBExecutionCtrl', ['$scope', '$window', '$rootScope', 'CB', '$modal', 'TestExecutionClock', 'Endpoint', 'TestExecutionService', '$timeout', 'StorageService', 'User', 'ReportService', 'TestCaseDetailsService', '$compile', 'Transport', '$filter', 'SOAPEscaper', function ($scope, $window, $rootScope, CB, $modal, TestExecutionClock, Endpoint, TestExecutionService, $timeout, StorageService, User, ReportService, TestCaseDetailsService, $compile, Transport, $filter, SOAPEscaper) {
     $scope.targ = "cb-executed-test-step";
     $scope.loading = false;
     $scope.error = null;
@@ -61,6 +92,7 @@ angular.module('cb')
     $scope.exampleMessageEditor = null;
     $scope.testExecutionService = TestExecutionService;
     $scope.loadingExecution = false;
+
     $scope.initExecution = function () {
       $scope.$on('cb:testCaseLoaded', function (event, testCase, tab) {
         $scope.executeTestCase(testCase, tab);
@@ -75,11 +107,11 @@ angular.module('cb')
     ];
 
     var parseRequest = function (incoming) {
-         return incoming;
+      return incoming;
     };
 
     var parseResponse = function (outbound) {
-         return outbound;
+      return outbound;
     };
 
 
@@ -351,7 +383,7 @@ angular.module('cb')
     };
 
     $scope.executeTestStep = function (testStep) {
-      if(testStep != null && testStep != undefined) {
+      if (testStep != null && testStep != undefined) {
         $scope.testExecutionService.testStepCommentsChanged[testStep.id] = false;
         TestExecutionService.setTestStepValidationReport(testStep, null);
         CB.testStep = testStep;
@@ -372,7 +404,7 @@ angular.module('cb')
         $scope.logger.content = log && log != null ? log : '';
         $scope.selectTestStep(testStep);
 
-         // }, function (error) {
+        // }, function (error) {
         //   $scope.error = "Failed to load the test step, please try again.";
         // });
       }
@@ -499,6 +531,12 @@ angular.module('cb')
       return $scope.outboundMessage() != null && $scope.outboundMessage() != '';
     };
 
+    $scope.saveTransportLog = function () {
+      $timeout(function(){
+        $scope.transport.saveTransportLog($scope.testStep.id, $scope.logger.content, $scope.domain, $scope.protocol);
+      });
+    };
+
     $scope.send = function () {
       $scope.connecting = true;
       $scope.openConsole($scope.testStep);
@@ -537,6 +575,7 @@ angular.module('cb')
           $scope.connecting = false;
           $scope.transport.logs[$scope.testStep.id] = $scope.logger.content;
           $scope.logger.log("Transaction completed");
+          $scope.saveTransportLog();
         }, function (error) {
           $scope.connecting = false;
           $scope.error = error.data;
@@ -545,12 +584,14 @@ angular.module('cb')
           $scope.completeStep($scope.testStep);
           $scope.transport.logs[$scope.testStep.id] = $scope.logger.content;
           $scope.logger.log("Transaction stopped");
+          $scope.saveTransportLog();
         });
       } else {
         $scope.error = "No message to send";
         $scope.connecting = false;
         $scope.transport.logs[$scope.testStep.id] = $scope.logger.content;
         $scope.logger.log("Transaction completed");
+        $scope.saveTransportLog();
 
       }
     };
@@ -612,7 +653,9 @@ angular.module('cb')
       $scope.transport.stopListener($scope.testStep.id, $scope.domain, $scope.protocol).then(function (response) {
         $scope.logger.log("Listener stopped.");
         $scope.transport.logs[$scope.testStep.id] = $scope.logger.content;
+        $scope.saveTransportLog();
       }, function (error) {
+        $scope.saveTransportLog();
       });
     };
 
@@ -668,7 +711,7 @@ angular.module('cb')
                 ++$scope.counter;
                 var sutInitiator = null;
                 try {
-                  sutInitiator = $scope.transport.configs[$scope.domain][$scope.protocol].data.sutInitiator;
+                  sutInitiator = $scope.transport.configs[$scope.protocol].data.sutInitiator;
                 } catch (e) {
                   sutInitiator = null;
                 }
@@ -843,14 +886,14 @@ angular.module('cb')
         result = result != undefined ? result : null;
         var comments = TestExecutionService.getTestCaseComments($scope.testCase);
         comments = comments != undefined ? comments : null;
-        ReportService.downloadTestCaseReports($scope.testCase.id, format, result, comments);
+        ReportService.downloadTestCaseReports($scope.testCase.id, format, result, comments, $scope.testCase.nav['testPlan'],$scope.testCase.nav['testGroup']);
       }
     };
 
 
     $scope.downloadReportAs = function (format, testStep) {
       var reportId = $scope.getTestStepValidationReport(testStep);
-      if(reportId != null && reportId != undefined) {
+      if (reportId != null && reportId != undefined) {
         return ReportService.downloadTestStepValidationReport(reportId, format);
       }
     };
@@ -929,6 +972,7 @@ angular.module('cb')
     $scope.selectedTestCase = CB.selectedTestCase;
     $scope.testCase = CB.testCase;
     $scope.selectedTP = {id: null};
+    $scope.preSelectedTP = {id: null};
     $scope.selectedScope = {key: null};
     $scope.testPlanScopes = [];
     $scope.allTestPlanScopes = [{key: 'USER', name: 'Private'}, {
@@ -946,6 +990,7 @@ angular.module('cb')
 
     $scope.error = null;
     $scope.collapsed = false;
+    
 
     var testCaseService = new TestCaseService();
 
@@ -963,6 +1008,24 @@ angular.module('cb')
       }
       $scope.selectScope();
     };
+    
+
+
+    $scope.$on('event:cb:initTestCase', function(event, args) {     
+      
+      $scope.preSelectedTP.id = null;
+      if (args !== undefined && args.scope !== undefined && args.group !== undefined){
+	    	  $scope.preSelectedTP.id = StorageService.get(StorageService.CB_SELECTED_TESTPLAN_ID_KEY);
+      }
+      $scope.initTestCase();
+    });
+    
+//    $scope.$on('event:cb:initTestCaseSelectedTP', function () {
+//        console.log('initTestCaseSelectedTP called');
+//        $scope.selectedTP.id = StorageService.get(StorageService.CB_SELECTED_TESTPLAN_ID_KEY);
+//        console.log("1020 " + $scope.selectedTP.id)
+//        $scope.initTestCase();
+//      });
 
 
     $rootScope.$on('event:logoutConfirmed', function () {
@@ -1016,37 +1079,41 @@ angular.module('cb')
       $scope.loadingTP = false;
       StorageService.set(StorageService.CB_SELECTED_TESTPLAN_SCOPE_KEY, $scope.selectedScope.key);
       if ($scope.selectedScope.key && $scope.selectedScope.key !== null && $scope.selectedScope.key !== "") {
-        $scope.loadingTP = true;
-        var tcLoader = new CBTestPlanListLoader($scope.selectedScope.key);
-        tcLoader.then(function (testPlans) {
-          $scope.error = null;
-          $scope.testPlans = $filter('orderBy')(testPlans, 'position');
-          var targetId = null;
-          if ($scope.testPlans.length > 0) {
-            if ($scope.testPlans.length === 1) {
-              targetId = $scope.testPlans[0].id;
-            } else if (userInfoService.isAuthenticated()) {
-              var lastTestPlanPersistenceId = userInfoService.getLastTestPlanPersistenceId();
-              var tp = findTPByPersistenceId(lastTestPlanPersistenceId, $scope.testPlans);
-              if (tp != null) {
-                targetId = tp.id;
+         if($rootScope.domain != null && $rootScope.domain.domain != null) {
+          $scope.loadingTP = true;
+          var tcLoader = new CBTestPlanListLoader($scope.selectedScope.key, $rootScope.domain.domain);
+          tcLoader.then(function (testPlans) {
+            $scope.error = null;
+            $scope.testPlans = $filter('orderBy')(testPlans, 'position');
+            var targetId = null;
+            if ($scope.testPlans.length > 0) {
+              if ($scope.testPlans.length === 1) {
+                targetId = $scope.testPlans[0].id;
+              }else if ($scope.preSelectedTP.id !== null) {	
+            	  	targetId = $scope.preSelectedTP.id;
+               }else if (StorageService.get(StorageService.CB_SELECTED_TESTPLAN_ID_KEY) !== null){
+            	   	   var previousTpId = StorageService.get(StorageService.CB_SELECTED_TESTPLAN_ID_KEY);
+                   targetId = previousTpId == undefined || previousTpId == null ? "" : previousTpId;
+               }else if (userInfoService.isAuthenticated()) {            	   
+	                var lastTestPlanPersistenceId = userInfoService.getLastTestPlanPersistenceId();
+	                var tp = findTPByPersistenceId(lastTestPlanPersistenceId, $scope.testPlans);
+	                if (tp != null) {
+	                  targetId = tp.id;
+	                }
               }
+              
+              $scope.selectedTP.id = targetId.toString();
+              $scope.selectTP();
+            } else {
+              $scope.loadingTP = false;
             }
-            if (targetId == null) {
-              var previousTpId = StorageService.get(StorageService.CB_SELECTED_TESTPLAN_ID_KEY);
-              targetId = previousTpId == undefined || previousTpId == null ? "" : previousTpId;
-            }
-            $scope.selectedTP.id = targetId.toString();
-            $scope.selectTP();
-          } else {
+            $scope.loading = false;
+          }, function (error) {
             $scope.loadingTP = false;
-          }
-          $scope.loading = false;
-        }, function (error) {
-          $scope.loadingTP = false;
-          $scope.loading = false;
-          $scope.error = "Sorry, Cannot load the test plans. Please try again";
-        });
+            $scope.loading = false;
+            $scope.error = "Sorry, Cannot load the test plans. Please try again";
+          });
+        }
       } else {
         StorageService.set(StorageService.CB_SELECTED_TESTPLAN_ID_KEY, "");
       }
@@ -1676,12 +1743,12 @@ angular.module('cb')
 
 
 angular.module('cb')
-  .controller('CBTestManagementCtrl', function ($scope, $window, $filter, $rootScope, CB, $timeout, $sce, StorageService, TestCaseService, TestStepService, CBTestPlanManager, User, userInfoService, $modal,Notification,$modalStack) {
+  .controller('CBTestManagementCtrl', function ($scope, $window, $filter, $rootScope, CB, $timeout, $sce, StorageService, TestCaseService, TestStepService, CBTestPlanManager, User, userInfoService, $modal, Notification, $modalStack,$location,$routeParams) {
     $scope.selectedTestCase = CB.selectedTestCase;
     $scope.testCase = CB.testCase;
     $scope.selectedTP = {id: null};
     $scope.selectedScope = {key: null};
-    $scope.testPlanScopes = [{key: 'USER', name: 'Private'}, {key: 'GLOBAL', name: 'Public'}];
+    $scope.testPlanScopes = null;
     $scope.testCases = [];
     $scope.testPlans = [];
     $scope.tree = {};
@@ -1689,24 +1756,41 @@ angular.module('cb')
     $scope.loadingTP = false;
     $scope.loadingTC = false;
     $scope.loadingTPs = false;
+    $scope.allTestPlanScopes = [{key: 'USER', name: 'Private'}, {key: 'GLOBAL', name: 'Public'}];
+    $scope.token = $routeParams.x;
+    $scope.domain = $routeParams.d;
+
 
     $scope.error = null;
     $scope.collapsed = false;
 
     var testCaseService = new TestCaseService();
 
+    
+   
+    
+
+    $scope.$on('event:cb:initManagement', function () {
+      $scope.initTestCase();
+    });
+    
+
+
+
     $scope.initTestCase = function () {
-      if($rootScope.isCbManagementSupported() && userInfoService.isAuthenticated()){
-      $scope.error = null;
-      $scope.loading = true;
-      $scope.testPlans = null;
-      if (!userInfoService.isAdmin() && !userInfoService.isSupervisor()) {
-        $scope.selectedScope.key = $scope.testPlanScopes[1].key; // GLOBAL
-      }else {
-        var tmp = StorageService.get(StorageService.CB_SELECTED_TESTPLAN_SCOPE_KEY);
-        $scope.selectedScope.key = tmp && tmp != null ? tmp : $scope.testPlanScopes[1].key;
-      }
-      $scope.selectScope();
+      if ($rootScope.isCbManagementSupported() && userInfoService.isAuthenticated() && $rootScope.hasWriteAccess()) {
+        $scope.error = null;
+        $scope.loading = true;
+        $scope.testPlans = null;
+        if (userInfoService.isAdmin() || userInfoService.isSupervisor()) {
+          $scope.testPlanScopes = $scope.allTestPlanScopes;
+          var tmp = StorageService.get(StorageService.CB_SELECTED_TESTPLAN_SCOPE_KEY);
+          $scope.selectedScope.key = tmp && tmp != null ? tmp : $scope.testPlanScopes[1].key;
+        } else {
+          $scope.testPlanScopes = [$scope.allTestPlanScopes[0]];
+          $scope.selectedScope.key = $scope.testPlanScopes[0].key; // GLOBAL
+        }
+        $scope.selectScope();
       }
     };
 
@@ -1734,7 +1818,6 @@ angular.module('cb')
       $scope.loadingTP = true;
       $scope.errorTP = null;
       $scope.selectedTestCase = null;
-      console.log("$scope.selectedTP.id=" + $scope.selectedTP.id);
       if ($scope.selectedTP.id && $scope.selectedTP.id !== null && $scope.selectedTP.id !== "") {
         CBTestPlanManager.getTestPlan($scope.selectedTP.id).then(function (testPlan) {
           $scope.testCases = [testPlan];
@@ -1752,6 +1835,7 @@ angular.module('cb')
       }
     };
 
+
     $scope.selectScope = function () {
       $scope.errorTP = null;
       $scope.selectedTestCase = null;
@@ -1760,31 +1844,33 @@ angular.module('cb')
       $scope.errorTP = null;
       $scope.loadingTP = false;
       StorageService.set(StorageService.CB_MANAGE_SELECTED_TESTPLAN_SCOPE_KEY, $scope.selectedScope.key);
-      if ($scope.selectedScope.key && $scope.selectedScope.key !== null && $scope.selectedScope.key !== "") {
-        $scope.loadingTP = true;
-        CBTestPlanManager.getTestPlans($scope.selectedScope.key).then(function (testPlans) {
-          $scope.error = null;
-          $scope.testPlans = $filter('orderBy')(testPlans, 'position');
-          var targetId = null;
-          if ($scope.testPlans.length > 0) {
-            if ($scope.testPlans.length === 1) {
-              targetId = $scope.testPlans[0].id;
+      if ($scope.selectedScope.key && $scope.selectedScope.key !== null && $scope.selectedScope.key !== "" && $rootScope.domain != null) {
+        if( $rootScope.domain && $rootScope.domain.domain != null) {
+          $scope.loadingTP = true;
+          CBTestPlanManager.getTestPlans($scope.selectedScope.key, $rootScope.domain.domain).then(function (testPlans) {
+            $scope.error = null;
+            $scope.testPlans = $filter('orderBy')(testPlans, 'position');
+            var targetId = null;
+            if ($scope.testPlans.length > 0) {
+              if ($scope.testPlans.length === 1) {
+                targetId = $scope.testPlans[0].id;
+              }
+              if (targetId == null) {
+                var previousTpId = StorageService.get(StorageService.CB_MANAGE_SELECTED_TESTPLAN_ID_KEY);
+                targetId = previousTpId == undefined || previousTpId == null ? "" : previousTpId;
+              }
+              $scope.selectedTP.id = targetId.toString();
+              $scope.selectTP();
+            } else {
+              $scope.loadingTP = false;
             }
-            if (targetId == null) {
-              var previousTpId = StorageService.get(StorageService.CB_MANAGE_SELECTED_TESTPLAN_ID_KEY);
-              targetId = previousTpId == undefined || previousTpId == null ? "" : previousTpId;
-            }
-            $scope.selectedTP.id = targetId.toString();
-            $scope.selectTP();
-          } else {
+            $scope.loading = false;
+          }, function (error) {
             $scope.loadingTP = false;
-          }
-          $scope.loading = false;
-        }, function (error) {
-          $scope.loadingTP = false;
-          $scope.loading = false;
-          $scope.error = "Sorry, Cannot load the test plans. Please try again";
-        });
+            $scope.loading = false;
+            $scope.error = "Sorry, Cannot load the test plans. Please try again";
+          });
+        }
       } else {
         StorageService.set(StorageService.CB_MANAGE_SELECTED_TESTPLAN_ID_KEY, "");
       }
@@ -1866,7 +1952,7 @@ angular.module('cb')
       if (potentialParent.children && potentialParent.children.length > 0) {
         for (var i = 0; i < potentialParent.children.length; i++) {
           var child = potentialParent.children[i];
-          if (child  == node) {
+          if (child == node) {
             potentialParent.children.splice(i, 1);
             return true;
           } else {
@@ -1881,11 +1967,10 @@ angular.module('cb')
     };
 
 
-
-    $scope.afterDelete = function(node){
+    $scope.afterDelete = function (node) {
       for (var i = 0; i < $scope.testCases.length; i++) {
         if ($scope.deleteTreeNode(node, $scope.testCases[i]) == true) {
-          if(node === $scope.selectedTestCase) {
+          if (node === $scope.selectedTestCase) {
             $scope.selectedTestCase = null;
           }
           break;
@@ -2011,15 +2096,15 @@ angular.module('cb')
             CBTestPlanManager.deleteTestPlan(testPlan).then(function (result) {
               if (result.status === "SUCCESS") {
 
-                if($scope.testPlans != null) {
+                if ($scope.testPlans != null) {
                   var ind = -1;
                   for (var i = 0; i < $scope.testPlans.length; i++) {
-                    if($scope.testPlans[i].id == $scope.testCases[0].id){
+                    if ($scope.testPlans[i].id == $scope.testCases[0].id) {
                       ind = i;
                       break;
                     }
                   }
-                  if(ind > -1){
+                  if (ind > -1) {
                     $scope.testPlans.splice(ind, 1);
                   }
                   $scope.testCases = [];
@@ -2046,7 +2131,6 @@ angular.module('cb')
     };
 
 
-
     $scope.editNodeName = function (node) {
       node.editName = node.name;
       node.edit = true
@@ -2056,7 +2140,6 @@ angular.module('cb')
       node.editName = null;
       node.edit = false;
     };
-
 
 
     $scope.deleteTestNode = function (node) {
@@ -2072,7 +2155,6 @@ angular.module('cb')
         }
       }
     };
-
 
 
     $scope.saveNodeName = function (node) {
@@ -2118,7 +2200,17 @@ angular.module('cb')
     };
 
 
-    $scope.publishTestPlan = function () {
+      // $scope.afterSave =function(token) {
+      //     $timeout(function () {
+      //         if(token != null && token) {
+      //             var group = StorageService.get(StorageService.CB_MANAGE_SELECTED_TESTPLAN_ID_KEY);
+      //             $location.url("/cb?nav=execution&scope=" + $scope.selectedScope.key + "&testPlan="+ $scope.selectedTestCase.id);
+      //         }
+      //     });
+      // };
+
+
+      $scope.publishTestPlan = function () {
       var modalInstance = $modal.open({
         templateUrl: 'views/cb/manage/confirm-publish-testplan.html',
         controller: 'ConfirmDialogCtrl',
@@ -2142,6 +2234,7 @@ angular.module('cb')
                 $scope.selectScope();
                 $scope.selectedTP.id = $scope.selectedTestCase.id;
                 $scope.selectTP();
+                // $scope.afterSave($scope.token);
               } else {
                 Notification.error({
                   message: result.message,
@@ -2163,6 +2256,54 @@ angular.module('cb')
           }
         });
     };
+
+      $scope.unpublishTestPlan = function () {
+          var modalInstance = $modal.open({
+              templateUrl: 'views/cb/manage/confirm-unpublish-testplan.html',
+              controller: 'ConfirmDialogCtrl',
+              size: 'md',
+              backdrop: 'static',
+              keyboard: false
+          });
+          modalInstance.result.then(
+              function (result) {
+                  if (result) {
+                      $scope.loading = true;
+                      CBTestPlanManager.unpublishTestPlan($scope.selectedTestCase.id).then(function (result) {
+                          if (result.status === "SUCCESS") {
+                              $scope.selectedScope.key = 'USER';
+                              Notification.success({
+                                  message: "Test Plan successfully unpublished !",
+                                  templateUrl: "NotificationSuccessTemplate.html",
+                                  scope: $rootScope,
+                                  delay: 5000
+                              });
+                              $scope.selectScope();
+                              $scope.selectedTP.id = $scope.selectedTestCase.id;
+                              $scope.selectTP();
+                              // $scope.afterSave($scope.token);
+                          } else {
+                              Notification.error({
+                                  message: result.message,
+                                  templateUrl: "NotificationErrorTemplate.html",
+                                  scope: $rootScope,
+                                  delay: 10000
+                              });
+                          }
+                          $scope.loading = false;
+                      }, function (error) {
+                          $scope.loading = false;
+                          Notification.error({
+                              message: error.data,
+                              templateUrl: "NotificationErrorTemplate.html",
+                              scope: $rootScope,
+                              delay: 10000
+                          });
+                      });
+                  }
+              });
+      };
+
 
     $scope.openUploadTestPlanModal = function () {
       $modalStack.dismissAll('close');
@@ -2211,7 +2352,7 @@ angular.module('cb')
 
 
 angular.module('cb')
-  .controller('CBUploadCtrl', ['$scope', '$http', '$window', '$modal', '$filter', '$rootScope', '$timeout', 'StorageService', 'TestCaseService', 'TestStepService', 'FileUploader', 'Notification', '$modalInstance', 'userInfoService', 'CFTestPlanManager', function ($scope, $http, $window, $modal, $filter, $rootScope, $timeout, StorageService, TestCaseService, TestStepService, FileUploader, Notification, $modalInstance, userInfoService, CFTestPlanManager) {
+  .controller('CBUploadCtrl', ['$scope', '$http', '$window', '$modal', '$filter', '$rootScope', '$timeout', 'StorageService', 'TestCaseService', 'TestStepService', 'FileUploader', 'Notification', '$modalInstance', 'userInfoService', 'CBTestPlanManager', function ($scope, $http, $window, $modal, $filter, $rootScope, $timeout, StorageService, TestCaseService, TestStepService, FileUploader, Notification, $modalInstance, userInfoService, CBTestPlanManager) {
 
     FileUploader.FileSelect.prototype.isEmptyAfterSelection = function () {
       return true;
@@ -2221,43 +2362,75 @@ angular.module('cb')
 
     var zipUploader = $scope.zipUploader = new FileUploader({
       url: 'api/cb/management/uploadZip',
-      autoUpload: true,
-      filters: [{
-        name: 'zipFilter',
-        fn: function (item) {
-          return /\/(zip)$/.test(item.type);
-        }
-      }]
+      autoUpload: true
     });
 
     zipUploader.onBeforeUploadItem = function (fileItem) {
       $scope.error = null;
       $scope.loading = true;
+      fileItem.formData.push({domain: $rootScope.domain.domain});
     };
 
     zipUploader.onCompleteItem = function (fileItem, response, status, headers) {
-      $scope.loading = false;
+      
       $scope.error = null;
       if (response.status == "FAILURE") {
-        $scope.error ="Could not upload and process your file.<br>" + response.message;
+    	  	$scope.step = 1;
+        $scope.error = response.message;
+        $scope.loading = false;
        } else {
-        if (response.action === "ADD") {
-          Notification.success({
-            message: "Test Plan Added Successfully !",
-            templateUrl: "NotificationSuccessTemplate.html",
-            scope: $rootScope,
-            delay: 5000
-          });
+        if (response.status === "SUCCESS") {
+        	if (response.token !== undefined){
+        		CBTestPlanManager.saveZip(response.token,$scope.domain.domain).then(function (response) {
+      	          $scope.loading = false;
+      	           if (response.status == "FAILURE") {
+             	   			$scope.step = 1;
+      	        	   		$scope.error = "Could not saved the zip, please try again";
+      	        	   		
+      	          } else {
+      	        	  	
+     	 	        	 if (response.action === "ADD") {
+     	 	        		Notification.success({
+     	  	                   message: "Test Plan Added Successfully !",
+     	  	                   templateUrl: "NotificationSuccessTemplate.html",
+     	  	                   scope: $rootScope,
+     	  	                   delay: 5000
+     	  	                 });
+     	 	        		$modalInstance.close({id: response.id}); 
+     	 	        }else if (response.action === "UPDATE") {
+     	 	        	 Notification.success({
+     	 	 	            message: "Test Plan Updated Successfully !",
+     	 	 	            templateUrl: "NotificationSuccessTemplate.html",
+     	 	 	            scope: $rootScope,
+     	 	 	            delay: 5000
+     	 	 	          });
+     	 	        	$modalInstance.close({id: response.id}); 
+     	 	        }
+      	        	  
+      	         	        	
+      	          }
+      	          }, function (error) {
+      	        	  	$scope.step = 1;
+      	            $scope.error = "Could not saved the zip, please try again";
+      	          });
+        	}else{
+        		$scope.step = 1;
+  	        $scope.error = "Could not saved the zip, no token was received, please try again";
+        	}
+        	
+        
+        	
+        
+        	
+        	
+        
+          
+          
+          
+          
         }
-        if (response.action === "UPDATE") {
-          Notification.success({
-            message: "Test Plan Updated Successfully !",
-            templateUrl: "NotificationSuccessTemplate.html",
-            scope: $rootScope,
-            delay: 5000
-          });
-        }
-        $modalInstance.close({id: response.id});
+        
+        
       }
     };
 
@@ -2281,3 +2454,82 @@ angular.module('cb')
     };
 
   }]);
+
+angular.module('cb').controller('UploadCBTokenCheckCtrl', ['$scope', '$http', 'CF', '$window', '$modal', '$filter', '$rootScope', '$timeout', 'StorageService', 'TestCaseService', 'TestStepService', 'userInfoService', 'Notification', 'modalService', '$routeParams', '$location','CBTestPlanManager', function ($scope, $http, CF, $window, $modal, $filter, $rootScope, $timeout, StorageService, TestCaseService, TestStepService, userInfoService, Notification, modalService, $routeParams, $location,CBTestPlanManager) {
+
+	  $scope.profileCheckToggleStatus = false;
+
+	  $scope.token = decodeURIComponent($routeParams.x);
+	  $scope.auth = decodeURIComponent($routeParams.y);
+	  $scope.domain = decodeURIComponent($routeParams.d);
+
+	  if ($scope.token !== undefined && $scope.auth !== "undefined" && $scope.domain !== undefined) {	    		    
+			//check if logged in
+	        if (!userInfoService.isAuthenticated()) {
+	            $scope.$emit('event:loginRequestWithAuth', $scope.auth, '/addcbprofiles?x=' + $scope.token + '&d=' + $scope.domain);      
+	        } else {
+	          $location.url('/addcbprofiles?x=' + $scope.token + '&d=' + $scope.domain);
+	        }
+	  }  
+	    else if ($scope.token !== undefined && $scope.auth === "undefined" && $scope.domain !== undefined){ // no auth
+	     	var modalInstance = $modal.open({
+	            templateUrl: 'views/cb/manage/savingTestPlanModal.html',
+	            windowClass: 'upload-modal',
+	            backdrop: 'static',
+	            keyboard: false
+	          });
+	
+	    	
+	    	CBTestPlanManager.saveZip($scope.token,$scope.domain).then(function (response) {
+	           modalInstance.close();
+	           if (response.status == "FAILURE") {
+		        	   Notification.error({
+		                   message: "An error occured while adding the Test Plan. Please try again or contact the administator for help",
+		                   templateUrl: "NotificationErrorTemplate.html",
+		                   scope: $rootScope,
+		                   delay: 10000
+		             });
+	        	   		$scope.error = "Could not saved the zip, please try again";
+	                	modalInstance.close();
+	          } else {
+	        	  Notification.success({
+                      message: "Test Plan added successfully!",
+                      templateUrl: "NotificationSuccessTemplate.html",
+                      scope: $rootScope,
+                      delay: 5000
+                  });
+	        		modalInstance.close();        
+	           $location.url('/cb?scope=USER&group='+response.id);
+	        		//set private
+	//                		$scope.selectedScope.key = $scope.testPlanScopes[1].key;
+	          }
+	          }, function (error) {
+	            $scope.error = "Could not saved the zip, please try again";
+	            	modalInstance.close();
+	          });
+	    }
+        
+        
+        
+        	
+//            $location.url('/addcbprofiles?x=' + $scope.token + '&d=' + $scope.domain);
+        
+		
+		  
+		  
+	  
+	  
+	  
+//	  if ($scope.token !== undefined && $scope.auth !== undefined) {
+//
+//
+//	    //check if logged in
+//	    if (!userInfoService.isAuthenticated()) {
+//	      $scope.$emit('event:loginRequestWithAuth', $scope.auth, '/addcbprofiles?x=' + $scope.token + '&d=' + $scope.domain);
+//	    } else {
+//	      $location.url('/addcbprofiles?x=' + $scope.token + '&d=' + $scope.domain);
+//	    }
+//	  }
+
+
+	}]);
