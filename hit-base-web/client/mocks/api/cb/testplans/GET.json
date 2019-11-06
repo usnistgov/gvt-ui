@@ -1,1 +1,60 @@
-[{"name":"ONC 2015 Test Plan","persistentId":849729,"description":"This test plan is to be used for the ONC 2015 Edition Certification Testing of HealthIT modules. All test cases are required to be executed. The test plan includes a set of Administered Immunization test cases (Administration Group) and a set of Query and Response test cases (Evaluated History and Forecast Group).<br>","type":null,"stage":null,"position":1,"version":"null","scope":null,"preloaded":false,"supplements":[],"transport":true,"domain":"iz","id":113,"testPackage":null,"testPlanSummary":null,"testCases":[],"testCaseGroups":[]}]
+[
+	
+	{
+		"name": "LOI Test Plan",
+		"persistentId": 581898200,
+		"description": "This is the LOI test plan.",
+		"type": null,
+		"stage": null,
+		"position": 2,
+		"version": "null",
+		"scope": null,
+		"preloaded": false,
+		"supplements": [],
+		"transport": false,
+		"domain": "iz",
+		"id": 168,
+		"testPackage": null,
+		"testPlanSummary": null,
+		"testCases": [],
+		"testCaseGroups": []
+	},
+	{
+		"name": "LRI R2 Test Plan",
+		"persistentId": 12111323,
+		"description": "",
+		"type": null,
+		"stage": null,
+		"position": 3,
+		"version": "null",
+		"scope": null,
+		"preloaded": false,
+		"supplements": [],
+		"transport": false,
+		"domain": "iz",
+		"id": 531,
+		"testPackage": null,
+		"testPlanSummary": null,
+		"testCases": [],
+		"testCaseGroups": []
+	},
+	{
+		"name": "eDOS Test Plan",
+		"persistentId": 476001816,
+		"description": "",
+		"type": null,
+		"stage": null,
+		"position": 4,
+		"version": "null",
+		"scope": null,
+		"preloaded": false,
+		"supplements": [],
+		"transport": false,
+		"domain": "iz",
+		"id": 1476,
+		"testPackage": null,
+		"testPlanSummary": null,
+		"testCases": [],
+		"testCaseGroups": []
+	}
+]

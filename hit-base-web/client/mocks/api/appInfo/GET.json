@@ -43,7 +43,9 @@
     "DIVISION_NAME": "",
     "DISCLAIMER_LINK": "NA",
     "AUTHENTICATION_REQUIRED": "false",
-    "DOMAIN_MANAGEMENT_SUPPORTED": "true"
+    "DOMAIN_MANAGEMENT_SUPPORTED": "true",
+    "TOOL_SCOPE_SELECTON_DISPLAYED":"true",
+    "USER_LOGIN_SUPPORTED":"true"
   },
   "domains": [
     {
