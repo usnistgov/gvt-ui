@@ -11,8 +11,6 @@ body {
 		top.location = self.location;
 	}
 </script>
-
-
 <!-- <!-- Fixed navbar -->
 <div class="navbar navbar-default navbar-static-top" role="navigation">
 	<div class="brand" id="appheader">
@@ -23,8 +21,7 @@ body {
 				appInfo.options.ORGANIZATION_NAME: 'NIST'}} <span style="color: white">{{appInfo.name}}</span><span style="color: red; font-size: 12px"> {{appInfo.version}}</span>
 			</div>
 			<div id="appsubtitle">{{appInfo.subTitle}}</div>
-		</a> <span ng-show="isToolScopeSelectionDisplayed()">
-			<span class="pull-right" style="margin-top: 10px" ng-show="appInfo.domains != null && appInfo.domains.length > 0">
+		</a> <span ng-show="isToolScopeSelectionDisplayed()"> <span class="pull-right" style="margin-top: 10px" ng-show="appInfo.domains != null && appInfo.domains.length > 0">
 
 				<label style="color: white">Tool Scope<span ng-if="appInfo.domains.length > 1">s</span>:
 			</label> <span ng-if="isAuthenticated()">
@@ -97,7 +94,8 @@ body {
 				</ul></li>
 		</ul>
 
-		<ul class="nav navbar-nav navbar-right" style="margin-right: 15px" ng-show="isUserLoginSupported()">
+
+		<ul class="nav navbar-nav navbar-right" style="margin-right: 15px ng-show=" isuserloginsupported="">
 			<li class="dropdown clear-fix" ng-show="isAuthenticated()" ng-class="isActive('/useraccount') || isActive('/transport')">
 				<a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa fa-user"></i>
 					Hello {{getUsername()}}<span class="caret"></span></a>
