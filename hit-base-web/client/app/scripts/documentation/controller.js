@@ -1123,6 +1123,26 @@ angular.module('doc')
       $scope.initDocs(scope, 500);
     });
 
+    $scope.isLink = function(path) {
+    	return path && path != null && path.startsWith("http");
+	};
+	
+	$scope.downloadDocument = function(path) {
+		if (path != null) {
+			var form = document.createElement("form");
+			form.action = "api/documentation/downloadDocument";
+			form.method = "POST";
+			form.target = "_target";
+			var input = document.createElement("input");
+			input.name = "path";
+			input.value = path;
+			form.appendChild(input);
+			form.style.display = 'none';
+			document.body.appendChild(form);
+			form.submit();
+		}
+	};
+
 
     $scope.addDocument = function () {
       $scope.actionError = null;
@@ -1339,21 +1359,25 @@ angular.module('doc')
     });
 
 
-    $scope.downloadDocument = function (path) {
-      if (path != null) {
-        var form = document.createElement("form");
-        form.action = "api/documentation/downloadDocument";
-        form.method = "POST";
-        form.target = "_target";
-        var input = document.createElement("input");
-        input.name = "path";
-        input.value = path;
-        form.appendChild(input);
-        form.style.display = 'none';
-        document.body.appendChild(form);
-        form.submit();
-      }
-    };
+    $scope.isLink = function(path) {
+    	return path && path != null && path.startsWith("http");
+	};
+	
+	$scope.downloadDocument = function(path) {
+		if (path != null) {
+			var form = document.createElement("form");
+			form.action = "api/documentation/downloadDocument";
+			form.method = "POST";
+			form.target = "_target";
+			var input = document.createElement("input");
+			input.name = "path";
+			input.value = path;
+			form.appendChild(input);
+			form.style.display = 'none';
+			document.body.appendChild(form);
+			form.submit();
+		}
+	};
 
 
     $scope.addDocument = function () {
