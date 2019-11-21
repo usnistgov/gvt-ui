@@ -1424,7 +1424,6 @@ angular.module('format').factory('TestExecutionService',
 
         TestExecutionService.setTestStepValidationResult = function (step, value) {
             TestExecutionService.testStepValidationResults[step.id] = value;
-            console.log("tata 2");
             StorageService.set("testStepValidationResults", angular.toJson(TestExecutionService.testStepValidationResults));
 
             return TestExecutionService.updateTestStepValidationReport(step);
@@ -1432,7 +1431,6 @@ angular.module('format').factory('TestExecutionService',
 
         TestExecutionService.deleteTestStepValidationResult = function (step) {
             delete TestExecutionService.testStepValidationResults[step.id];
-            console.log("tata 3");
             StorageService.set("testStepValidationResults", angular.toJson(TestExecutionService.testStepValidationResults));
             return TestExecutionService.updateTestStepValidationReport(step);
         };
@@ -1566,7 +1564,6 @@ angular.module('format').factory('TestExecutionService',
         };
 
         TestExecutionService.updateTestStepValidationReport = function (testStep) {
-        	console.log("tata 4");
             StorageService.set("testStepValidationResults", angular.toJson(TestExecutionService.testStepValidationResults));
             StorageService.set("testStepComments", angular.toJson(TestExecutionService.testStepComments));
             var result = TestExecutionService.getTestStepValidationResult(testStep);

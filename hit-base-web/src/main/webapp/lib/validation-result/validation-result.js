@@ -247,15 +247,14 @@
           $scope.showValidationTable($scope.validationResult['errors'].categories[0], 'errors');
         }
 
+        //TODO check why this if condition was here.
 //        if (testStep.testingType != 'TA_RESPONDER' && testStep.testingType !== 'TA_MANUAL' && testStep.testingType !== 'SUT_MANUAL') {
           var rs = TestExecutionService.getTestStepValidationResult(testStep);
               var resString = getTestStepMessageValidationResultDesc($scope.validationResult);
              TestExecutionService.testStepValidationResults[testStep.id] = resString;
-             console.log("tata 1");
-           
+             StorageService.set("testStepValidationResults", angular.toJson(TestExecutionService.testStepValidationResults));
+
 //         }
-        console.log(TestExecutionService.testStepValidationResults);
-        StorageService.set("testStepValidationResults", angular.toJson(TestExecutionService.testStepValidationResults));
 
         $timeout(function () {
           var reportType = $scope.type;

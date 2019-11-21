@@ -539,7 +539,7 @@
                 <span ng-if="doc.path != null">
                     <a class="point"  ng-if="isLink(doc.path)" target="_blank"
                        ng-href="{{::doc.path}}">{{::doc.title}}</a>
-                    <a class="point"  ng-if="!isLink(doc.path)" ng-click="downloadDocument(doc.path)">{{::doc.name}}</a>
+                    <a class="point"  ng-if="!isLink(doc.path)" ng-click="downloadTool(doc.path)">{{::doc.name}}</a>
                     </span>
               </td>
               <td st-ratio="15">
