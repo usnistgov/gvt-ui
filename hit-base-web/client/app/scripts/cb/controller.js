@@ -889,6 +889,17 @@ angular.module('cb')
         ReportService.downloadTestCaseReports($scope.testCase.id, format, result, comments, $scope.testCase.nav['testPlan'],$scope.testCase.nav['testGroup']);
       }
     };
+    
+    $scope.isReportSavingSupported = function () {
+        return $rootScope.isReportSavingSupported();
+    };
+    
+    
+    $scope.savetestcasereport = function () {
+    	  return ReportService.saveTestCaseValidationReport($scope.testCase.id);
+      };
+        
+      
 
 
     $scope.downloadReportAs = function (format, testStep) {
@@ -1193,7 +1204,7 @@ angular.module('cb')
     };
 
     $scope.loadTestCase = function (testCase, tab, clear) {
-
+    	
       if (clear === undefined || clear === true) {
         StorageService.remove(StorageService.CB_EDITOR_CONTENT_KEY);
         var id = StorageService.get(StorageService.CB_LOADED_TESTCASE_ID_KEY);

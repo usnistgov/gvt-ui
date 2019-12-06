@@ -707,7 +707,7 @@ app.run(function (Session, $rootScope, $location, $modal, TestingSettings, AppIn
 
     //loadAppInfo();
     userInfoService.loadFromServer().then(function (currentUser) {
-        console.log("currentUser=" + angular.toJson(currentUser));
+//        console.log("currentUser=" + angular.toJson(currentUser));
         if (currentUser !== null && currentUser.accountId != null && currentUser.accountId != undefined) {
             initUser(currentUser);
         } else {
@@ -755,11 +755,23 @@ app.run(function (Session, $rootScope, $location, $modal, TestingSettings, AppIn
     };
 
 
-
     $rootScope.isLoggedIn = function () {
         return userInfoService.isAuthenticated();
     };
 
+    $rootScope.isToolScopeSelectionDisplayed = function () {
+        return $rootScope.getAppInfo().options && ($rootScope.getAppInfo().options['TOOL_SCOPE_SELECTON_DISPLAYED'] === "true");
+    };
+    
+    $rootScope.isUserLoginSupported = function () {
+        return $rootScope.getAppInfo().options && ($rootScope.getAppInfo().options['USER_LOGIN_SUPPORTED'] === "true");
+    };
+    
+    $rootScope.isReportSavingSupported = function () {    	
+        return $rootScope.getAppInfo().options && ($rootScope.getAppInfo().options['REPORT_SAVING_SUPPORTED'] === "true");
+    };
+    
+    
 
 });
 

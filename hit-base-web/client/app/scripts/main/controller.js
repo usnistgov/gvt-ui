@@ -783,6 +783,7 @@ angular.module('main').controller('MainCtrl',
                     'my': [],
                     'others':[]
                 };
+                
                 DomainsManager.getDomains().then(function (domains) {
                     $rootScope.appInfo.domains = domains;
                     if ($rootScope.appInfo.domains != null) {
@@ -790,7 +791,7 @@ angular.module('main').controller('MainCtrl',
                         if ($rootScope.appInfo.domains.length === 1) {
                             domainFound = $rootScope.appInfo.domains[0].domain;
                         } else if (storedDomain != null) {
-                            $rootScope.appInfo.domains = $filter('orderBy')($rootScope.appInfo.domains, 'position');
+                            $rootScope.appInfo.domains = $filter('orderBy')($rootScope.appInfo.domains, 'position'); //sorting by position but position doesn't exist...
                             for (var i = 0; i < $rootScope.appInfo.domains.length; i++) {
                                 if ($rootScope.appInfo.domains[i].domain === storedDomain) {
                                     domainFound = $rootScope.appInfo.domains[i].domain;
@@ -798,17 +799,19 @@ angular.module('main').controller('MainCtrl',
                                 }
                             }
                         }
-
-                        if (domainFound == null) {
-                            $rootScope.appInfo.domains = $filter('orderBy')($rootScope.appInfo.domains, 'position');
-                            domainFound = $rootScope.appInfo.domains[0].domain;
+                        if (domainFound == null) {                        	
+                        	for (var i = 0; i < $rootScope.appInfo.domains.length; i++) {
+                                if ($rootScope.appInfo.domains[i].domain === "default") {
+                                    domainFound = $rootScope.appInfo.domains[i].domain;
+                                    break;
+                                }
+                            }
+                        	if (domainFound == null) {                        	
+	                            $rootScope.appInfo.domains = $filter('orderBy')($rootScope.appInfo.domains, 'position'); //sorting by position but position doesn't exist...
+	                            domainFound = $rootScope.appInfo.domains[0].domain;
+                        	}
                         }
 
-
-                        if (domainFound == null) {
-                            //$rootScope.openUnknownDomainDlg();
-                            domainFound = "default";
-                        }
 
                         $rootScope.clearDomainSession();
                         DomainsManager.getDomainByKey(domainFound).then(function (result) {
