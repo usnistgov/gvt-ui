@@ -20,7 +20,7 @@
   ]);
 
   mod
-    .controller('ReportViewerCtrl', ['$scope', '$rootScope', '$compile', 'ReportService', 'TestExecutionService', 'Notification', function ($scope, $rootScope, $compile, ReportService, TestExecutionService, Notification) {
+    .controller('ReportViewerCtrl', ['$scope', '$rootScope', '$compile', 'ReportService', 'TestExecutionService', 'Notification','userInfoService', function ($scope, $rootScope, $compile, ReportService, TestExecutionService, Notification,userInfoService) {
       $scope.report = null;
       $scope.testStepId = null;
       $scope.error = null;
@@ -50,42 +50,50 @@
       //         $scope.loading = false;
       //     }
       // });
+// nico commented
+//      destroyEvent2 = $rootScope.$on($scope.type + ':initValidationReport', function (event, report, testStep) {
+//        $scope.loading = true;
+//        $scope.error = null;
+//        $scope.testStepId = testStep.id;
+//        if (report != null && report != undefined) {
+//          if (report.html == null) {
+//            var comments = report.comments != undefined ? report.comments : null;
+//            var result = report.result != undefined ? report.result : null;
+//            ReportService.updateTestStepValidationReport(report.id, testStep.id, result, comments).then(function (response) {
+//              $scope.report = response;
+//              TestExecutionService.setTestStepValidationReport(testStep, $scope.report.id);
+//              $scope.loading = false;
+//              $scope.compile();
+//            }, function (error) {
+//              $scope.report = null;
+//              $scope.compile();
+//              $scope.loading = false;
+//
+//              //Notification.error({message: error.data, templateUrl: "NotificationErrorTemplate.html", scope: $rootScope, delay: 30000});
+//            });
+//          } else {
+//            $scope.report = report;
+//            TestExecutionService.setTestStepValidationReport(testStep, $scope.report.id);
+//            $scope.compile();
+//            $scope.loading = false;
+//          }
+//        } else {
+//          $scope.report = null;
+//          $scope.compile();
+//          TestExecutionService.setTestStepValidationReport(testStep, null);
+//          $scope.loading = false;
+//          $scope.error = null;
+//        }
+//      });
+      
+      $scope.isAuthenticated = function () {
+          return userInfoService.isAuthenticated();
+      };
 
-      destroyEvent2 = $rootScope.$on($scope.type + ':initValidationReport', function (event, report, testStep) {
-        $scope.loading = true;
-        $scope.error = null;
-        $scope.testStepId = testStep.id;
-        if (report != null && report != undefined) {
-          if (report.html == null) {
-            var comments = report.comments != undefined ? report.comments : null;
-            var result = report.result != undefined ? report.result : null;
-            ReportService.updateTestStepValidationReport(report.id, testStep.id, result, comments).then(function (response) {
-              $scope.report = response;
-              TestExecutionService.setTestStepValidationReport(testStep, $scope.report.id);
-              $scope.loading = false;
-              $scope.compile();
-            }, function (error) {
-              $scope.report = null;
-              $scope.compile();
-              $scope.loading = false;
-
-              //Notification.error({message: error.data, templateUrl: "NotificationErrorTemplate.html", scope: $rootScope, delay: 30000});
-            });
-          } else {
-            $scope.report = report;
-            TestExecutionService.setTestStepValidationReport(testStep, $scope.report.id);
-            $scope.compile();
-            $scope.loading = false;
-          }
-        } else {
-          $scope.report = null;
-          $scope.compile();
-          TestExecutionService.setTestStepValidationReport(testStep, null);
-          $scope.loading = false;
-          $scope.error = null;
-        }
-      });
-
+      
+      $scope.isReportSavingSupported = function () {
+          return $rootScope.isReportSavingSupported();
+      };
 
       destroyEvent3 = $rootScope.$on($scope.type + ':updateTestStepValidationReport', function (event, reportId, testStep) {
         //$scope.loading = true;
@@ -162,6 +170,13 @@
       $scope.downloadAs = function (format) {
         return ReportService.downloadTestStepValidationReport($scope.report.id, format);
       };
+      
+      
+      $scope.savereport = function (format) {
+    	  	return ReportService.saveValidationReport($scope.testStepId);
+      };
+        
+      
     }]);
 
 
@@ -306,6 +321,9 @@
     };
 
 
+    
+    
+    
     ReportService.updateTestStepValidationReport = function (testReportId, testStepId, result, comments) {
       var delay = $q.defer();
       var data = angular.fromJson({
@@ -358,6 +376,45 @@
 
       return delay.promise;
     };
+    
+    
+    ReportService.saveValidationReport = function (testStepId) {
+        var delay = $q.defer();
+        var data = angular.fromJson({
+          "testStepId": testStepId
+        });
+        $http.post("api/tsReport/savePersistentUserTestStepReport", data).then(
+          function (object) {
+        	  	consoele.log("ok");
+        	  delay.resolve(res);
+          },
+          function (response) {
+        	  	console.log("error");
+        	  	delay.reject(response.data);
+          }
+        );
+        return delay.promise;
+      };
+      
+      
+      ReportService.saveTestCaseValidationReport = function (testCaseId) {
+          var delay = $q.defer();
+          var data = angular.fromJson({
+            "testCaseId": testCaseId
+          });
+          $http.post("api/tsReport/savePersistentUserTestCaseReport", data).then(
+            function (object) {
+          	  	consoele.log("ok");
+          	  delay.resolve(res);
+            },
+            function (response) {
+          	  	console.log("error");
+          	  	delay.reject(response.data);
+            }
+          );
+          return delay.promise;
+        };
+      
 
 
 //        ReportService.updateTestStepValidationReport = function (testStep, result, comments) {
