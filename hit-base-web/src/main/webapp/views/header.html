@@ -11,7 +11,7 @@ body {
 		top.location = self.location;
 	}
 </script>
-<!-- <!-- Fixed navbar -->
+<!-- Fixed navbar -->
 <div class="navbar navbar-default navbar-static-top" role="navigation">
 	<div class="brand" id="appheader">
 		<a style="display: inline-block; text-shadow: none" href="#">
@@ -51,7 +51,7 @@ body {
 							<span class="caret"></span>
 						</button>
 						<ul class="dropdown-menu">
-							<li ng-if="appInfo.domains.length > 0" ng-click="appInfo.selectedDomain = dom.domain; selectDomain(appInfo.selectedDomain)" ng-class="{'domain-selected': domain.domain === dom.domain, 'disabled': domain.domain === dom.domain}" ng-repeat="dom in appInfo.domains"><a href="#">
+							<li ng-if="appInfo.domains.length > 0" ng-click="appInfo.selectedDomain = dom.domain; selectDomain(appInfo.selectedDomain)" ng-class="{'domain-selected': domain.domain === dom.domain, 'disabled': domain.domain === dom.domain}" ng-repeat="dom in appInfo.domains | orderBy:'name'"><a href="#">
 									{{dom.name}}</a></li>
 						</ul>
 					</div>

@@ -41,6 +41,11 @@
                                         style="height:15;width:15px">HTML</a></li>
                             </ul>
                         </div>
+						<button ng-if="isReportSavingSupported() && isAuthenticated()" title="Save Report" type="button" class="btn btn-sm btn-success"
+                                        ng-click="savereport()">
+                                    <i class="fa fa-check-circle"></i>
+                                    Save Report
+                        	</button>
                         <br/>
                         <br/>
                     </div>
