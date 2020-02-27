@@ -10,45 +10,70 @@ angular.module('cf').factory('CF',
             testCase: null,
             selectedTestCase: null,
             message: new Message(),
-            searchTableId: 0
+            searchTableId: 0,
+            savedReports: [],
+            selectedSavedReport: null
         };
         return CF;
 }]);
 
 
 
-angular.module('cf').factory('CFTestPlanExecutioner', ['$q', '$http',
-  function ($q, $http) {
-    var manager = {
-      getTestPlan:  function (id) {
-        var delay = $q.defer();
-        $http.get("api/cf/testplans/" + id, {timeout: 180000}).then(
-          function (object) {
-            delay.resolve(angular.fromJson(object.data));
-          },
-          function (response) {
-            delay.reject(response.data);
-          }
-        );
 
-        return delay.promise;
-      },
 
-      getTestPlans: function (scope,domain) {
-        var delay = $q.defer();
-        $http.get("api/cf/testplans", {timeout: 180000, params: {"scope": scope, "domain":domain}}).then(
-          function (object) {
-            delay.resolve(angular.fromJson(object.data));
-          },
-          function (response) {
-            delay.reject(response.data);
-          }
-        );
-        return delay.promise;
-      }
-    };
-    return manager;
-  }
+angular.module('cf').factory('CFTestPlanExecutioner', ['$q', '$http', '$rootScope', 'CacheFactory',
+	function ($q, $http, $rootScope, CacheFactory) {
+	var manager = {
+			getTestPlan:  function (id) {
+				var delay = $q.defer();
+
+				if (!CacheFactory.get($rootScope.appInfo.name)) {
+					CacheFactory.createCache($rootScope.appInfo.name, {
+						storageMode: 'localStorage'
+					});
+				}			
+				var cache = CacheFactory.get($rootScope.appInfo.name);
+
+				$http.get("api/cf/testplans/" + id+"/updateDate", { timeout: 180000}).then(
+						function (date) {	
+							var cacheData = cache.get("api/cf/testplans/" + id);
+							if (cacheData && cacheData.updateDate === date.data) {
+								delay.resolve(cache.get("api/cf/testplans/" + id));
+							} else {
+								$http.get("api/cf/testplans/" + id, {timeout: 180000}).then(
+										function (object) {
+											cache.put("api/cf/testplans/" + id,angular.fromJson(object.data));
+											delay.resolve(angular.fromJson(object.data));
+										},
+										function (response) {
+											delay.reject(response.data);
+										}
+								);
+							}
+
+						},
+						function (error) {
+							delay.reject(error.data);
+						}
+				);
+				return delay.promise;
+			},
+
+			getTestPlans: function (scope,domain) {
+				var delay = $q.defer();
+				$http.get("api/cf/testplans", {timeout: 180000, params: {"scope": scope, "domain":domain}}).then(
+						function (object) {
+							delay.resolve(angular.fromJson(object.data));
+						},
+						function (response) {
+							delay.reject(response.data);
+						}
+				);
+				return delay.promise;
+			}
+	};
+	return manager;
+}
 ]);
 
 
@@ -359,8 +384,7 @@ angular.module('cf').factory('CFTestPlanManager', ['$q', '$http',
           );
           return delay.promise;
         }
-      
-      
+
 
     };
     return manager;

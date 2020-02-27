@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('main').controller('MainCtrl',
-    function ($scope, $rootScope, i18n, $location, userInfoService, $modal, $filter, base64, $http, Idle, Notification, IdleService, StorageService, TestingSettings, Session, AppInfo, User, $templateCache, $window, $sce, DomainsManager, Transport, $timeout) {
+    function ($scope, $rootScope, i18n, $location, userInfoService, $modal, $filter, base64, $http, Idle, Notification, IdleService, StorageService, TestingSettings, Session, AppInfo, User, $templateCache, $window, $sce, DomainsManager, Transport, $timeout, CBTestPlanListLoader,CBTestPlanLoader,CachingService) {
         //This line fetches the info from the server if the user is currently logged in.
         //If success, the app is updated according to the role.
         $rootScope.loginDialog = null;
@@ -783,35 +783,33 @@ angular.module('main').controller('MainCtrl',
                     'my': [],
                     'others':[]
                 };
-                
                 DomainsManager.getDomains().then(function (domains) {
                     $rootScope.appInfo.domains = domains;
                     if ($rootScope.appInfo.domains != null) {
-                    		$rootScope.initDomainsByOwner();
-                        if ($rootScope.appInfo.domains.length === 1) {
-                            domainFound = $rootScope.appInfo.domains[0].domain;
-                        } else if (storedDomain != null) {
+                		$rootScope.initDomainsByOwner();
+                    if ($rootScope.appInfo.domains.length === 1) {
+                        domainFound = $rootScope.appInfo.domains[0].domain;
+                    } else if (storedDomain != null) {
+                        $rootScope.appInfo.domains = $filter('orderBy')($rootScope.appInfo.domains, 'position'); //sorting by position but position doesn't exist...
+                        for (var i = 0; i < $rootScope.appInfo.domains.length; i++) {
+                            if ($rootScope.appInfo.domains[i].domain === storedDomain) {
+                                domainFound = $rootScope.appInfo.domains[i].domain;
+                                break;
+                            }
+                        }
+                    }
+                    if (domainFound == null) {                        	
+                    	for (var i = 0; i < $rootScope.appInfo.domains.length; i++) {
+                            if ($rootScope.appInfo.domains[i].domain === "default") {
+                                domainFound = $rootScope.appInfo.domains[i].domain;
+                                break;
+                            }
+                        }
+                    	if (domainFound == null) {                        	
                             $rootScope.appInfo.domains = $filter('orderBy')($rootScope.appInfo.domains, 'position'); //sorting by position but position doesn't exist...
-                            for (var i = 0; i < $rootScope.appInfo.domains.length; i++) {
-                                if ($rootScope.appInfo.domains[i].domain === storedDomain) {
-                                    domainFound = $rootScope.appInfo.domains[i].domain;
-                                    break;
-                                }
-                            }
-                        }
-                        if (domainFound == null) {                        	
-                        	for (var i = 0; i < $rootScope.appInfo.domains.length; i++) {
-                                if ($rootScope.appInfo.domains[i].domain === "default") {
-                                    domainFound = $rootScope.appInfo.domains[i].domain;
-                                    break;
-                                }
-                            }
-                        	if (domainFound == null) {                        	
-	                            $rootScope.appInfo.domains = $filter('orderBy')($rootScope.appInfo.domains, 'position'); //sorting by position but position doesn't exist...
-	                            domainFound = $rootScope.appInfo.domains[0].domain;
-                        	}
-                        }
-
+                            domainFound = $rootScope.appInfo.domains[0].domain;
+                    	}
+                    }
 
                         $rootScope.clearDomainSession();
                         DomainsManager.getDomainByKey(domainFound).then(function (result) {
@@ -819,6 +817,19 @@ angular.module('main').controller('MainCtrl',
                             StorageService.set(StorageService.APP_SELECTED_DOMAIN, result.domain);
                             $rootScope.domain = result;
                             $rootScope.loadingDomain = false;
+                            
+                            
+                            
+                            //CACHE preload thingies.
+                            
+                            CachingService.cacheCBTestPlans("GLOBAL",$rootScope.domain.domain);
+                            CachingService.cacheCFTestPlans("GLOBAL",$rootScope.domain.domain);
+                            if (userInfoService.isAuthenticated() === true) { 
+                            	CachingService.cacheCBTestPlans("USER",$rootScope.domain.domain);
+                                CachingService.cacheCFTestPlans("USER",$rootScope.domain.domain);
+                            }
+                                 
+                            
                             $timeout(function () {
                                 Transport.configs = {};
                                 Transport.getDomainForms($rootScope.domain.domain).then(function (transportForms) {

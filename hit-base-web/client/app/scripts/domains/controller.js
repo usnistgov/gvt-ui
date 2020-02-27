@@ -21,7 +21,7 @@ angular.module('domains')
         };
 
         $scope.viewDomain = function (domain, waitingTime) {
-            waitingTime = waitingTime == undefined ? 3000: waitingTime;
+            waitingTime = waitingTime == undefined ? 1000: waitingTime;
             $scope.loadingDomain = true;
             $scope.errorDomain = null;
             $scope.originalUserDomain = null;
