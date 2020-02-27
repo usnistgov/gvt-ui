@@ -278,4 +278,88 @@ angular.module('logs').controller('ValidationLogDetailsCtrl', function ($scope, 
 
 });
 
+//
+//angular.module('logs')
+//.controller('ReportsCtrl', ['$scope', 'ValidationLogService','ReportService', 'Notification', '$modal','$rootScope','$timeout',
+//  function ($scope, ValidationLogService, ReportService, Notification, $modal,$rootScope,$timeout) {
+//
+//    $scope.reports = null;
+//    $scope.tmpReports = null;
+//    $scope.logDetails = null;
+//    $scope.error = null;
+//    $scope.loadingAll = false;
+//    $scope.loadingOne = false;
+//
+//    $scope.allReports = null;
+//    $scope.contextType = "*";
+//    $scope.userType = "*";
+//    $scope.resultType = "*";
+//
+//
+//    $scope.initReportsLogs = function () {
+//        $scope.loadingAll = true;
+//        $timeout(function() {
+//            ReportService.getAllByAccountIdAndDomain($rootScope.domain.domain).then(function (reports) {
+//                $scope.allReports = reports;
+//                $scope.contextType = "*";
+//                $scope.resultType = "*";
+//                $scope.filterBy();
+//                $scope.loadingAll = false;
+//                console.log(reports)
+//            }, function (error) {
+//                $scope.loadingAll = false;
+//                $scope.error = "Sorry, Cannot load the logs. Please try again. \n DEBUG:" + error;
+//            });
+//        },1000);
+//    };
+//
+//    $scope.openLogDetails = function (validationLogItem) {
+//      var modalInstance = $modal.open({
+//        templateUrl: 'ValidationLogDetails.html',
+//        controller: 'ValidationLogDetailsCtrl',
+//        windowClass: 'valueset-modal',
+//        animation: false,
+//        keyboard: true,
+//        backdrop: true,
+//        resolve: {
+//          validationLogItem: function () {
+//            return validationLogItem;
+//          }
+//        }
+//      });
+//    };
+//
+//    $scope.filterBy = function () {
+//      $scope.reports = $scope.filterByResultType($scope.filterByContextType($scope.allReports));
+//      $scope.tmpReports = [].concat($scope.logs);
+//    };
+//
+//
+//    $scope.filterByContextType = function (inputLogs) {
+//      return _.filter(inputLogs, function (log) {
+//        return ($scope.contextType === "*" ) || ($scope.contextType === log.testingStage);
+//      });
+//    };
+//
+//
+//    $scope.filterByResultType = function (inputLogs) {
+//      return _.filter(inputLogs, function (log) {
+//        return ($scope.resultType === "*" ) || ($scope.resultType === "SUCCESS" && log.validationResult) || ($scope.resultType === "FAILED" && !log.validationResult)
+//      });
+//    };
+//
+//    $scope.deleteReport = function(report){
+//    	ReportService.deleteReport(report.id).then(function (result) {
+//        var index = $scope.reports.indexOf(report);
+//        if(index > -1){
+//          $scope.reports.splice(index, 1);
+//        }
+//      }, function (error) {
+//        $scope.error = "Sorry, Cannot delete the log. Please try again. \n DEBUG:" + error;
+//      });
+//    };
+//
+//
+//  }
+//]);
 

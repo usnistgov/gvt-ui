@@ -78,6 +78,7 @@ angular.module('cf')
             $scope.tabs[1] = false;
             $scope.tabs[2] = false;
             $scope.tabs[3] = false;
+            $scope.tabs[4] = false;
             $scope.activeTab = value;
             $scope.tabs[$scope.activeTab] = true;
         };
@@ -214,8 +215,8 @@ angular.module('cf')
                         StorageService.remove(StorageService.CF_EDITOR_CONTENT_KEY);
                     }
                     $scope.$broadcast('cf:testCaseLoaded', $scope.testCase);
-                    $scope.$broadcast('cf:profileLoaded', $scope.testCase.testContext.profile);
-                    $scope.$broadcast('cf:valueSetLibraryLoaded', $scope.testCase.testContext.vocabularyLibrary);
+//                    $scope.$broadcast('cf:profileLoaded', $scope.testCase.testContext.profile);
+//                    $scope.$broadcast('cf:valueSetLibraryLoaded', $scope.testCase.testContext.vocabularyLibrary);
                 }
                 $scope.loadingTC = false;
             });
@@ -335,7 +336,7 @@ angular.module('cf').controller('CFProfileInfoCtrl', function ($scope, $modalIns
 });
 
 angular.module('cf')
-    .controller('CFValidatorCtrl', ['$scope', '$http', 'CF', '$window', '$timeout', '$modal', 'NewValidationResult', '$rootScope', 'ServiceDelegator', 'StorageService', 'TestStepService', 'MessageUtil', 'FileUpload', 'Notification', function ($scope, $http, CF, $window, $timeout, $modal, NewValidationResult, $rootScope, ServiceDelegator, StorageService, TestStepService, MessageUtil, FileUpload, Notification) {
+    .controller('CFValidatorCtrl', ['$scope', '$http', 'CF', '$window', '$timeout', '$modal', 'NewValidationResult', '$rootScope', 'ServiceDelegator', 'StorageService', 'TestStepService', 'MessageUtil', 'FileUpload', 'Notification','ReportService','userInfoService', function ($scope, $http, CF, $window, $timeout, $modal, NewValidationResult, $rootScope, ServiceDelegator, StorageService, TestStepService, MessageUtil, FileUpload, Notification,ReportService,userInfoService) {
         $scope.cf = CF;
         $scope.testCase = CF.testCase;
         $scope.message = CF.message;
@@ -513,7 +514,7 @@ angular.module('cf')
 
         $scope.loadValidationResult = function (mvResult) {
             $timeout(function () {
-                $rootScope.$emit('cf:validationResultLoaded', mvResult, $scope.cf.testCase);
+                $rootScope.$emit('cf:validationResultLoaded', mvResult, $scope.cf.testCase, 'TestStep');
             });
         };
 
@@ -607,6 +608,8 @@ angular.module('cf')
             $scope.tError = null;
             $scope.mError = null;
             $scope.vError = null;
+            $scope.cf.savedReports = [];
+            
             $scope.$on('cf:testCaseLoaded', function (event, testCase) {
                 $scope.testCase = testCase;
                 if ($scope.testCase != null) {
@@ -627,6 +630,28 @@ angular.module('cf')
                             $scope.execute();
                         }
                     }, 500);
+                    
+                    if (userInfoService.isAuthenticated() && $rootScope.isReportSavingSupported()){
+                    	$timeout(function() {
+                            ReportService.getAllTSByAccountIdAndDomainAndtestStepId($rootScope.domain.domain,$scope.testCase.persistentId).then(function (reports) {
+                            	if (reports !== null){
+                            		$scope.cf.selectedSavedReport = null;
+                                    $scope.cf.savedReports = reports;
+                            	}else{
+                            		$scope.cf.savedReports = [];
+                            		$scope.cf.selectedSavedReport = null;
+                            	}                             
+                            }, function (error) {
+                        		$scope.cf.selectedSavedReport = null;
+                            	$scope.cf.savedReports = [];
+                            	$scope.loadingAll = false;
+                                $scope.error = "Sorry, Cannot load the reports. Please try again. \n DEBUG:" + error;                            
+                            });
+                        },100);
+                    }
+                    
+                    
+                    
                 }
             });
 
@@ -681,10 +706,69 @@ angular.module('cf')
     }]);
 
 
-angular.module('cf')
-    .controller('CFReportCtrl', ['$scope', '$sce', '$http', 'CF', function ($scope, $sce, $http, CF) {
+angular.module('cf').controller('CFReportCtrl', ['$scope', '$sce', '$http', 'CF', function ($scope, $sce, $http, CF) {
         $scope.cf = CF;
     }]);
+
+angular.module('cf').controller('CFSavedReportCtrl', ['$scope', '$sce', '$http', 'CF','ReportService','$modal', function ($scope, $sce, $http, CF,ReportService,$modal) {
+	$scope.cf = CF;
+	$scope.selectReport = function (report) {			
+			ReportService.getUserTSReport(report.id).then(function (report) {
+            	if (report !== null){
+            		$scope.cf.selectedSavedReport = report;
+            	}                           
+            }, function (error) {    
+                $scope.error = "Sorry, Cannot load the report data. Please try again. \n DEBUG:" + error;                            
+            });
+     };
+     
+      $scope.downloadAs = function (format) {
+    	 if ($scope.cf.selectedSavedReport){
+             return ReportService.downloadUserTestStepValidationReport($scope.cf.selectedSavedReport.id, format);
+    	 }
+       };
+       
+       $scope.deleteReport = function(report){    	    	    	     
+ 	      var modalInstance = $modal.open({
+ 	        templateUrl: 'confirmReportDelete.html',
+ 	        controller: 'ConfirmDialogCtrl',
+ 	        size: 'md',
+ 	        backdrop: true,
+ 	        keyboard: true
+ 	      });
+ 	      modalInstance.result.then(
+ 	        function (resultDiag) {
+ 	        	//Delete
+ 	          if (resultDiag) { 	        	  
+ 	        		  ReportService.deleteTSReport(report.id).then(function (result) {
+ 	    	          		var index = $scope.reports.indexOf(report);
+ 	    	          		if(index > -1){
+ 	    	          			$scope.reports.splice(index, 1);
+ 	    	          		}
+ 	    	          		Notification.success({
+ 	    	                    message: "Report deleted successfully!",
+ 	    	                    templateUrl: "NotificationSuccessTemplate.html",
+ 	    	                    scope: $rootScope,
+ 	    	                    delay: 5000
+ 	    	                  });
+ 	    	          	}, function (error) {
+ 	    	          		Notification.error({
+ 	    	                    message: "Report deletion failed! <br>If error persists, please contact the website administrator." ,
+ 	    	                    templateUrl: "NotificationErrorTemplate.html",
+ 	    	                    scope: $rootScope,
+ 	    	                    delay: 10000
+ 	    	                  });
+ 	    	          	}); 	        	  	        	  
+ 	          }
+ 	        }, function (resultDiag) {
+ 	        	//cancel
+ 	        });
+
+ 	    } 
+     
+}]);
+
+
 
 angular.module('cf')
     .controller('CFVocabularyCtrl', ['$scope', 'CF', function ($scope, CF) {
@@ -1272,7 +1356,6 @@ angular.module('cf')
             if (node != null) {
                 $scope.executionError = null;
                 $scope.error = null;
-                console.log("node.type=" + node.type);
                 $scope.selectedNode = node;
                 $scope.oldProfileMessages = [];
                 $scope.originalOldProfileMessages = angular.copy($scope.oldProfileMessages);
@@ -1839,7 +1922,6 @@ angular.module('cf')
                 var destNode = e.dest.nodesScope.node;
                 var destPosition = e.dest.index + 1;
                 // display modal if the node is being dropped into a smaller container
-                console.log(destNode);
                 if (sourceNode != null && destNode != null) {
                     return CFTestPlanManager.updateLocation(destNode, sourceNode, destPosition).then(function (result) {
                         if (result.status == 'SUCCESS') {

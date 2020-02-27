@@ -156,7 +156,12 @@ body {
 
 					<li ng-if="isDomainsManagementSupported()" role="separator"
 						class="divider"></li>
-
+											
+					<li ng-if="isReportSavingSupported()" ng-class="isActive('/reports')"><a
+						class="point" href="#/reports"><i class="fa fa-cog"></i> My Reports</a></li>
+					<li ng-if="isReportSavingSupported()" role="separator"
+						class="divider"></li>	
+						
 					<li ng-show="isAdmin()" ng-class="isActive('/logs')"><a
 						class="point" href="#/logs"><i class="fa fa-cog"></i> Admin
 							Logs</a></li>

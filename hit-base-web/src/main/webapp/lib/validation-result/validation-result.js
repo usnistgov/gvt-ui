@@ -39,7 +39,7 @@
 
   mod
     .controller('ValidationResultCtrl', ['$scope', '$filter', '$modal', '$rootScope', 'ValidationResultHighlighter', '$sce', 'NewValidationResult', '$timeout', 'ServiceDelegator', 'Settings', 'TestExecutionService', 'StorageService', function ($scope, $filter, $modal, $rootScope, ValidationResultHighlighter, $sce, NewValidationResult, $timeout, ServiceDelegator, Settings, TestExecutionService,StorageService) {
-      $scope.validationTabs = new Array();
+    	$scope.validationTabs = new Array();
       $scope.currentType = null;
       $scope.settings = Settings;
       $scope.validationResultOriginal = null;
@@ -164,7 +164,7 @@
         });
       });
 
-      var destroyEvent1 = $rootScope.$on($scope.type + ':validationResultLoaded', function (event, mvResult, testStep) {
+      var destroyEvent1 = $rootScope.$on($scope.type + ':validationResultLoaded', function (event, mvResult, testStep,testType) {
         if ($scope.format != null) {
           $scope.editorService = ServiceDelegator.getEditorService($scope.format);
           $scope.treeService = ServiceDelegator.getTreeService($scope.format);
@@ -177,14 +177,14 @@
             validationResult.init(mvResult, testStep.id).then(function (done) {
               if(done) {
                 mvResult['result'] = validationResult;
-                $scope.processValidationResult(mvResult,testStep);
+                $scope.processValidationResult(mvResult,testStep,testType);
               }else{
                 mvResult['result'] = null;
-                $scope.processValidationResult(mvResult,testStep);
+                $scope.processValidationResult(mvResult,testStep,testType);
               }
             });
           } else {
-            $scope.processValidationResult(mvResult,testStep);
+            $scope.processValidationResult(mvResult,testStep,testType);
           }
         }
       });
@@ -199,7 +199,7 @@
         return result > 0 ? 'FAILED' : result === 0 ? 'PASSED' : undefined;
       };
 
-      $scope.processValidationResult = function (mvResult, testStep) {
+      $scope.processValidationResult = function (mvResult, testStep,testType) {
         $scope.validationResult = mvResult.result;
         if ($scope.validationResult && $scope.validationResult != null) {
 
@@ -258,8 +258,8 @@
           var reportType = $scope.type;
           if ($scope.type === 'cb') { // TODO: remove dependency
             reportType = testStep.testContext && testStep.testContext != null ? 'cbValidation' : 'cbManual';
-          }
-          $rootScope.$emit(reportType + ':updateTestStepValidationReport', mvResult != null ? mvResult.reportId : null, testStep);
+          }      
+          $rootScope.$emit(reportType + ':updateTestStepValidationReport', mvResult != null ? mvResult.reportId : null, testStep,testType);
         });
 
 
@@ -292,7 +292,7 @@
       };
 
 
-      $rootScope.$on('$destroy', function () {
+      $scope.$on('$destroy', function () {
         destroyEvent1(); // remove listener.
       });
 
