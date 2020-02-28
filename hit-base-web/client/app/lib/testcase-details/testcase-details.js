@@ -489,7 +489,6 @@
                 
             
                 
-                
                 TestCaseDetailsService.details(testCase.stage,testCase.type, testCase.id).then(function (result) {
                     $scope.testCase['testStory'] = result['testStory'];
                     $scope.testCase['jurorDocument'] = result['jurorDocument'];
@@ -658,14 +657,31 @@
 					storageMode: 'localStorage'
 				});
 			}			
-            var cache = CacheFactory.get($rootScope.appInfo.name);
-            
-            $http.get('api/'+stage.toLowerCase()+ '/' + type.toLowerCase() + 's/' + id + "/updateDate", { timeout: 180000}).then(
-					function (date) {	
-						var cacheData = cache.get('api/'+stage.toLowerCase()+ '/' + type.toLowerCase() + 's/' + id + '/details');					
-						if (cacheData && cacheData.updateDate === date.data) {
-							delay.resolve(cache.get('api/'+stage.toLowerCase()+ '/' + type.toLowerCase() + 's/' + id + '/details'));
-						} else {
+            var cache = CacheFactory.get($rootScope.appInfo.name);           
+            if (stage !== undefined && stage !== null && type !== undefined && type !== null){
+            	     
+	            $http.get('api/'+stage.toLowerCase()+ '/' + type.toLowerCase() + 's/' + id + "/updateDate", { timeout: 180000}).then(
+						function (date) {	
+							var cacheData = cache.get('api/'+stage.toLowerCase()+ '/' + type.toLowerCase() + 's/' + id + '/details');					
+							if (cacheData && cacheData.updateDate === date.data) {
+								delay.resolve(cache.get('api/'+stage.toLowerCase()+ '/' + type.toLowerCase() + 's/' + id + '/details'));
+							} else {
+								$http.get('api/'+stage.toLowerCase()+ '/' + type.toLowerCase() + 's/' + id + '/details').then(
+										function (object) {
+											try {
+												cache.put('api/'+stage.toLowerCase() +'/' + type.toLowerCase() + 's/' + id + '/details',angular.fromJson(object.data));
+												delay.resolve(angular.fromJson(object.data));
+											} catch (e) {
+												delay.reject("Invalid character");
+											}
+										},
+										function (errorresponse) {
+											delay.reject(errorresponse.data);
+										}
+								);
+							}
+						},
+		                function (error) {
 							$http.get('api/'+stage.toLowerCase()+ '/' + type.toLowerCase() + 's/' + id + '/details').then(
 									function (object) {
 										try {
@@ -679,25 +695,9 @@
 										delay.reject(errorresponse.data);
 									}
 							);
-						}
-					},
-	                function (error) {
-						$http.get('api/'+stage.toLowerCase()+ '/' + type.toLowerCase() + 's/' + id + '/details').then(
-								function (object) {
-									try {
-										cache.put('api/'+stage.toLowerCase() +'/' + type.toLowerCase() + 's/' + id + '/details',angular.fromJson(object.data));
-										delay.resolve(angular.fromJson(object.data));
-									} catch (e) {
-										delay.reject("Invalid character");
-									}
-								},
-								function (errorresponse) {
-									delay.reject(errorresponse.data);
-								}
-						);
-	                }
-            );
-            
+		                }
+	            );
+            }
            
 
             return delay.promise;

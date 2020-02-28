@@ -85,7 +85,6 @@ var httpHeaders,
 var msg = {};
 app.config(function ($routeProvider, $httpProvider, localStorageServiceProvider, KeepaliveProvider, IdleProvider, NotificationProvider, $provide) {
 
-
     localStorageServiceProvider
         .setPrefix('hit-app')
         .setStorageType('sessionStorage');
@@ -562,7 +561,7 @@ app.run(function (Session, $rootScope, $location, $modal, TestingSettings, AppIn
         httpHeaders.common['Accept'] = 'application/json';
         httpHeaders.common['Authorization'] = 'Basic ' + auth;
         $http.get('api/accounts/login').success(function () {
-            console.log("logging success...");
+//            console.log("logging success...");
             httpHeaders.common['Authorization'] = null;
             $http.get('api/accounts/cuser').then(function (result) {
                 if (result.data && result.data != null) {
@@ -769,7 +768,7 @@ app.run(function (Session, $rootScope, $location, $modal, TestingSettings, AppIn
     };
 
 
-    $rootScope.isDomainsManagementSupported = function () {
+    $rootScope.isDomainsManagementSupported = function () {    	
         return $rootScope.getAppInfo().options && ($rootScope.getAppInfo().options['DOMAIN_MANAGEMENT_SUPPORTED'] === "true") || userInfoService.isAdmin() || userInfoService.isSupervisor() || userInfoService.isDeployer();
     };
 
@@ -779,7 +778,7 @@ app.run(function (Session, $rootScope, $location, $modal, TestingSettings, AppIn
     };
     
     $rootScope.isDomainSelectionSupported = function () {
-        return $rootScope.getAppInfo().options && ($rootScope.getAppInfo().options['DOMAIN_SELECTON_SUPPORTED'] === "true");
+        return $rootScope.getAppInfo().options && ($rootScope.getAppInfo().options['DOMAIN_SELECTION_SUPPORTED'] === "true");
     };
     
     $rootScope.isUserLoginSupported = function () {
@@ -797,10 +796,7 @@ app.run(function (Session, $rootScope, $location, $modal, TestingSettings, AppIn
     $rootScope.isUserLoginSupported = function () {
         return $rootScope.getAppInfo().options && ($rootScope.getAppInfo().options['USER_LOGIN_SUPPORTED'] === "true");
     };
-    
-    $rootScope.isReportSavingSupported = function () {    	
-        return $rootScope.getAppInfo().options && ($rootScope.getAppInfo().options['REPORT_SAVING_SUPPORTED'] === "true");
-    };
+       
     
     
 

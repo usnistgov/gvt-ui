@@ -54,10 +54,10 @@
       // });
 // nico commented
       destroyEvent2 = $rootScope.$on($scope.type + ':initValidationReport', function (event, report, testStep) {
-    	  console.log($scope.type + ':initValidationReport');
         $scope.loading = true;
         $scope.error = null;
         $scope.testStepId = testStep.id;
+        $scope.testStep = testStep;
         if (report != null && report != undefined) {
           if (report.html == null) {
             var comments = report.comments != undefined ? report.comments : null;
@@ -97,13 +97,19 @@
       $scope.isReportSavingSupported = function () {
           return $rootScope.isReportSavingSupported();
       };
+      
+      $scope.isTestStepCompleted = function () {
+    	  
+    	  console.log(TestExecutionService.getTestStepExecutionStatus($scope.testStep))
+          return TestExecutionService.getTestStepExecutionStatus($scope.testStep) === 'COMPLETE';
+        };
 
       destroyEvent3 = $rootScope.$on($scope.type + ':updateTestStepValidationReport', function (event, reportId, testStep, testType) {
-    	  console.log($scope.type + ':updateTestStepValidationReport');
         //$scope.loading = true;
 		$scope.saveButtonDisabled = false;
 		$scope.saveButtonText = "Save Report";
         if (testStep != null) {
+          $scope.testStep = testStep;
           $scope.report = null;
           $scope.error = null;
           $scope.testType = testType;
