@@ -2,7 +2,7 @@
 
 angular.module('cb')
   .controller('CBTestingCtrl', ['$scope', '$window', '$rootScope', 'CB', 'StorageService', '$timeout', 'TestCaseService', 'TestStepService','$routeParams','userInfoService', function ($scope, $window, $rootScope, CB, StorageService, $timeout, TestCaseService, TestStepService,$routeParams,userInfoService) {
-
+	$scope.cb = CB;
     $scope.testCase = null;
     $scope.token = $routeParams.x;
     $scope.domain = $routeParams.d;
@@ -10,7 +10,6 @@ angular.module('cb')
    
     
     $scope.initTesting = function () {
-    	
     	 if ($routeParams.scope !== undefined && $routeParams.group !== undefined){
     	       
     	        	StorageService.set(StorageService.CB_SELECTED_TESTPLAN_ID_KEY, $routeParams.group);
@@ -47,7 +46,7 @@ angular.module('cb')
         }
         
       } else if (tab === '/cb_management') {
-        $scope.$broadcast('event:cb:initManagement');
+    	  $scope.$broadcast('event:cb:initManagement');
       } 
       },500);
 
@@ -65,7 +64,8 @@ angular.module('cb')
 
 angular.module('cb')
   .controller('CBExecutionCtrl', ['$scope', '$window', '$rootScope', 'CB', '$modal', 'TestExecutionClock', 'Endpoint', 'TestExecutionService', '$timeout', 'StorageService', 'User', 'ReportService', 'TestCaseDetailsService', '$compile', 'Transport', '$filter', 'SOAPEscaper','Notification', function ($scope, $window, $rootScope, CB, $modal, TestExecutionClock, Endpoint, TestExecutionService, $timeout, StorageService, User, ReportService, TestCaseDetailsService, $compile, Transport, $filter, SOAPEscaper,Notification) {
-    $scope.targ = "cb-executed-test-step";
+	$scope.cb = CB;
+	$scope.targ = "cb-executed-test-step";
     $scope.loading = false;
     $scope.error = null;
     $scope.tabs = new Array();
@@ -143,6 +143,9 @@ angular.module('cb')
       }
     };
 
+    $scope.isTestCase = function () {
+        return CB.testCase != null && CB.testCase.type === 'TestCase';
+      };
 
     $scope.getTestType = function () {
       return CB.testCase.type;
@@ -1021,8 +1024,10 @@ angular.module('cb')
 
 
 angular.module('cb')
-  .controller('CBTestCaseCtrl', ['$scope', '$window', '$filter', '$rootScope', 'CB', '$timeout', 'CBTestPlanListLoader', '$sce', 'StorageService', 'TestCaseService', 'TestStepService', 'TestExecutionService', 'CBTestPlanLoader', 'User', 'userInfoService', function ($scope, $window, $filter, $rootScope, CB, $timeout, CBTestPlanListLoader, $sce, StorageService, TestCaseService, TestStepService, TestExecutionService, CBTestPlanLoader, User, userInfoService) {
-    $scope.selectedTestCase = CB.selectedTestCase;
+  .controller('CBTestCaseCtrl', ['$scope', '$window', '$filter', '$rootScope', 'CB', '$timeout', 'CBTestPlanListLoader', '$sce', 'StorageService', 'TestCaseService', 'TestStepService', 'TestExecutionService', 'CBTestPlanLoader', 'User', 'userInfoService','ReportService', function ($scope, $window, $filter, $rootScope, CB, $timeout, CBTestPlanListLoader, $sce, StorageService, TestCaseService, TestStepService, TestExecutionService, CBTestPlanLoader, User, userInfoService,ReportService) {
+	$scope.cb = CB;
+	$scope.error = null;
+	$scope.selectedTestCase = CB.selectedTestCase;
     $scope.testCase = CB.testCase;
     $scope.selectedTP = {id: null};
     $scope.preSelectedTP = {id: null};
@@ -1041,7 +1046,7 @@ angular.module('cb')
     $scope.loadingTC = false;
     $scope.loadingTPs = false;
 
-    $scope.error = null;
+    
     $scope.collapsed = false;
     
 
@@ -1228,6 +1233,7 @@ angular.module('cb')
     $scope.selectTestCase = function (node) {
       $scope.loadingTC = true;
       $scope.selectedTestCase = node;
+      $scope.cb.selectedTestCase = node;
       StorageService.set(StorageService.CB_SELECTED_TESTCASE_ID_KEY, node.id);
       StorageService.set(StorageService.CB_SELECTED_TESTCASE_TYPE_KEY, node.type);
       $timeout(function () {
@@ -1243,15 +1249,17 @@ angular.module('cb')
     };
 
     $scope.loadTestCase = function (testCase, tab, clear) {
-    	
+//    	console.log($scope.cb);
       if (clear === undefined || clear === true) {
         StorageService.remove(StorageService.CB_EDITOR_CONTENT_KEY);
         var id = StorageService.get(StorageService.CB_LOADED_TESTCASE_ID_KEY);
         var type = StorageService.get(StorageService.CB_LOADED_TESTCASE_TYPE_KEY);
         if (id != null && id != undefined) {
           if (type === 'TestCase') { // a test case was loaded
+//        	  console.log("a test case was loaded");
             TestExecutionService.clearTestCase(id);
           } else if (type === 'TestStep') { // a test step was loaded
+//        	  console.log("a test step was loaded");
             TestExecutionService.clearTestStep(id);
           }
           StorageService.remove(StorageService.CB_LOADED_TESTCASE_ID_KEY);
@@ -1261,7 +1269,7 @@ angular.module('cb')
         id = StorageService.get(StorageService.CB_LOADED_TESTSTEP_ID_KEY);
         type = StorageService.get(StorageService.CB_LOADED_TESTSTEP_TYPE_KEY);
 
-        if (id != null && id != undefined) { // a test step was executed independent of weither it was part of a test case or test step execution
+        if (id != null && id != undefined) { // a test step was executed independent of whether it was part of a test case or test step execution
           TestExecutionService.clearTestStep(id);
           StorageService.remove(StorageService.CB_LOADED_TESTCASE_ID_KEY);
           StorageService.remove(StorageService.CB_LOADED_TESTCASE_TYPE_KEY);
@@ -1270,6 +1278,10 @@ angular.module('cb')
 
       StorageService.set(StorageService.CB_LOADED_TESTCASE_ID_KEY, testCase.id);
       StorageService.set(StorageService.CB_LOADED_TESTCASE_TYPE_KEY, testCase.type);
+      
+      if (testCase.type === 'TestStep'){
+    	  $rootScope.$emit('cb:updateSavedReports',testCase);
+      }
 
       $timeout(function () {
         $rootScope.$broadcast('cb:testCaseLoaded', testCase, tab);
@@ -1298,9 +1310,88 @@ angular.module('cb')
       $scope.initTestCase();
     });
 
+    
+    $rootScope.$on('cb:updateSavedReports', function (event, testStep) {
+    	if (userInfoService.isAuthenticated() && $rootScope.isReportSavingSupported()){
+        	$timeout(function() {
+                ReportService.getAllIndependantTSByAccountIdAndDomainAndtestStepId($rootScope.domain.domain,testStep.persistentId).then(function (reports) {
+                	if (reports !== null){
+                		$scope.cb.selectedSavedReport = null;
+                        $scope.cb.savedReports = reports;
+                	}else{
+                		$scope.cb.savedReports = [];
+                		$scope.cb.selectedSavedReport = null;
+                	}                             
+                }, function (error) {
+            		$scope.cb.selectedSavedReport = null;
+                	$scope.cb.savedReports = [];
+                	$scope.loadingAll = false;
+                    $scope.error = "Sorry, Cannot load the reports. Please try again. \n DEBUG:" + error;                            
+                });
+            },100);
+        }
+    });
 
   }]);
 
+
+angular.module('cb').controller('CBSavedReportCtrl', ['$scope', '$sce', '$http', 'CB','ReportService','$modal', function ($scope, $sce, $http, CB, ReportService,$modal) {
+	$scope.cb = CB;
+	$scope.selectReport = function (report) {			
+			ReportService.getUserTSReport(report.id).then(function (report) {
+            	if (report !== null){
+            		$scope.cb.selectedSavedReport = report;
+            	}                           
+            }, function (error) {    
+                $scope.error = "Sorry, Cannot load the report data. Please try again. \n DEBUG:" + error;                            
+            });
+     };
+     
+      $scope.downloadAs = function (format) {
+    	 if ($scope.cb.selectedSavedReport){
+             return ReportService.downloadUserTestStepValidationReport($scope.cb.selectedSavedReport.id, format);
+    	 }
+       };
+       
+       $scope.deleteReport = function(report){    	    	    	     
+ 	      var modalInstance = $modal.open({
+ 	        templateUrl: 'confirmReportDelete.html',
+ 	        controller: 'ConfirmDialogCtrl',
+ 	        size: 'md',
+ 	        backdrop: true,
+ 	        keyboard: true
+ 	      });
+ 	      modalInstance.result.then(
+ 	        function (resultDiag) {
+ 	        	//Delete
+ 	          if (resultDiag) { 	        	  
+ 	        		  ReportService.deleteTSReport(report.id).then(function (result) {
+ 	    	          		var index = $scope.reports.indexOf(report);
+ 	    	          		if(index > -1){
+ 	    	          			$scope.reports.splice(index, 1);
+ 	    	          		}
+ 	    	          		Notification.success({
+ 	    	                    message: "Report deleted successfully!",
+ 	    	                    templateUrl: "NotificationSuccessTemplate.html",
+ 	    	                    scope: $rootScope,
+ 	    	                    delay: 5000
+ 	    	                  });
+ 	    	          	}, function (error) {
+ 	    	          		Notification.error({
+ 	    	                    message: "Report deletion failed! <br>If error persists, please contact the website administrator." ,
+ 	    	                    templateUrl: "NotificationErrorTemplate.html",
+ 	    	                    scope: $rootScope,
+ 	    	                    delay: 10000
+ 	    	                  });
+ 	    	          	}); 	        	  	        	  
+ 	          }
+ 	        }, function (resultDiag) {
+ 	        	//cancel
+ 	        });
+
+ 	    } 
+     
+}]);
 
 angular.module('cb')
   .controller('CBValidatorCtrl', ['$scope', '$http', 'CB', '$window', '$timeout', '$modal', 'NewValidationResult', '$rootScope', 'ServiceDelegator', 'StorageService', 'TestExecutionService', 'MessageUtil', 'FileUpload', function ($scope, $http, CB, $window, $timeout, $modal, NewValidationResult, $rootScope, ServiceDelegator, StorageService, TestExecutionService, MessageUtil, FileUpload) {

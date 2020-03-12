@@ -22,6 +22,7 @@
   mod
     .controller('ReportViewerCtrl', ['$scope', '$rootScope', '$compile', 'ReportService', 'TestExecutionService', 'Notification','userInfoService', function ($scope, $rootScope, $compile, ReportService, TestExecutionService, Notification,userInfoService) {
       $scope.report = null;
+      $scope.cfCompleteStatus = false;
       $scope.testStepId = null;
       $scope.error = null;
       $scope.loading = false;
@@ -54,6 +55,7 @@
       // });
 // nico commented
       destroyEvent2 = $rootScope.$on($scope.type + ':initValidationReport', function (event, report, testStep) {
+    	$scope.cfCompleteStatus = false;
         $scope.loading = true;
         $scope.error = null;
         $scope.testStepId = testStep.id;
@@ -100,13 +102,19 @@
       
       $scope.isTestStepCompleted = function () {
     	  
-    	  console.log(TestExecutionService.getTestStepExecutionStatus($scope.testStep))
-          return TestExecutionService.getTestStepExecutionStatus($scope.testStep) === 'COMPLETE';
+    	  if($scope.testStep.stage === 'CB'){
+    		  return TestExecutionService.getTestStepExecutionStatus($scope.testStep) === 'COMPLETE';
+    	  }else if($scope.testStep.stage === 'CF'){
+    		  return $scope.cfCompleteStatus;
+    	  }
+    	  
+          
         };
 
       destroyEvent3 = $rootScope.$on($scope.type + ':updateTestStepValidationReport', function (event, reportId, testStep, testType) {
         //$scope.loading = true;
 		$scope.saveButtonDisabled = false;
+		$scope.cfCompleteStatus = false;
 		$scope.saveButtonText = "Save Report";
         if (testStep != null) {
           $scope.testStep = testStep;
@@ -179,6 +187,10 @@
           element.html('');
         }
         $compile(element.contents())($scope);
+        if($scope.testStep.stage === 'CF'){
+        	$scope.cfCompleteStatus = true;
+        }
+        	
       };
 
       $scope.downloadAs = function (format) {
@@ -197,6 +209,14 @@
                     delay: 5000
                   });
     	  		$scope.saveButtonText = "Report Saved!";
+    	  		if($scope.testStep.stage === 'CF'){
+    	  			$rootScope.$broadcast('cf:updateSavedReports',$scope.testStep);
+    	        }
+    	  		if($scope.testStep.stage === 'CB'){
+    	  			$rootScope.$broadcast('cb:updateSavedReports',$scope.testStep);
+    	        }
+    	  		
+    	  		
               }, function (error) {
             	  Notification.error({
 	                    message: "Report could not be saved! <br>If error persists, please contact the website administrator." ,

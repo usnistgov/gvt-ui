@@ -215,8 +215,8 @@ angular.module('cf')
                         StorageService.remove(StorageService.CF_EDITOR_CONTENT_KEY);
                     }
                     $scope.$broadcast('cf:testCaseLoaded', $scope.testCase);
-//                    $scope.$broadcast('cf:profileLoaded', $scope.testCase.testContext.profile);
-//                    $scope.$broadcast('cf:valueSetLibraryLoaded', $scope.testCase.testContext.vocabularyLibrary);
+                    $scope.$broadcast('cf:profileLoaded', $scope.testCase.testContext.profile);
+                    $scope.$broadcast('cf:valueSetLibraryLoaded', $scope.testCase.testContext.vocabularyLibrary);
                 }
                 $scope.loadingTC = false;
             });
@@ -652,6 +652,28 @@ angular.module('cf')
                     
                     
                     
+                }
+            });
+            
+            
+            $rootScope.$on('cf:updateSavedReports', function (event, teptStep) {
+            	if (userInfoService.isAuthenticated() && $rootScope.isReportSavingSupported()){
+                	$timeout(function() {
+                        ReportService.getAllTSByAccountIdAndDomainAndtestStepId($rootScope.domain.domain,teptStep.persistentId).then(function (reports) {
+                        	if (reports !== null){
+                        		$scope.cf.selectedSavedReport = null;
+                                $scope.cf.savedReports = reports;
+                        	}else{
+                        		$scope.cf.savedReports = [];
+                        		$scope.cf.selectedSavedReport = null;
+                        	}                             
+                        }, function (error) {
+                    		$scope.cf.selectedSavedReport = null;
+                        	$scope.cf.savedReports = [];
+                        	$scope.loadingAll = false;
+                            $scope.error = "Sorry, Cannot load the reports. Please try again. \n DEBUG:" + error;                            
+                        });
+                    },100);
                 }
             });
 

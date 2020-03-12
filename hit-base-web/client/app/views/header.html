@@ -14,7 +14,7 @@ body {
 <!-- Fixed navbar -->
 <div class="navbar navbar-default navbar-static-top" role="navigation">
 	<div class="brand" id="appheader">
-		<a style="display: inline-block; text-shadow: none" href="#">
+		<a style="display: inline-block; text-shadow: none" href="#/home">
 			<div id="apptitle">
 				{{appInfo.options.ORGANIZATION_NAME != null &&
 				appInfo.options.ORGANIZATION_NAME != undefined ?
@@ -159,7 +159,7 @@ body {
 						class="divider"></li>
 											
 					<li ng-if="isReportSavingSupported()" ng-class="isActive('/reports')"><a
-						class="point" href="#/reports"><i class="fa fa-cog"></i> My Reports</a></li>
+						class="point" href="#/reports"><i class="fa fa-cog"></i> My Validation Reports</a></li>
 					<li ng-if="isReportSavingSupported()" role="separator"
 						class="divider"></li>	
 						

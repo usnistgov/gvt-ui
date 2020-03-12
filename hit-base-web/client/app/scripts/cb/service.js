@@ -20,7 +20,9 @@ angular.module('cb').factory('CB',
             },
             getContent: function () {
                 return  CB.message.content;
-            }
+            },
+            savedReports: [],
+            selectedSavedReport: null
         };
         return CB;
     }]);
