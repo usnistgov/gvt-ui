@@ -1098,6 +1098,25 @@ angular.module('doc')
 
     $scope.initDocs(null, 3000);
 
+    $scope.isLink = function (path) {
+        return path && path != null && path.startsWith("http");
+      };
+
+      $scope.downloadTool = function (path) {
+        if (path != null) {
+          var form = document.createElement("form");
+          form.action = "api/documentation/downloadDocument";
+          form.method = "POST";
+          form.target = "_target";
+          var input = document.createElement("input");
+          input.name = "path";
+          input.value = path;
+          form.appendChild(input);
+          form.style.display = 'none';
+          document.body.appendChild(form);
+          form.submit();
+        }
+      };
 
     $scope.$on('event:doc:scopeChangedEvent', function (event, scope, sectionType) {
       $scope.sectionType = sectionType;

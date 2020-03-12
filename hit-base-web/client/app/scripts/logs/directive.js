@@ -105,7 +105,7 @@ angular.module('logs').directive('stLogDateRange', ['$timeout', function ($timeo
 
   return function customFilter(array, expression) {
     function customComparator(actual, expected) {
-
+    
       var isBeforeActivated = expected.before;
       var isAfterActivated = expected.after;
       var isLower = expected.lower;
@@ -117,16 +117,17 @@ angular.module('logs').directive('stLogDateRange', ['$timeout', function ($timeo
 
 
       if (angular.isObject(expected)) {
-
+    	
         //date range
         if (expected.before || expected.after) {
           try {
             if (isBeforeActivated) {
               higherLimit = expected.before;
-
+              
               itemDate = new Date(actual);
               queryDate = new Date(higherLimit);
-
+              queryDate.setDate(queryDate.getDate() + 1);
+              
               if (itemDate > queryDate) {
                 return false;
               }
@@ -175,7 +176,7 @@ angular.module('logs').directive('stLogDateRange', ['$timeout', function ($timeo
       }
       return standardComparator(actual, expected);
     }
-
+    	
     var output = filterFilter(array, expression, customComparator);
     return output;
   };
