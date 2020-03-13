@@ -45,9 +45,10 @@ angular.module('account').factory('AccountLoader', ['Account', '$q',
 
 'use strict';
 
+
 angular.module('account').factory('Testers', ['$resource',
     function ($resource) {
-        return $resource('api/shortaccounts', {filter:'accountType::tester'});
+        return $resource('api/shortaccounts', {filter:['accountType::tester', 'accountType::deployer', 'accountType::admin']});
     }
 ]);
 
@@ -140,15 +141,19 @@ angular.module('account').factory('userLoaderService', ['userInfo', '$q',
     }
 ]);
 
-angular.module('account').factory('userInfoService', ['StorageService', 'userLoaderService','User','Transport','$q','$timeout',
-    function(StorageService,userLoaderService,User,Transport,$q,$timeout) {
+angular.module('account').factory('userInfoService', ['StorageService', 'userLoaderService','User','Transport','$q','$timeout','$rootScope',
+    function(StorageService,userLoaderService,User,Transport,$q,$timeout,$rootScope) {
         var currentUser = null;
         var supervisor = false,
             tester = false,
+            publisher = false,
+            deployer = false,
             admin = false,
             id = null,
             username = '',
-            fullName= '';
+            fullName= '',
+            lastTestPlanPersistenceId = null,
+          employer = null;
 
         //console.log("USER ID=", StorageService.get('userID'));
 
@@ -159,7 +164,13 @@ angular.module('account').factory('userInfoService', ['StorageService', 'userLoa
             username = StorageService.get('username');
             tester = StorageService.get('tester');
             supervisor = StorageService.get('supervisor');
+            deployer = StorageService.get('deployer');
+            publisher = StorageService.get('publisher');
+
             admin = StorageService.get('admin');
+          lastTestPlanPersistenceId = StorageService.get('lastTestPlanPersistenceId');
+          employer = StorageService.get('employer');
+
         };
 
         var saveToCookie = function() {
@@ -167,8 +178,13 @@ angular.module('account').factory('userInfoService', ['StorageService', 'userLoa
             StorageService.set('username', username);
             StorageService.set('tester', tester);
             StorageService.set('supervisor', supervisor);
+            StorageService.set('deployer', deployer);
+            StorageService.set('publisher', publisher);
             StorageService.set('admin', admin);
             StorageService.set('fullName', fullName);
+          StorageService.set('lastTestPlanPersistenceId', lastTestPlanPersistenceId);
+          StorageService.set('employer', employer);
+
         };
 
         var clearCookie = function() {
@@ -176,9 +192,14 @@ angular.module('account').factory('userInfoService', ['StorageService', 'userLoa
             StorageService.remove('username');
             StorageService.remove('tester');
             StorageService.remove('supervisor');
+            StorageService.remove('publisher');
+
+            StorageService.remove('deployer');
             StorageService.remove('admin');
             StorageService.remove('hthd');
             StorageService.remove('fullName');
+            StorageService.remove('lastTestPlanPersistenceId');
+          StorageService.remove('employer');
 
         };
 
@@ -207,7 +228,14 @@ angular.module('account').factory('userInfoService', ['StorageService', 'userLoa
         };
 
         var isAdmin = function() {
-            return admin;
+          if (!admin && currentUser != null  && $rootScope.appInfo.adminEmails != null && $rootScope.appInfo.adminEmails) {
+            if (Array.isArray($rootScope.appInfo.adminEmails)) {
+              admin = $rootScope.appInfo.adminEmails.indexOf(currentUser.email) >= 0;
+            } else {
+              admin = $rootScope.appInfo.adminEmails === currentUser.email;
+            }
+          }
+          return admin;
         };
 
         var isTester = function() {
@@ -225,6 +253,14 @@ angular.module('account').factory('userInfoService', ['StorageService', 'userLoa
         var isSupervisor = function() {
             return supervisor;
         };
+
+        var isDeployer = function() {
+            return deployer;
+        };
+        var isPublisher = function() {
+            return publisher;
+        };
+
 
         var isPending = function() {
             return isAuthenticated() && currentUser != null ? currentUser.pending: false;
@@ -259,7 +295,10 @@ angular.module('account').factory('userInfoService', ['StorageService', 'userLoa
                 username = currentUser.username;
                 id = currentUser.accountId;
                 fullName = currentUser.fullName;
-                if ( angular.isArray(currentUser.authorities)) {
+              lastTestPlanPersistenceId = currentUser.lastTestPlanPersistenceId;
+              employer = currentUser.employer;
+
+              if ( angular.isArray(currentUser.authorities)) {
                     angular.forEach(currentUser.authorities, function(value, key){
                         switch(value.authority)
                         {
@@ -272,7 +311,13 @@ angular.module('account').factory('userInfoService', ['StorageService', 'userLoa
                                 tester = true;
                                 break;
                             case 'supervisor':
-                                supervisor = true;
+                              supervisor = true;
+                              break;
+                            case 'deployer':
+                                deployer = true;
+                                break;
+                            case 'publisher':
+                                publisher = true;
                                 break;
                             default:
                         }
@@ -283,11 +328,16 @@ angular.module('account').factory('userInfoService', ['StorageService', 'userLoa
             else {
                 supervisor = false;
                 tester = false;
+                deployer = false;
+                publisher = false;
                 admin = false;
                 username = '';
                 id = null;
                 fullName = '';
-                //clearCookie();
+              lastTestPlanPersistenceId = null;
+              employer = '';
+
+              //clearCookie();
             }
         };
 
@@ -299,22 +349,37 @@ angular.module('account').factory('userInfoService', ['StorageService', 'userLoa
             return fullName;
         };
 
-        return {
+      var getLastTestPlanPersistenceId = function() {
+        return lastTestPlanPersistenceId;
+      };
+
+      var getEmployer = function() {
+        return employer;
+      };
+
+
+
+
+      return {
             saveHthd: saveHthd,
             getHthd: getHthd,
             hasCookieInfo: hasCookieInfo,
             loadFromCookie: loadFromCookie,
             getAccountID: getAccountID,
             isAdmin: isAdmin,
+            isPublisher: isPublisher,
             isTester: isTester,
             isAuthenticated: isAuthenticated,
             isPending: isPending,
             isSupervisor: isSupervisor,
+            isDeployer: isDeployer,
             setCurrentUser: setCurrentUser,
             getCurrentUser: getCurrentUser,
             loadFromServer: loadFromServer,
             getUsername: getUsername,
-            getFullName: getFullName
+            getFullName: getFullName,
+            getLastTestPlanPersistenceId: getLastTestPlanPersistenceId,
+            getEmployer: getEmployer
 
         };
     }

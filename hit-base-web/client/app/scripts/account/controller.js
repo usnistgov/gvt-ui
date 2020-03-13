@@ -18,7 +18,6 @@ angular.module('account')
                 //not sure it is very clean...
                 //TODO: Add call back?
                 new Account($scope.account).$save().then(function(){
-                   Transport.init();
                 }, function(error){
                     Notification.error({message: error.data, templateUrl: "NotificationErrorTemplate.html", scope: $scope, delay: 50000});
                 });
@@ -106,11 +105,191 @@ angular.module('account')
         }
     ]);
 
-'use strict';
+
+
+angular.module('account').directive('stDateRange', ['$timeout', function ($timeout) {
+  return {
+    restrict: 'E',
+    require: '^stTable',
+    scope: {
+      before: '=',
+      after: '='
+    },
+    templateUrl: 'stDateRange.html',
+
+    link: function (scope, element, attr, table) {
+
+      var inputs = element.find('input');
+      var inputBefore = angular.element(inputs[0]);
+      var inputAfter = angular.element(inputs[1]);
+      var predicateName = attr.predicate;
+
+
+      [inputBefore, inputAfter].forEach(function (input) {
+
+        input.bind('blur', function () {
+
+
+          var query = {};
+
+          if (!scope.isBeforeOpen && !scope.isAfterOpen) {
+
+            if (scope.before) {
+              query.before = scope.before;
+            }
+
+            if (scope.after) {
+              query.after = scope.after;
+            }
+
+            scope.$apply(function () {
+              table.search(query, predicateName);
+            })
+          }
+        });
+      });
+
+      function open(before) {
+        return function ($event) {
+          $event.preventDefault();
+          $event.stopPropagation();
+
+          if (before) {
+            scope.isBeforeOpen = true;
+          } else {
+            scope.isAfterOpen = true;
+          }
+        }
+      }
+
+      scope.openBefore = open(true);
+      scope.openAfter = open();
+    }
+  }
+}]).directive('stNumberRange', ['$timeout', function ($timeout) {
+  return {
+    restrict: 'E',
+    require: '^stTable',
+    scope: {
+      lower: '=',
+      higher: '='
+    },
+    templateUrl: 'stNumberRange.html',
+    link: function (scope, element, attr, table) {
+      var inputs = element.find('input');
+      var inputLower = angular.element(inputs[0]);
+      var inputHigher = angular.element(inputs[1]);
+      var predicateName = attr.predicate;
+
+      [inputLower, inputHigher].forEach(function (input, index) {
+
+        input.bind('blur', function () {
+          var query = {};
+
+          if (scope.lower) {
+            query.lower = scope.lower;
+          }
+
+          if (scope.higher) {
+            query.higher = scope.higher;
+          }
+
+          scope.$apply(function () {
+            table.search(query, predicateName)
+          });
+        });
+      });
+    }
+  };
+}]).filter('customFilter', ['$filter', function ($filter) {
+  var filterFilter = $filter('filter');
+  var standardComparator = function standardComparator(obj, text) {
+    text = ('' + text).toLowerCase();
+    return ('' + obj).toLowerCase().indexOf(text) > -1;
+  };
+
+  return function customFilter(array, expression) {
+    function customComparator(actual, expected) {
+
+      var isBeforeActivated = expected.before;
+      var isAfterActivated = expected.after;
+      var isLower = expected.lower;
+      var isHigher = expected.higher;
+      var higherLimit;
+      var lowerLimit;
+      var itemDate;
+      var queryDate;
+
+
+      if (angular.isObject(expected)) {
+
+        //date range
+        if (expected.before || expected.after) {
+          try {
+            if (isBeforeActivated) {
+              higherLimit = expected.before;
+
+              itemDate = new Date(actual);
+              queryDate = new Date(higherLimit);
+
+              if (itemDate > queryDate) {
+                return false;
+              }
+            }
+
+            if (isAfterActivated) {
+              lowerLimit = expected.after;
+
+
+              itemDate = new Date(actual);
+              queryDate = new Date(lowerLimit);
+
+              if (itemDate < queryDate) {
+                return false;
+              }
+            }
+
+            return true;
+          } catch (e) {
+            return false;
+          }
+
+        } else if (isLower || isHigher) {
+          //number range
+          if (isLower) {
+            higherLimit = expected.lower;
+
+            if (actual > higherLimit) {
+              return false;
+            }
+          }
+
+          if (isHigher) {
+            lowerLimit = expected.higher;
+            if (actual < lowerLimit) {
+              return false;
+            }
+          }
+
+          return true;
+        }
+        //etc
+
+        return true;
+
+      }
+      return standardComparator(actual, expected);
+    }
+
+    var output = filterFilter(array, expression, customComparator);
+    return output;
+  };
+}]);
+
 
 angular.module('account')
-    .controller('AccountsListCtrl', ['$scope', 'MultiAuthorsLoader', 'MultiSupervisorsLoader','Account', '$modal', '$resource','AccountLoader','userInfoService','$location','Notification',
-        function ($scope, MultiAuthorsLoader, MultiSupervisorsLoader, Account, $modal, $resource, AccountLoader, userInfoService, $location, Notification) {
+    .controller('AccountsListCtrl', ['$scope', 'MultiTestersLoader', 'MultiSupervisorsLoader','Account', '$modal', '$resource','AccountLoader','userInfoService','$location','Notification',
+        function ($scope, MultiTestersLoader, MultiSupervisorsLoader, Account, $modal, $resource, AccountLoader, userInfoService, $location, Notification) {
 
             //$scope.accountTypes = [{ 'name':'Author', 'type':'author'}, {name:'Supervisor', type:'supervisor'}];
             //$scope.accountType = $scope.accountTypes[0];
@@ -119,12 +298,15 @@ angular.module('account')
             $scope.accountOrig = null;
             $scope.accountType = "tester";
             $scope.scrollbarWidth = $scope.getScrollbarWidth();
+            $scope.authorities = [];
 
 //        var PasswordChange = $resource('api/accounts/:id/passwordchange', {id:'@id'});
             var PasswordChange = $resource('api/accounts/:id/userpasswordchange', {id:'@id'});
             var ApproveAccount = $resource('api/accounts/:id/approveaccount', {id:'@id'});
             var SuspendAccount = $resource('api/accounts/:id/suspendaccount', {id:'@id'});
-            $scope.msg = null;
+          var AccountTypeChange = $resource('api/accounts/:id/useraccounttypechange', {id:'@id'});
+
+          $scope.msg = null;
 
             $scope.accountpwd = {};
 
@@ -162,10 +344,24 @@ angular.module('account')
                 });
             };
 
+          $scope.saveAccountType = function() {
+            var authorityChange = new AccountTypeChange();
+            authorityChange.username = $scope.account.username;
+            authorityChange.accountType = $scope.account.accountType;
+            authorityChange.id = $scope.account.id;
+            //TODO: Check return value???
+            authorityChange.$save().then(function(result){
+              $scope.msg = angular.fromJson(result);
+            },function(error){
+              Notification.error({message: error.data, templateUrl: "NotificationErrorTemplate.html", scope: $scope, delay: 50000});
+            });
+          };
+
+
             $scope.loadAccounts = function(){
                 if (userInfoService.isAuthenticated() && userInfoService.isAdmin()) {
                     $scope.msg = null;
-                    new MultiAuthorsLoader().then(function (response) {
+                    new MultiTestersLoader().then(function (response) {
                         $scope.accountList = response;
                         $scope.tmpAccountList = [].concat($scope.accountList);
                     },function(error){
@@ -181,6 +377,7 @@ angular.module('account')
             $scope.selectAccount = function(row) {
                 $scope.accountpwd = {};
                 $scope.account = row;
+              $scope.authorities =
                 $scope.accountOrig = angular.copy($scope.account);
             };
 
@@ -201,37 +398,41 @@ angular.module('account')
                         }
                     }
                 });
-                modalInstance.result.then(function (accountToDelete,accountList ) {
-                    $scope.accountToDelete = accountToDelete;
-                    $scope.accountList = accountList;
+                modalInstance.result.then(function (accountToDelete) {
+                  var rowIndex = $scope.accountList.indexOf(accountToDelete);
+                    if(rowIndex !== -1){
+                      $scope.accountList.splice(rowIndex,1);
+                    }
+                    $scope.tmpAccountList = [].concat($scope.accountList);
+                    $scope.account =null;
                 }, function (error) {
-                    Notification.error({message: error.data, templateUrl: "NotificationErrorTemplate.html", scope: $scope, delay: 50000});
+                     Notification.error({message: error.data, templateUrl: "NotificationErrorTemplate.html", scope: $scope, delay: 50000});
                 });
             };
 
-            $scope.approveAccount = function() {
-                var user = new ApproveAccount();
-                user.username = $scope.account.username;
-                user.id = $scope.account.id;
-                user.$save().then(function(result){
-                    $scope.account.pending = false;
-                    $scope.msg = angular.fromJson(result);
-                },function(error){
-                    Notification.error({message: error.data, templateUrl: "NotificationErrorTemplate.html", scope: $scope, delay: 50000});
-                });
-            };
-
-            $scope.suspendAccount = function(){
-                var user = new SuspendAccount();
-                user.username = $scope.account.username;
-                user.id = $scope.account.id;
-                user.$save().then(function(result){
-                    $scope.account.pending = true;
-                    $scope.msg = angular.fromJson(result);
-                },function(error){
-                    Notification.error({message: error.data, templateUrl: "NotificationErrorTemplate.html", scope: $scope, delay: 50000});
-                });
-            };
+            // $scope.approveAccount = function() {
+            //     var user = new ApproveAccount();
+            //     user.username = $scope.account.username;
+            //     user.id = $scope.account.id;
+            //     user.$save().then(function(result){
+            //         $scope.account.pending = false;
+            //         $scope.msg = angular.fromJson(result);
+            //     },function(error){
+            //         Notification.error({message: error.data, templateUrl: "NotificationErrorTemplate.html", scope: $scope, delay: 50000});
+            //     });
+            // };
+            //
+            // $scope.suspendAccount = function(){
+            //     var user = new SuspendAccount();
+            //     user.username = $scope.account.username;
+            //     user.id = $scope.account.id;
+            //     user.$save().then(function(result){
+            //         $scope.account.pending = true;
+            //         $scope.msg = angular.fromJson(result);
+            //     },function(error){
+            //         Notification.error({message: error.data, templateUrl: "NotificationErrorTemplate.html", scope: $scope, delay: 50000});
+            //     });
+            // };
 
 
         }
@@ -247,16 +448,10 @@ angular.module('account').controller('ConfirmAccountDeleteCtrl', function ($scop
         //console.log('Delete for', $scope.accountList[rowIndex]);
         Account.remove({id:accountToDelete.id},
             function() {
-                var rowIndex = $scope.accountList.indexOf(accountToDelete);
-                if(index !== -1){
-                    $scope.accountList.splice(rowIndex,1);
-                }
                 $modalInstance.close($scope.accountToDelete);
             },
             function(error) {
-//                            console.log('There was an error deleting the account');
-                Notification.error({message: error.data, templateUrl: "NotificationErrorTemplate.html", scope: $scope, delay: 50000});
-
+                 Notification.error({message: error.data, templateUrl: "NotificationErrorTemplate.html", scope: $scope, delay: 50000});
             }
         );
     };
@@ -294,8 +489,8 @@ angular.module('account')
 'use strict';
 
 angular.module('account')
-    .controller('RegistrationCtrl', ['$scope', '$resource', '$modal', '$location','$rootScope',
-        function ($scope, $resource, $modal, $location,$rootScope) {
+    .controller('RegistrationCtrl', ['$scope', '$resource', '$modal', '$location','$rootScope','Notification',
+        function ($scope, $resource, $modal, $location,$rootScope,Notification) {
             $scope.account = {};
             $scope.registered = false;
             $scope.agreed = false;
@@ -326,7 +521,8 @@ angular.module('account')
                                 $scope.account = {};
                                 //should unfreeze the form
                                 $scope.registered = true;
-                                $location.path('/registrationSubmitted');
+                                $location.path('/home');
+                                Notification.success({message: $rootScope.appInfo.registrationSubmittedContent, templateUrl: "NotificationSuccessTemplate.html", scope: $rootScope, delay: 30000});
                             }else{
                                 $scope.registered = false;
                             }
