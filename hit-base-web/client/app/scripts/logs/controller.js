@@ -4,8 +4,8 @@
 
 
 angular.module('logs')
-  .controller('LogCtrl', ['$scope', 'ValidationLogService', 'TransportLogService',
-    function ($scope, ValidationLogService, TransportLogService) {
+  .controller('LogCtrl', ['$scope', 'ValidationLogService', 'TransportLogService','$rootScope','$timeout',
+    function ($scope, ValidationLogService, TransportLogService,$rootScope,$timeout) {
 
       $scope.numberOfValidationLogs = 0;
       $scope.numberOfTransportLogs = 0;
@@ -13,25 +13,42 @@ angular.module('logs')
       $scope.loadingAll = false;
       $scope.loadingOne = false;
 
+      $scope.currentDate = new Date();
+
       $scope.selectedType = null;
 
       $scope.initLogs = function () {
         $scope.loadingAll = true;
-        ValidationLogService.getTotalCount().then(function (numberOfValidationLogs) {
-          $scope.numberOfValidationLogs = numberOfValidationLogs;
-          $scope.loadingAll = false;
-        }, function (error) {
-          $scope.loadingAll = false;
-          $scope.error = "Sorry, Cannot load the logs. Please try again. \n DEBUG:" + error;
+        $scope.numberOfValidationLogs = 0;
+        $timeout(function() {
+            ValidationLogService.getTotalCount($rootScope.domain.domain).then(function (numberOfValidationLogs) {
+                $scope.numberOfValidationLogs = numberOfValidationLogs;
+                $scope.loadingAll = false;
+            }, function (error) {
+                $scope.loadingAll = false;
+                $scope.error = "Sorry, Cannot load the logs. Please try again. \n DEBUG:" + error;
+            });
+            $scope.numberOfTransportLogs = 0;
+            TransportLogService.getTotalCount($rootScope.domain.domain).then(function (numberOfTransportLogs) {
+                $scope.numberOfTransportLogs = numberOfTransportLogs;
+                $scope.loadingAll = false;
+            }, function (error) {
+                $scope.loadingAll = false;
+                $scope.error = "Sorry, Cannot load the logs. Please try again. \n DEBUG:" + error;
+            });
+        }, 1000);
+
+
+        $rootScope.$on('logs:decreaseValidationCount', function (event) {
+          $scope.numberOfValidationLogs -=1;
         });
 
-        TransportLogService.getTotalCount().then(function (numberOfTransportLogs) {
-          $scope.numberOfTransportLogs = numberOfTransportLogs;
-          $scope.loadingAll = false;
-        }, function (error) {
-          $scope.loadingAll = false;
-          $scope.error = "Sorry, Cannot load the logs. Please try again. \n DEBUG:" + error;
+        $rootScope.$on('logs:decreaseTransportCount', function (event) {
+          $scope.numberOfTransportLogs -=1;
         });
+
+
+
 
       };
 
@@ -44,8 +61,8 @@ angular.module('logs')
 
 
 angular.module('logs')
-  .controller('ValidationLogCtrl', ['$scope', 'ValidationLogService', 'Notification', '$modal',
-    function ($scope, ValidationLogService, Notification, $modal) {
+  .controller('ValidationLogCtrl', ['$scope', 'ValidationLogService', 'Notification', '$modal','$rootScope','$timeout',
+    function ($scope, ValidationLogService, Notification, $modal,$rootScope,$timeout) {
 
       $scope.logs = null;
       $scope.tmpLogs = null;
@@ -61,18 +78,20 @@ angular.module('logs')
 
 
       $scope.initValidationLogs = function () {
-        $scope.loadingAll = true;
-        ValidationLogService.getAll().then(function (logs) {
-          $scope.allLogs = logs;
-          $scope.contextType = "*";
-          $scope.userType = "*";
-          $scope.resultType = "*";
-          $scope.filterBy();
-          $scope.loadingAll = false;
-        }, function (error) {
-          $scope.loadingAll = false;
-          $scope.error = "Sorry, Cannot load the logs. Please try again. \n DEBUG:" + error;
-        });
+          $scope.loadingAll = true;
+          $timeout(function() {
+              ValidationLogService.getAll($rootScope.domain.domain).then(function (logs) {
+                  $scope.allLogs = logs;
+                  $scope.contextType = "*";
+                  $scope.userType = "*";
+                  $scope.resultType = "*";
+                  $scope.filterBy();
+                  $scope.loadingAll = false;
+              }, function (error) {
+                  $scope.loadingAll = false;
+                  $scope.error = "Sorry, Cannot load the logs. Please try again. \n DEBUG:" + error;
+              });
+          },1000);
       };
 
       $scope.openLogDetails = function (validationLogItem) {
@@ -115,14 +134,26 @@ angular.module('logs')
         });
       };
 
+      $scope.deleteLog = function(log){
+        ValidationLogService.deleteLog(log.id).then(function (result) {
+          $rootScope.$emit('logs:decreaseValidationCount');
+          var index = $scope.logs.indexOf(log);
+          if(index > -1){
+            $scope.logs.splice(index, 1);
+          }
+        }, function (error) {
+          $scope.error = "Sorry, Cannot delete the log. Please try again. \n DEBUG:" + error;
+        });
+      };
+
 
     }
   ]);
 
 
 angular.module('logs')
-  .controller('TransportLogCtrl', ['$scope', 'TransportLogService', 'Notification', '$modal',
-    function ($scope, TransportLogService, Notification, $modal) {
+  .controller('TransportLogCtrl', ['$scope', 'TransportLogService', 'Notification', '$modal','$rootScope','$timeout',
+    function ($scope, TransportLogService, Notification, $modal,$rootScope,$timeout) {
 
       $scope.logs = null;
       $scope.tmpLogs = null;
@@ -140,20 +171,22 @@ angular.module('logs')
       $scope.protocols = [];
 
       $scope.initTransportLogs = function () {
-        $scope.loadingAll = true;
-        TransportLogService.getAll().then(function (logs) {
-          $scope.allLogs = logs;
-          $scope.selected.transportType = "*";
-          $scope.selected.protocol = "*";
-          $scope.userType = "*";
-          $scope.protocols = _(logs).chain().flatten().pluck('protocol').unique().value();
-          $scope.transportTypes = _(logs).chain().flatten().pluck('testingType').unique().value();
-          $scope.filterBy();
-          $scope.loadingAll = false;
-        }, function (error) {
-          $scope.loadingAll = false;
-          $scope.error = "Sorry, Cannot load the logs. Please try again. \n DEBUG:" + error;
-        });
+          $scope.loadingAll = true;
+          $timeout(function() {
+              TransportLogService.getAll($rootScope.domain.domain).then(function (logs) {
+                  $scope.allLogs = logs;
+                  $scope.selected.transportType = "*";
+                  $scope.selected.protocol = "*";
+                  $scope.userType = "*";
+                  $scope.protocols = _(logs).chain().flatten().pluck('protocol').unique().value();
+                  $scope.transportTypes = _(logs).chain().flatten().pluck('testingType').unique().value();
+                  $scope.filterBy();
+                  $scope.loadingAll = false;
+              }, function (error) {
+                  $scope.loadingAll = false;
+                  $scope.error = "Sorry, Cannot load the logs. Please try again. \n DEBUG:" + error;
+              });
+          },1000);
       };
 
       $scope.openLogDetails = function (transportLogItem) {
@@ -203,6 +236,17 @@ angular.module('logs')
         return connType === 'TA_MANUAL' || connType === 'SUT_MANUAL' ? 'fa fa-wrench' : connType === 'SUT_RESPONDER' || connType === 'SUT_INITIATOR' ? 'fa fa-arrow-right' : connType === 'TA_RESPONDER' || connType === 'TA_INITIATOR' ? 'fa fa-arrow-left' : 'fa fa-check-square-o';
       };
 
+      $scope.deleteLog = function(log){
+        TransportLogService.deleteLog(log.id).then(function (result) {
+          $rootScope.$emit('logs:decreaseTransportCount');
+          var index = $scope.logs.indexOf(log);
+          if(index > -1){
+            $scope.logs.splice(index, 1);
+          }
+        }, function (error) {
+          $scope.error = "Sorry, Cannot delete the log. Please try again. \n DEBUG:" + error;
+        });
+      };
 
     }
   ]);
@@ -234,4 +278,88 @@ angular.module('logs').controller('ValidationLogDetailsCtrl', function ($scope, 
 
 });
 
+//
+//angular.module('logs')
+//.controller('ReportsCtrl', ['$scope', 'ValidationLogService','ReportService', 'Notification', '$modal','$rootScope','$timeout',
+//  function ($scope, ValidationLogService, ReportService, Notification, $modal,$rootScope,$timeout) {
+//
+//    $scope.reports = null;
+//    $scope.tmpReports = null;
+//    $scope.logDetails = null;
+//    $scope.error = null;
+//    $scope.loadingAll = false;
+//    $scope.loadingOne = false;
+//
+//    $scope.allReports = null;
+//    $scope.contextType = "*";
+//    $scope.userType = "*";
+//    $scope.resultType = "*";
+//
+//
+//    $scope.initReportsLogs = function () {
+//        $scope.loadingAll = true;
+//        $timeout(function() {
+//            ReportService.getAllByAccountIdAndDomain($rootScope.domain.domain).then(function (reports) {
+//                $scope.allReports = reports;
+//                $scope.contextType = "*";
+//                $scope.resultType = "*";
+//                $scope.filterBy();
+//                $scope.loadingAll = false;
+//                console.log(reports)
+//            }, function (error) {
+//                $scope.loadingAll = false;
+//                $scope.error = "Sorry, Cannot load the logs. Please try again. \n DEBUG:" + error;
+//            });
+//        },1000);
+//    };
+//
+//    $scope.openLogDetails = function (validationLogItem) {
+//      var modalInstance = $modal.open({
+//        templateUrl: 'ValidationLogDetails.html',
+//        controller: 'ValidationLogDetailsCtrl',
+//        windowClass: 'valueset-modal',
+//        animation: false,
+//        keyboard: true,
+//        backdrop: true,
+//        resolve: {
+//          validationLogItem: function () {
+//            return validationLogItem;
+//          }
+//        }
+//      });
+//    };
+//
+//    $scope.filterBy = function () {
+//      $scope.reports = $scope.filterByResultType($scope.filterByContextType($scope.allReports));
+//      $scope.tmpReports = [].concat($scope.logs);
+//    };
+//
+//
+//    $scope.filterByContextType = function (inputLogs) {
+//      return _.filter(inputLogs, function (log) {
+//        return ($scope.contextType === "*" ) || ($scope.contextType === log.testingStage);
+//      });
+//    };
+//
+//
+//    $scope.filterByResultType = function (inputLogs) {
+//      return _.filter(inputLogs, function (log) {
+//        return ($scope.resultType === "*" ) || ($scope.resultType === "SUCCESS" && log.validationResult) || ($scope.resultType === "FAILED" && !log.validationResult)
+//      });
+//    };
+//
+//    $scope.deleteReport = function(report){
+//    	ReportService.deleteReport(report.id).then(function (result) {
+//        var index = $scope.reports.indexOf(report);
+//        if(index > -1){
+//          $scope.reports.splice(index, 1);
+//        }
+//      }, function (error) {
+//        $scope.error = "Sorry, Cannot delete the log. Please try again. \n DEBUG:" + error;
+//      });
+//    };
+//
+//
+//  }
+//]);
 
