@@ -889,6 +889,15 @@ angular.module('cb')
         ReportService.downloadTestCaseReports($scope.testCase.id, format, result, comments, $scope.testCase.nav['testPlan'],$scope.testCase.nav['testGroup']);
       }
     };
+    
+    $scope.isReportSavingSupported = function () {
+        return $rootScope.isReportSavingSupported();
+    };
+    
+    
+    $scope.savetestcasereport = function () {
+    	  return ReportService.saveTestCaseValidationReport($scope.testCase.id);
+      };            
 
 
     $scope.downloadReportAs = function (format, testStep) {

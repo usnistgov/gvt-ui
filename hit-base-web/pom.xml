@@ -69,11 +69,7 @@
 		</pluginManagement>
 
 	</build>
-	<dependencies>
-
-
 	
-	</dependencies>
 	<repositories>
 		<repository>
 			<id>spring-milestones</id>
