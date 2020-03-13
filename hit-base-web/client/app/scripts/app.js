@@ -67,7 +67,8 @@ var app = angular.module('hit-app', [
     'transport',
     'angular-cache',
     'cache',
-    'ngFileSaver'
+    'ngFileSaver',
+    'LocalForageModule'
 ]);
 
 var httpHeaders,
