@@ -143,6 +143,13 @@
                   </tab-heading>
                   <div ng-include="'views/cf/vocabulary.html'"></div>
                 </tab>
+                <tab ng-if="isAuthenticated()  && isReportSavingSupported()" select="setActiveTab(4)" active="tabs[4]">
+                  <tab-heading>
+                    <i class="fa fa-book"></i>
+                    Saved Test Step Reports ({{cf.savedReports.length}})
+                  </tab-heading>
+                  <div ng-include="'views/cf/savedReports.html'"></div>
+                </tab>
                 <!--<tab select="setActiveTab(4)" active="tabs[4]">-->
                 <!--<tab-heading>-->
                 <!--<i class="glyphicon glyphicon-help"></i>Instructions-->

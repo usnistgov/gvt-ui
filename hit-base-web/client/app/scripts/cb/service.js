@@ -20,13 +20,15 @@ angular.module('cb').factory('CB',
             },
             getContent: function () {
                 return  CB.message.content;
-            }
+            },
+            savedReports: [],
+            selectedSavedReport: null
         };
         return CB;
     }]);
 
-angular.module('cb').factory('CBTestPlanListLoader', ['$q', '$http',
-    function ($q, $http) {
+angular.module('cb').factory('CBTestPlanListLoader', ['$q', '$http','StorageService',
+    function ($q, $http,StorageService) {
         return function (scope,domain) {
             var delay = $q.defer();
             $http.get("api/cb/testplans", {timeout: 180000, params: {"scope": scope,"domain": domain}}).then(
@@ -39,53 +41,67 @@ angular.module('cb').factory('CBTestPlanListLoader', ['$q', '$http',
             );
 
 
-//            $http.get("../../resources/cb/testPlans.json").then(
-//                function (object) {
-//                    delay.resolve(angular.fromJson(object.data));
-//                },
-//                function (response) {
-//                    delay.reject(response.data);
-//                }
-//            );
             return delay.promise;
         };
     }
 ]);
 
 
-angular.module('cb').factory('CBTestPlanLoader', ['$q', '$http',
-  function ($q, $http) {
-    return function (id) {
-      var delay = $q.defer();
-      $http.get("api/cb/testplans/" + id, {timeout: 180000}).then(
-        function (object) {
-          delay.resolve(angular.fromJson(object.data));
-        },
-        function (response) {
-          delay.reject(response.data);
-        }
-      );
+angular.module('cb').factory('CBTestPlanLoader', ['$q', '$http', '$rootScope','CacheFactory','$localForage',
+	function ($q, $http, $rootScope,CacheFactory,$localForage) {
+	return function (id,domain) {
+		var delay = $q.defer();
 
-
-//            $http.get("../../resources/cb/testPlans.json").then(
-//                function (object) {
-//                    delay.resolve(angular.fromJson(object.data));
-//                },
-//                function (response) {
-//                    delay.reject(response.data);
-//                }
-//            );
-      return delay.promise;
-    };
-  }
+		$http.get("api/cb/testplans/" + id+"/updateDate", { timeout: 180000}).then(
+				function (date) {	
+					$localForage.getItem("api/cb/testplans/" + id,true).then(function(data) {
+						//cache found
+			            var cacheData = data;
+			            if (cacheData && cacheData.updateDate === date.data) {
+							delay.resolve(data);
+						} else {
+							$http.get("api/cb/testplans/" + id, { timeout: 180000}).then(
+									function (object) {	
+										$localForage.setItem("api/cb/testplans/" + id,angular.fromJson(object.data)).then(function() {});
+										delay.resolve(angular.fromJson(object.data));
+									},
+									function (response) {
+										delay.reject(response.data);
+									}
+							);
+						}
+			        },function(error){
+			        	//no cache found
+			        	$http.get("api/cb/testplans/" + id, { timeout: 180000}).then(
+			        			function (object) {	
+			        				$localForage.setItem("api/cb/testplans/" + id,angular.fromJson(object.data)).then(function() {});
+			        				delay.resolve(angular.fromJson(object.data));
+			        			},
+			        			function (response) {
+			        				delay.reject(response.data);
+			        			}
+			        	);
+			        });
+									
+				},
+				function (error) {
+					$http.get("api/cb/testplans/" + id, { timeout: 180000}).then(
+		        			function (object) {	
+		        				$localForage.setItem("api/cb/testplans/" + id,angular.fromJson(object.data)).then(function() {});
+		        				delay.resolve(angular.fromJson(object.data));
+		        			},
+		        			function (response) {
+		        				delay.reject(response.data);
+		        			}
+		        	);
+				}
+		);
+		return delay.promise;
+	};
+}
 ]);
-
-
-
-
-
-
-
+		
+		
 
 
 

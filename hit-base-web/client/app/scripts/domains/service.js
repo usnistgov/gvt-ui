@@ -78,8 +78,19 @@ angular.module('domains').factory('DomainsManager', ['$q', '$http',
                 );
                 return delay.promise;
             },
-
-
+            getUpdateDate: function (id) {
+                var delay = $q.defer();
+                $http.get('api/domains/' + id + '/updateDate', {timeout: 60000}).then(
+                    function (object) {
+                        delay.resolve(angular.fromJson(object.data));
+                    },
+                    function (response) {
+                        delay.reject(response.data);
+                    }
+                );
+                return delay.promise;
+            },
+            
             getDomainByKey: function (key) {
                 var delay = $q.defer();
                 $http.get('api/domains/searchByKey', {params: {'key': key}}).then(

@@ -10,45 +10,86 @@ angular.module('cf').factory('CF',
             testCase: null,
             selectedTestCase: null,
             message: new Message(),
-            searchTableId: 0
+            searchTableId: 0,
+            savedReports: [],
+            selectedSavedReport: null
         };
         return CF;
 }]);
 
 
 
-angular.module('cf').factory('CFTestPlanExecutioner', ['$q', '$http',
-  function ($q, $http) {
-    var manager = {
-      getTestPlan:  function (id) {
-        var delay = $q.defer();
-        $http.get("api/cf/testplans/" + id, {timeout: 180000}).then(
-          function (object) {
-            delay.resolve(angular.fromJson(object.data));
-          },
-          function (response) {
-            delay.reject(response.data);
-          }
-        );
 
-        return delay.promise;
-      },
 
-      getTestPlans: function (scope,domain) {
-        var delay = $q.defer();
-        $http.get("api/cf/testplans", {timeout: 180000, params: {"scope": scope, "domain":domain}}).then(
-          function (object) {
-            delay.resolve(angular.fromJson(object.data));
-          },
-          function (response) {
-            delay.reject(response.data);
-          }
-        );
-        return delay.promise;
-      }
-    };
-    return manager;
-  }
+angular.module('cf').factory('CFTestPlanExecutioner', ['$q', '$http', '$rootScope', 'CacheFactory','$localForage',
+	function ($q, $http, $rootScope, CacheFactory,$localForage) {
+	var manager = {
+			getTestPlan:  function (id) {
+				var delay = $q.defer();
+
+
+
+				$http.get("api/cf/testplans/" + id, { timeout: 180000}).then(
+						function (date) {	
+							$localForage.getItem("api/cf/testplans/" + id,true).then(function(data) {
+								//cache found
+					            var cacheData = data;
+					            if (cacheData && cacheData.updateDate === date.data) {
+									delay.resolve(data);
+								} else {							
+									$http.get("api/cf/testplans/" + id, {timeout: 180000}).then(
+										function (object) {
+											$localForage.setItem("api/cf/testplans/" + id,angular.fromJson(object.data)).then(function() {});
+											delay.resolve(angular.fromJson(object.data));
+										},
+										function (response) {
+											delay.reject(response.data);
+										}
+								);
+							}
+							 },function(error){
+						        	//no cache found
+						        	$http.get("api/cf/testplans/" + id, { timeout: 180000}).then(
+						        			function (object) {	
+						        				$localForage.setItem("api/cf/testplans/" + id,angular.fromJson(object.data)).then(function() {});
+						        				delay.resolve(angular.fromJson(object.data));
+						        			},
+						        			function (response) {
+						        				delay.reject(response.data);
+						        			}
+						        	);
+						        });
+						},
+						function (error) {
+							$http.get("api/cf/testplans/" + id, { timeout: 180000}).then(
+				        			function (object) {	
+				        				$localForage.setItem("api/cf/testplans/" + id,angular.fromJson(object.data)).then(function() {});
+				        				delay.resolve(angular.fromJson(object.data));
+				        			},
+				        			function (response) {
+				        				delay.reject(response.data);
+				        			}
+				        	);
+						}
+				);
+				return delay.promise;
+			},
+
+			getTestPlans: function (scope,domain) {
+				var delay = $q.defer();
+				$http.get("api/cf/testplans", {timeout: 180000, params: {"scope": scope, "domain":domain}}).then(
+						function (object) {
+							delay.resolve(angular.fromJson(object.data));
+						},
+						function (response) {
+							delay.reject(response.data);
+						}
+				);
+				return delay.promise;
+			}
+	};
+	return manager;
+}
 ]);
 
 

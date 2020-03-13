@@ -11,12 +11,15 @@ angular.module('documentation', []);
 angular.module('domains', []);
 angular.module('logs', ['common']);
 angular.module('transport', []);
+angular.module('reports', ['common','treeGrid']);
+angular.module('cache', []);
 
 var app = angular.module('hit-app', [
     'ngRoute',
     'ui.bootstrap',
     'ngCookies',
     'LocalStorageModule',
+    'treeGrid',
     'ngResource',
     'ngSanitize',
     'ngIdle',
@@ -35,6 +38,7 @@ var app = angular.module('hit-app', [
     'soap',
     'cf',
     'cb',
+    'reports',
     'ngTreetable',
     'hit-tool-directives',
     'hit-tool-services',
@@ -60,7 +64,11 @@ var app = angular.module('hit-app', [
     'documentation',
     'domains',
     'logs',
-    'transport'
+    'transport',
+    'angular-cache',
+    'cache',
+    'ngFileSaver',
+    'LocalForageModule'
 ]);
 
 var httpHeaders,
@@ -77,7 +85,6 @@ var httpHeaders,
 //the message to be shown to the user
 var msg = {};
 app.config(function ($routeProvider, $httpProvider, localStorageServiceProvider, KeepaliveProvider, IdleProvider, NotificationProvider, $provide) {
-
 
     localStorageServiceProvider
         .setPrefix('hit-app')
@@ -160,6 +167,8 @@ app.config(function ($routeProvider, $httpProvider, localStorageServiceProvider,
         })
         .when('/logs', {
             templateUrl: 'views/logs/logs.html'
+        }).when('/reports', {
+            templateUrl: 'views/reports/reports.html'
         })
         .otherwise({
             redirectTo: '/'
@@ -290,7 +299,6 @@ app.factory('interceptor4', function ($q, $rootScope, $location, StorageService,
                     manualHandle: true
                 };
             } else {
-                console.log(response.status);
                 msg = {
                     text: response.data.text,
                     type: response.data.type,
@@ -338,7 +346,7 @@ app.factory('interceptor4', function ($q, $rootScope, $location, StorageService,
 
 
 app.run(function (Session, $rootScope, $location, $modal, TestingSettings, AppInfo, $q, $sce, $templateCache, $compile, StorageService, $window, $route, $timeout, $http, User, Idle, Transport, IdleService, userInfoService, base64, Notification, DomainsManager, $filter) {
-
+	StorageService.set(StorageService.ACTIVE_SUB_TAB_KEY,null);
     var domainParam = $location.search()['d'] ? decodeURIComponent($location.search()['d']) : null;
 
 
@@ -390,7 +398,18 @@ app.run(function (Session, $rootScope, $location, $modal, TestingSettings, AppIn
         StorageService.set(StorageService.CB_MANAGE_SELECTED_TESTPLAN_ID_KEY, null);
         StorageService.set(StorageService.CB_MANAGE_SELECTED_TESTPLAN_TYPE_KEY, null);
         StorageService.set(StorageService.CB_MANAGE_SELECTED_TESTPLAN_SCOPE_KEY, null);
-        StorageService.set(StorageService.APP_SELECTED_DOMAIN, null);
+        StorageService.set(StorageService.APP_SELECTED_DOMAIN, null);           
+        StorageService.set(StorageService.CB_TEST_PLANS, []);
+        
+        //nico added
+        StorageService.set(StorageService.CB_LOADED_TESTCASE_ID_KEY,null);
+        StorageService.set(StorageService.ACTIVE_SUB_TAB_KEY,null);
+        StorageService.set(StorageService.TEST_STEP_EXECUTION_MESSAGES_KEY,null);
+        StorageService.set(StorageService.TEST_STEP_VALIDATION_REPORTS_KEY,null);
+        StorageService.set(StorageService.TEST_STEP_MESSAGE_TREES_KEY,null);
+        StorageService.set(StorageService.TEST_STEP_VALIDATION_RESULTS_KEY,null);
+        StorageService.set(StorageService.TEST_STEP_EXECUTION_STATUSES_KEY,null);
+        
     };
 
 
@@ -543,7 +562,7 @@ app.run(function (Session, $rootScope, $location, $modal, TestingSettings, AppIn
         httpHeaders.common['Accept'] = 'application/json';
         httpHeaders.common['Authorization'] = 'Basic ' + auth;
         $http.get('api/accounts/login').success(function () {
-            console.log("logging success...");
+//            console.log("logging success...");
             httpHeaders.common['Authorization'] = null;
             $http.get('api/accounts/cuser').then(function (result) {
                 if (result.data && result.data != null) {
@@ -750,7 +769,7 @@ app.run(function (Session, $rootScope, $location, $modal, TestingSettings, AppIn
     };
 
 
-    $rootScope.isDomainsManagementSupported = function () {
+    $rootScope.isDomainsManagementSupported = function () {    	
         return $rootScope.getAppInfo().options && ($rootScope.getAppInfo().options['DOMAIN_MANAGEMENT_SUPPORTED'] === "true") || userInfoService.isAdmin() || userInfoService.isSupervisor() || userInfoService.isDeployer();
     };
 
@@ -760,7 +779,7 @@ app.run(function (Session, $rootScope, $location, $modal, TestingSettings, AppIn
     };
     
     $rootScope.isDomainSelectionSupported = function () {
-        return $rootScope.getAppInfo().options && ($rootScope.getAppInfo().options['DOMAIN_SELECTON_SUPPORTED'] === "true");
+        return $rootScope.getAppInfo().options && ($rootScope.getAppInfo().options['DOMAIN_SELECTION_SUPPORTED'] === "true");
     };
     
     $rootScope.isUserLoginSupported = function () {
@@ -768,9 +787,19 @@ app.run(function (Session, $rootScope, $location, $modal, TestingSettings, AppIn
     };
     
     $rootScope.isReportSavingSupported = function () {    	
-        return $rootScope.getAppInfo().options && ($rootScope.getAppInfo().options['REPORT_SAVING_SUPPORTED'] === "true");
+        return  $rootScope.domain &&  $rootScope.domain.options && ($rootScope.domain.options['REPORT_SAVING_SUPPORTED'] === "true");
     };
 
+    $rootScope.isToolScopeSelectionDisplayed = function () {
+        return $rootScope.getAppInfo().options && ($rootScope.getAppInfo().options['TOOL_SCOPE_SELECTON_DISPLAYED'] === "true");
+    };
+    
+    $rootScope.isUserLoginSupported = function () {
+        return $rootScope.getAppInfo().options && ($rootScope.getAppInfo().options['USER_LOGIN_SUPPORTED'] === "true");
+    };
+       
+    
+    
 
 });
 
