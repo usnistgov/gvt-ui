@@ -182,7 +182,7 @@ app.config(function ($routeProvider, $httpProvider, localStorageServiceProvider,
 
     IdleProvider.idle(7200);
     IdleProvider.timeout(30);
-    KeepaliveProvider.interval(10);
+    KeepaliveProvider.interval(3);
 
     // auto hide
     NotificationProvider.setOptions({

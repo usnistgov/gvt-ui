@@ -153,7 +153,7 @@ angular.module('reports').controller('ReportDetailsCtrl', function ($scope, $mod
 	  $scope.report =report;
 	  $scope.type = $scope.report.type;
 	  if ($scope.report.type === 'TESTSTEP'){
-		  ReportService.getUserTSReport($scope.report.id).then(function (fullReport) {
+		  ReportService.getUserTSReportHTML($scope.report.id).then(function (fullReport) {
               $scope.reportItem = fullReport;
           }, function (error) {
               $scope.loadingAll = false;
@@ -165,7 +165,7 @@ angular.module('reports').controller('ReportDetailsCtrl', function ($scope, $mod
                });
           });
 	  }if ($scope.report.type === 'TESTCASE'){
-		  ReportService.getUserTCReport($scope.report.id).then(function (fullReport) {
+		  ReportService.getUserTCReportHTML($scope.report.id).then(function (fullReport) {
 			  $scope.reportItem = fullReport;
           }, function (error) {
               $scope.loadingAll = false;

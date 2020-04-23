@@ -16,7 +16,13 @@
 			<groupId>gov.nist.hit.gvt</groupId>
 			<artifactId>gvt-config</artifactId>
 			<version>${config.version}</version>
-		</dependency>		
+		</dependency>
+		<dependency>
+		    <groupId>junit</groupId>
+		    <artifactId>junit</artifactId>
+		    <version>4.13</version>
+		    <scope>test</scope>
+		</dependency>				
 	</dependencies>
 
 	<build>

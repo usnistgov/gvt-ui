@@ -141,6 +141,59 @@ angular.module('account').factory('userLoaderService', ['userInfo', '$q',
     }
 ]);
 
+angular.module('account').factory('notificationService', function ($http, $q) {
+    var notificationService = function () { };
+
+    notificationService.saveNotification = function (notification) {
+        var delay = $q.defer();
+        var data = angular.fromJson(notification);
+        $http.post("api/notification/add", data).then(
+            function (object) {
+                var res = object.data != null && object.data != "" ? angular.fromJson(object.data) : null;
+                delay.resolve(res);
+            },
+            function (response) {
+                console.log("error");
+                delay.reject(response.data);
+            }
+        );
+        return delay.promise;
+    };
+
+    notificationService.updateNotification = function (notification) {
+        var delay = $q.defer();
+        var data = angular.fromJson(notification);
+        $http.post("api/notification/update", data).then(
+            function (object) {
+                var res = object.data != null && object.data != "" ? angular.fromJson(object.data) : null;
+                delay.resolve(res);
+            },
+            function (response) {
+                console.log("error");
+                delay.reject(response.data);
+            }
+        );
+        return delay.promise;
+    };
+
+    notificationService.getAllNotifications = function (notification) {
+        var delay = $q.defer();
+        $http.get("api/notification/all").then(
+            function (object) {
+                var res = object.data != null && object.data != "" ? angular.fromJson(object.data) : null;
+                delay.resolve(res);
+            },
+            function (response) {
+                console.log("error");
+                delay.reject(response.data);
+            }
+        );
+        return delay.promise;
+    };
+
+    return notificationService;
+});
+
 angular.module('account').factory('userInfoService', ['StorageService', 'userLoaderService','User','Transport','$q','$timeout','$rootScope',
     function(StorageService,userLoaderService,User,Transport,$q,$timeout,$rootScope) {
         var currentUser = null;

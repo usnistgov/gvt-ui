@@ -317,7 +317,7 @@
 				        </tr>
 		        
 		       	 </thead>									
-					<tr class="reportrow" ng-repeat="child in tmpReports"  >		         					                    
+					<tr ng-class="{reportrowselected: selectedSavedReport.id === child.id}" class="reportrow" ng-repeat="child in tmpReports"  >		         					                    
 		                    <td  class="point" ng-click="selectReport(child);">{{child.creationDate | date:'MM/dd/yyyy HH:mm:ss'}}</td>                   
 		                    <td  class="point" ng-click="selectReport(child);">
 		                    	<span ng-if="child.result==='PASSED'|| child.result==='PASSED_NOTABLE_EXCEPTION'"><span class="label label-success"><i class="fa fa-check"></i></span>{{child.result}}</span>

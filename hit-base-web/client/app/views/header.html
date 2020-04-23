@@ -136,7 +136,7 @@ body {
 					Hello {{getUsername()}}<span class="caret"></span></a>
 				<ul class="dropdown-menu">
 					<li ng-class="isActive('/useraccount')"><a class="point"
-						href="#/useraccount"><i class="fa fa-user"></i> My Profile</a></li>
+						href="#/useraccount"><i class="fa fa-user"></i> My Profile <span ng-show="isAdmin()"> and Admin Tools</span></a></li>
 					<li role="separator" class="divider"></li>
 
 					<li ng-class="{'active':isActive('/transport')}"
@@ -144,7 +144,7 @@ body {
 							title="Transport Configuration"
 							class="label label-danger label-icon2">T</i> Transport Settings
 					</a></li>
-					<li role="separator" class="divider"></li>
+					<li ng-show="transportSupported" role="separator" class="divider"></li>
 					<li><a ng-click="showSettings()"><i class="fa fa-cog"></i>
 							Validation Settings</a></li>
 

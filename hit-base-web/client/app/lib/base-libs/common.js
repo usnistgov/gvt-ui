@@ -13,7 +13,7 @@ angular.module('format').factory('CursorService',
          * @param editor
          */
         CursorService.prototype.getCoordinate = function (editor) {
-            return angular.fromJson({start: {line: -1, index: -1}, end: {line: -1, index: -1}, triggerTree: {}});
+            return angular.fromJson({ start: { line: -1, index: -1 }, end: { line: -1, index: -1 }, triggerTree: {} });
         };
 
         /**
@@ -28,8 +28,8 @@ angular.module('format').factory('CursorService',
         CursorService.prototype.createCoordinate = function (line, startIndex, endIndex, index, triggerTree) {
             try {
                 return angular.fromJson({
-                    start: {line: line, index: startIndex},
-                    end: {line: line, index: endIndex},
+                    start: { line: line, index: startIndex },
+                    end: { line: line, index: endIndex },
                     triggerTree: triggerTree
                 });
             } catch (e) {
@@ -270,23 +270,23 @@ angular.module('format').factory('MessageValidatorClass', function ($http, $q, $
             );
 
 
-//            $http.get('../../resources/cf/newValidationResult3.json').then(
-//                function (object) {
-//                    delay.resolve(angular.fromJson(object.data));
-//                },
-//                function (response) {
-//                    delay.reject(response.data);
-//                }
-//            );
+            //            $http.get('../../resources/cf/newValidationResult3.json').then(
+            //                function (object) {
+            //                    delay.resolve(angular.fromJson(object.data));
+            //                },
+            //                function (response) {
+            //                    delay.reject(response.data);
+            //                }
+            //            );
 
-//            $http.get('../../resources/erx/soap-validate-response.json').then(
-//                function (object) {
-//                    delay.resolve(angular.fromJson(object.data));
-//                },
-//                function (response) {
-//                    delay.reject(response.data);
-//                }
-//            );
+            //            $http.get('../../resources/erx/soap-validate-response.json').then(
+            //                function (object) {
+            //                    delay.resolve(angular.fromJson(object.data));
+            //                },
+            //                function (response) {
+            //                    delay.reject(response.data);
+            //                }
+            //            );
 
         } else {
             $timeout(function () {
@@ -317,7 +317,7 @@ angular.module('format').factory('MessageParserClass', function ($http, $q, $tim
     MessageParserClass.prototype.parse = function (testContextId, content, name) {
         var delay = $q.defer();
         if (this.format && this.format != null) {
-            $http.post('api/' + this.format + '/testcontext/' + testContextId + '/parseMessage', angular.fromJson({"content": content})).then(
+            $http.post('api/' + this.format + '/testcontext/' + testContextId + '/parseMessage', angular.fromJson({ "content": content })).then(
                 function (object) {
                     delay.resolve(angular.fromJson(object.data));
                 },
@@ -326,22 +326,22 @@ angular.module('format').factory('MessageParserClass', function ($http, $q, $tim
                 }
             );
 
-//            $http.get('../../resources/cf/messageObject.json').then(
-//                function (object) {
-//                    delay.resolve(angular.fromJson(object.data));
-//                },
-//                function (response) {
-//                    delay.reject(response.data);
-//                }
-//            );
-//            $http.get('../../resources/erx/soap-parse-response.json').then(
-//                function (object) {
-//                    delay.resolve(angular.fromJson(object.data));
-//                },
-//                function (response) {
-//                    delay.reject(response.data);
-//                }
-//            );
+            //            $http.get('../../resources/cf/messageObject.json').then(
+            //                function (object) {
+            //                    delay.resolve(angular.fromJson(object.data));
+            //                },
+            //                function (response) {
+            //                    delay.reject(response.data);
+            //                }
+            //            );
+            //            $http.get('../../resources/erx/soap-parse-response.json').then(
+            //                function (object) {
+            //                    delay.resolve(angular.fromJson(object.data));
+            //                },
+            //                function (response) {
+            //                    delay.reject(response.data);
+            //                }
+            //            );
         } else {
             $timeout(function () {
                 delay.reject("Unsupported format specified");
@@ -835,8 +835,8 @@ angular.module('format').factory('NewValidationReport', function ($http, $q) {
         var delay = $q.defer();
         $http({
             url: url,
-            data: $.param({'jsonReport': this.content}),
-            headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'},
+            data: $.param({ 'jsonReport': this.content }),
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
             method: 'POST',
             timeout: 60000
         }).success(function (data) {
@@ -985,7 +985,7 @@ angular.module('format').factory('ValidationResultItem', function () {
     var ValidationResultItem = function () {
         this.data = [];
         this.categories = [];
-        this.categories.push({"title": "All", "data": []});
+        this.categories.push({ "title": "All", "data": [] });
         this.show = true;
         this.updateIndicator = '0';
     };
@@ -993,7 +993,7 @@ angular.module('format').factory('ValidationResultItem', function () {
     ValidationResultItem.prototype.init = function (data) {
         this.data = data;
         this.categories = [];
-        this.categories.push({"title": "All", "data": []});
+        this.categories.push({ "title": "All", "data": [] });
         this.show = true;
         this.notify();
     };
@@ -1065,7 +1065,7 @@ angular.module('format').factory('ValidationResult', function (ValidationResultI
         this.content = sessionStorage.getItem(this.key);
     };
     ValidationResult.prototype.hasState = function () {
-        return sessionStorage.getItem(this.key) !== {xml: ''} && sessionStorage.getItem(this.key) != null;
+        return sessionStorage.getItem(this.key) !== { xml: '' } && sessionStorage.getItem(this.key) != null;
     };
     ValidationResult.prototype.getState = function () {
         return sessionStorage.getItem(this.key);
@@ -1094,14 +1094,14 @@ angular.module('format').factory('AppInfo', ['$http', '$q', function ($http, $q)
                 }
             );
 
-//            $http.get('../../resources/appInfo.json').then(
-//                function (object) {
-//                    delay.resolve(angular.fromJson(object.data));
-//                },
-//                function (response) {
-//                    delay.reject(response.data);
-//                }
-//            );
+            //            $http.get('../../resources/appInfo.json').then(
+            //                function (object) {
+            //                    delay.resolve(angular.fromJson(object.data));
+            //                },
+            //                function (response) {
+            //                    delay.reject(response.data);
+            //                }
+            //            );
 
             return delay.promise;
 
@@ -1133,17 +1133,17 @@ angular.module('format').factory('User', function ($q, $http, StorageService) {
             }
         );
 
-//        $http.get('../../resources/cb/user.json').then(
-//            function (response) {
-//                var data = angular.fromJson(response.data);
-//                user.setInfo(data);
-//                delay.resolve(data);
-//            },
-//            function (response) {
-//                user.setInfo(null);
-//                delay.reject(response.data);
-//            }
-//        );
+        //        $http.get('../../resources/cb/user.json').then(
+        //            function (response) {
+        //                var data = angular.fromJson(response.data);
+        //                user.setInfo(data);
+        //                delay.resolve(data);
+        //            },
+        //            function (response) {
+        //                user.setInfo(null);
+        //                delay.reject(response.data);
+        //            }
+        //        );
 
 
         return delay.promise;
@@ -1162,18 +1162,18 @@ angular.module('format').factory('User', function ($q, $http, StorageService) {
             }
         );
 
-//
-//        $http.get('../../resources/cb/user.json').then(
-//            function (response) {
-//                var data = angular.fromJson(response.data);
-//                user.setInfo(data);
-//                delay.resolve(data);
-//            },
-//            function (response) {
-//                user.setInfo(null);
-//                delay.reject(response.data);
-//            }
-//        );
+        //
+        //        $http.get('../../resources/cb/user.json').then(
+        //            function (response) {
+        //                var data = angular.fromJson(response.data);
+        //                user.setInfo(data);
+        //                delay.resolve(data);
+        //            },
+        //            function (response) {
+        //                user.setInfo(null);
+        //                delay.reject(response.data);
+        //            }
+        //        );
 
         return delay.promise;
     };
@@ -1186,28 +1186,28 @@ angular.module('format').factory('User', function ($q, $http, StorageService) {
         }
     };
 
-//        var delay = $q.defer();
-//        var user = this;
-//        $http.post('api/accounts/guest/delete').then(
-//            function (response) {
-//                var data = angular.fromJson(response.data);
-//                user.setInfo(null);
-//                delay.resolve(true);
-//            },
-//            function (response) {
-//                user.setInfo(null);
-//                delay.reject(response.data);
-//            }
-//        );
-//        return delay.promise;
-//    };
+    //        var delay = $q.defer();
+    //        var user = this;
+    //        $http.post('api/accounts/guest/delete').then(
+    //            function (response) {
+    //                var data = angular.fromJson(response.data);
+    //                user.setInfo(null);
+    //                delay.resolve(true);
+    //            },
+    //            function (response) {
+    //                user.setInfo(null);
+    //                delay.reject(response.data);
+    //            }
+    //        );
+    //        return delay.promise;
+    //    };
 
-//    UserClass.prototype.delete = function () {
-//        if(this.info && this.info != null && this.info.id != null){
-//            $http.post("api/user/" + this.info.id + "/delete");
-//        }
-//        //StorageService.remove(StorageService.USER_KEY);
-//    };
+    //    UserClass.prototype.delete = function () {
+    //        if(this.info && this.info != null && this.info.id != null){
+    //            $http.post("api/user/" + this.info.id + "/delete");
+    //        }
+    //        //StorageService.remove(StorageService.USER_KEY);
+    //    };
 
     return new UserClass();
 });
@@ -1227,14 +1227,14 @@ angular.module('format').factory('Session', ['$q', '$http', function ($q, $http)
                 delay.reject(response.data);
             }
         );
-//        $http.get('../../resources/cb/session.json').then(
-//            function (response) {
-//                delay.resolve(angular.fromJson(response.data));
-//            },
-//            function (response) {
-//                delay.reject('Sorry,we did not get a response');
-//            }
-//        );
+        //        $http.get('../../resources/cb/session.json').then(
+        //            function (response) {
+        //                delay.resolve(angular.fromJson(response.data));
+        //            },
+        //            function (response) {
+        //                delay.reject('Sorry,we did not get a response');
+        //            }
+        //        );
         return delay.promise;
     };
 
@@ -1260,21 +1260,21 @@ angular.module('format').factory('TestExecutionService',
 
         var TestExecutionService = {
             resultOptions: [
-                {"title": "Passed", "value": "PASSED", "class": "fa fa-check green"},
+                { "title": "Passed", "value": "PASSED", "class": "fa fa-check green" },
                 {
                     "title": "Passed - Notable Exception",
                     "value": "PASSED_NOTABLE_EXCEPTION",
                     "class": "fa fa-check green"
                 },
-                {"title": "Failed", "value": "FAILED", "class": "fa fa-check red"},
-                {"title": "Failed - Not Supported", "value": "FAILED_NOT_SUPPORTED", "class": "fa fa-check red"},
-                {"title": "Incomplete", "value": "INCOMPLETE", "class": "fa fa-check gray"},
-                {"title": "Inconclusive", "value": "INCONCLUSIVE", "class": "fa fa-check yellow"}
+                { "title": "Failed", "value": "FAILED", "class": "fa fa-check red" },
+                { "title": "Failed - Not Supported", "value": "FAILED_NOT_SUPPORTED", "class": "fa fa-check red" },
+                { "title": "Incomplete", "value": "INCOMPLETE", "class": "fa fa-check gray" },
+                { "title": "Inconclusive", "value": "INCONCLUSIVE", "class": "fa fa-check yellow" }
             ],
             executionOptions: [
-                {"title": "In Progress", "value": "IN_PROGRESS"},
-                {"title": "Complete", "value": "COMPLETE"},
-                {"title": "Incomplete", "value": "INCOMPLETE"}
+                { "title": "In Progress", "value": "IN_PROGRESS" },
+                { "title": "Complete", "value": "COMPLETE" },
+                { "title": "Incomplete", "value": "INCOMPLETE" }
             ],
             testStepValidationResults: StorageService.get("testStepValidationResults") != null ? angular.fromJson(StorageService.get("testStepValidationResults")) : {},
             testStepExecutionStatuses: StorageService.get("testStepExecutionStatuses") != null ? angular.fromJson(StorageService.get("testStepExecutionStatuses")) : {},
@@ -1523,21 +1523,21 @@ angular.module('format').factory('TestExecutionService',
 
         TestExecutionService.deleteTestStepExecutionStatus = function (step) {
             if (step != null) {
-                delete  TestExecutionService.testStepExecutionStatuses[step.id];
+                delete TestExecutionService.testStepExecutionStatuses[step.id];
                 StorageService.set("testStepExecutionStatuses", angular.toJson(TestExecutionService.testStepExecutionStatuses));
             }
         };
 
         TestExecutionService.deleteTestCaseExecutionStatus = function (testCase) {
             if (testCase != null) {
-                delete  TestExecutionService.testCaseExecutionStatuses[testCase.id];
+                delete TestExecutionService.testCaseExecutionStatuses[testCase.id];
                 StorageService.set("testCaseExecutionStatuses", angular.toJson(TestExecutionService.testCaseExecutionStatuses));
             }
         };
 
         TestExecutionService.deleteTestCaseValidationResult = function (testCase) {
             if (testCase != null) {
-                delete  TestExecutionService.testCaseValidationResults[testCase.id];
+                delete TestExecutionService.testCaseValidationResults[testCase.id];
                 StorageService.set("testCaseValidationResults", angular.toJson(TestExecutionService.testCaseValidationResults));
             }
         };
@@ -1558,7 +1558,7 @@ angular.module('format').factory('TestExecutionService',
 
         TestExecutionService.deleteTestStepMessageTree = function (step) {
             if (step) {
-                delete  TestExecutionService.testStepMessageTrees[step.id];
+                delete TestExecutionService.testStepMessageTrees[step.id];
                 StorageService.set("testStepMessageTrees", angular.toJson(TestExecutionService.testStepMessageTrees));
             }
         };
@@ -1575,16 +1575,16 @@ angular.module('format').factory('TestExecutionService',
             return ReportService.updateTestStepValidationReport(vResult && vResult != null ? vResult.reportId : null, testStep.id, result, comments);
         };
 
-//        TestExecutionService.updateTestStepValidationReport = function (testStep) {
-//            StorageService.set("testStepValidationResults", angular.toJson(TestExecutionService.testStepValidationResults));
-//            StorageService.set("testStepComments", angular.toJson(TestExecutionService.testStepComments));
-//            var result = TestExecutionService.getTestStepValidationResult(testStep);
-//            result = result != undefined ? result : null;
-//            var comments = TestExecutionService.getTestStepComments(testStep);
-//            comments = comments != undefined ? comments : null;
-//            return ReportService.updateTestStepValidationReport(testStep, result, comments);
-//        };
-//
+        //        TestExecutionService.updateTestStepValidationReport = function (testStep) {
+        //            StorageService.set("testStepValidationResults", angular.toJson(TestExecutionService.testStepValidationResults));
+        //            StorageService.set("testStepComments", angular.toJson(TestExecutionService.testStepComments));
+        //            var result = TestExecutionService.getTestStepValidationResult(testStep);
+        //            result = result != undefined ? result : null;
+        //            var comments = TestExecutionService.getTestStepComments(testStep);
+        //            comments = comments != undefined ? comments : null;
+        //            return ReportService.updateTestStepValidationReport(testStep, result, comments);
+        //        };
+        //
 
 
         return TestExecutionService;
@@ -1691,16 +1691,25 @@ angular.module('format').factory('ServiceDelegator', function (HL7V2MessageValid
     }
 });
 
-angular.module('format').factory('IdleService',
-    function ($http) {
-        var IdleService = {
-            keepAlive: function () {
-                return $http.get(
-                    'api/session/keepAlive');
+angular.module('format').factory('IdleService', function ($http, $q) {
+    var IdleService = function () { };
+
+    IdleService.keepAlive = function () {
+        var delay = $q.defer();
+        $http.get('api/session/keepAlive').then(
+            function (data) {
+                var response = data.data;
+                delay.resolve(response);
+            },
+            function (response) {
+                delay.reject(response);
             }
-        };
-        return IdleService;
-    });
+        );
+        return delay.promise;
+    };
+
+    return IdleService;
+});
 
 
 angular.module('format').factory('FileUpload', function ($filter, $q, Upload, Notification) {
@@ -1719,11 +1728,11 @@ angular.module('format').factory('FileUpload', function ($filter, $q, Upload, No
             if (errFile.$error === 'maxSize') {
                 errorMsg = "File is too big. Maximum accepted size is : '" + errFile.$errorParam + "'";
             }
-            delay.reject({"data": errorMsg});
+            delay.reject({ "data": errorMsg });
         } else if (file) {
             file.upload = Upload.upload({
                 url: 'api/message/upload',
-                data: {file: file}
+                data: { file: file }
             });
             file.upload.then(function (response) {
                 delay.resolve(response);
