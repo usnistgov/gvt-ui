@@ -55,5 +55,24 @@
 		"testPlanSummary": null,
 		"testCases": [],
 		"testCaseGroups": []
+	},
+	{
+		"name": "VR BFDR LRF-FIXED",
+		"persistentId": 8095398904650810834,
+		"description": "Sample Test Plan for BFDR",
+		"type": null,
+		"stage": null,
+		"position": 1,
+		"version": "null",
+		"scope": null,
+		"preloaded": false,
+		"supplements": [],
+		"transport": true,
+		"domain": "default",
+		"id": 27934,
+		"testPackage": null,
+		"testPlanSummary": null,
+		"testCases": [],
+		"testCaseGroups": []
 	}
 ]

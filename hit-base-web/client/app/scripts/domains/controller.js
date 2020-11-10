@@ -10,7 +10,8 @@ angular.module('domains')
         $scope.loadingAction = false;
         $scope.loadingDomains = false;
         $scope.domainsErrors = null;
-
+        
+        
         $scope.hasDomainAccess = function (domain) {
             return userInfoService.isAuthenticated() && (userInfoService.isAdmin() || (domain != null && domain.owner === userInfoService.getUsername()));
         };
@@ -41,6 +42,8 @@ angular.module('domains')
                     $scope.loadingDomain = false;
                 }
             }, waitingTime);
+            
+            
         };
 
         $scope.openDomain = function (domain) {

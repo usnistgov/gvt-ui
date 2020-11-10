@@ -7,6 +7,7 @@ angular.module('main').controller('MainCtrl',
         $rootScope.loginDialog = null;
         $rootScope.started = false;
         $scope.notifications = [];
+        $scope.showNotificationPanel = false;
 
         var domainParam = $location.search()['d'] ? decodeURIComponent($location.search()['d']) : null;
 
@@ -248,6 +249,11 @@ angular.module('main').controller('MainCtrl',
                     //different, update!
                     $scope.notifications = angular.copy(filteredData);
 
+                }
+                if ($scope.notifications.length >0){
+                	$scope.showNotificationPanel = true;
+                }else{
+                	$scope.showNotificationPanel = false;
                 }
             });
         };
@@ -738,8 +744,8 @@ angular.module('main').controller('MainCtrl',
 
         $rootScope.showSettings = function () {
             var modalInstance = $modal.open({
-                templateUrl: 'SettingsCtrl.html',
-                size: 'lg',
+                templateUrl: 'views/settings/SettingsCtrl.html',
+                windowClass: 'upload-modal',
                 keyboard: 'false',
                 controller: 'SettingsCtrl'
             });

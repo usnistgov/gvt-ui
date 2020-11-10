@@ -1011,6 +1011,7 @@ angular.module('format').factory('ValidationSettings', function () {
         this.ignores = true;
         this.alerts = true;
         this.warnings = true;
+        this.specerrors = true;
     };
     return ValidationSettings;
 });
@@ -1025,6 +1026,7 @@ angular.module('format').factory('ValidationResult', function (ValidationResultI
         this.alerts = new ValidationResultItem();
         this.warnings = new ValidationResultItem();
         this.informationals = new ValidationResultItem();
+        this.specerrors = new ValidationResultItem();
         this.id = '';
     };
 
@@ -1042,6 +1044,7 @@ angular.module('format').factory('ValidationResult', function (ValidationResultI
         this.alerts = new ValidationResultItem();
         this.warnings = new ValidationResultItem();
         this.informationals = new ValidationResultItem();
+        this.specerrors = new ValidationResultItem();
         this.updateId();
     };
 
@@ -1053,6 +1056,7 @@ angular.module('format').factory('ValidationResult', function (ValidationResultI
         this.alerts.init(object.alerts);
         this.warnings.init(object.warnings);
         this.informationals.init(object.informationals);
+        this.informationals.init(object.specerrors);
         this.updateId();
     };
 

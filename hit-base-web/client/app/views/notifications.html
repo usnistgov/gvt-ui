@@ -132,7 +132,7 @@
 
 </style>
 
-<div class="notifications"  ng-show="notifications.length > 0">
+<div class="notifications" ng-cloak  ng-if="showNotificationPanel">
 	<div ng-repeat="not in notifications" class="row ns-box ns-bar ns-effect-slidetop ns-type-notice ns-show"	style="display: flex;" ng-show="not.visible !== false">
 		<div class="col-sm-1 ns-box-inner" style="flex: 1;max-width: 30px;"><i class="fa fa-bullhorn"
 				aria-hidden="true"></i></div>
