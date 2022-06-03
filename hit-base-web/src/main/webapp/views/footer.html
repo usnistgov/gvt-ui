@@ -20,7 +20,7 @@
         <div>
           <h5>Application Information</h5>
           <ul>
-            <li>Date: {{appInfo.date |  date: 'MM/dd/yyyy HH:mm:ss'}} </li>
+            <li>Date: {{appInfo.date |  date: 'MM/dd/yyyy'}} </li>
             <li>Application Version: {{appInfo.version}}</li>
             <li ng-if="domain.rsbVersion != null && domain.rsbVersion != ''">Resource Bundle Version:{{domain.rsbVersion}}</li>
             <li ng-if="domain.igVersion != null && domain.igVersion != ''">Ig Version:{{domain.igVersion}}</li>
@@ -35,7 +35,7 @@
             <li><i class="fa fa-firefox"></i> Firefox</li>
             <li><i class="fa fa-chrome"></i> Chrome </li>
             <li><i class="fa fa-safari"></i>Safari</li>
-            <li><i class="fa fa-internet-explorer"></i> IE 10+ and Edge</li>
+            <li><i class="fa fa-edge"></i>Edge</li>
           </ul>
         </div>
       </td>

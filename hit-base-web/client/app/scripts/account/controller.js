@@ -518,7 +518,7 @@ angular.module('account').controller('ConfirmAccountDeleteCtrl', function ($scop
 angular.module('account')
     .controller('ForgottenCtrl', ['$scope', '$resource','$rootScope','Notification',
         function ($scope, $resource,$rootScope, Notification) {
-            var ForgottenRequest = $resource('api/sooa/accounts/passwordreset', {username:'@username'});
+            var ForgottenRequest = $resource('api/sooa/accounts/passwordresetrequest');
 
             $scope.requestResetPassword =  function() {
                 var resetReq = new ForgottenRequest();
@@ -621,17 +621,17 @@ angular.module('account')
             if ( $routeParams.token === '' ) {
                 $scope.displayForm = false;
             }
-            if ( !angular.isDefined($routeParams.userId) ) {
-                $scope.displayForm = false;
-            }
-            if ( $routeParams.userId === '' ) {
-                $scope.displayForm = false;
-            }
+//            if ( !angular.isDefined($routeParams.userId) ) {
+//                $scope.displayForm = false;
+//            }
+//            if ( $routeParams.userId === '' ) {
+//                $scope.displayForm = false;
+//            }
 
             //to register an account for the first time
-            var AcctInitPassword = $resource('api/sooa/accounts/register/:userId/passwordreset', {userId:'@userId', token:'@token'});
+            //var AcctInitPassword = $resource('api/sooa/accounts/register/:userId/passwordreset', {userId:'@userId', token:'@token'});
             //to reset the password
-            var AcctResetPassword = $resource('api/sooa/accounts/:id/passwordreset', {id:'@userId', token:'@token'});
+            var AcctResetPassword = $resource('api/sooa/accounts/passwordreset', {id:'@userId', token:'@token'});
 
             $scope.user = {};
             $scope.user.username = $routeParams.username;

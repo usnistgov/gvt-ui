@@ -809,7 +809,9 @@ app.run(function (Session, $rootScope, $location, $modal, TestingSettings, AppIn
         return $rootScope.getAppInfo().options && ($rootScope.getAppInfo().options['USER_LOGIN_SUPPORTED'] === "true");
     };
        
-    
+    $rootScope.isDevTool = function () {
+	    return $rootScope.getAppInfo().options && ($rootScope.getAppInfo().options['IS_DEV_TOOL'] === "true");
+	};
     
 
 });

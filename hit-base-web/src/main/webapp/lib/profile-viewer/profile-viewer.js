@@ -447,7 +447,8 @@
 
         field["path"] = parent.path + "-" + field.position;
         var dt = field.datatype;
-        if (dt === 'varies') {
+        // check for varies
+        if (dt.toLowerCase().indexOf('var') !== -1) {
           var dynamicMaps = parent.dynamicMaps && parent.dynamicMaps != null && parent.dynamicMaps[field.position] != null ? parent.dynamicMaps[field.position] : null;
           field.children = [];
           if (dynamicMaps != null) {
@@ -486,10 +487,12 @@
     	//process message constraints
     	processConstraints($scope.model.message, null);
     	      
-    	$scope.model.message.children = $filter('orderBy')($scope.model.message.children, 'position');
+//    	$scope.model.message.children = $filter('orderBy')($scope.model.message.children, 'position');
+    	
         angular.forEach($scope.model.message.children, function (segmentRefOrGroup) {
           processElement(segmentRefOrGroup);
-        });        
+        });    
+        $scope.model.message.children = sortByPosition($scope.model.message.children);
         if ($scope.options.relevance) {
           $scope.onlyRelevantElementsModel = $scope.model;
         } else {
@@ -571,7 +574,8 @@
           if (node.type === 'SEGMENT_REF') {
             return getNodeChildren($scope.model.segments[node.ref]);
           } else if (node.type === 'FIELD' || node.type === 'COMPONENT') {
-            return node.datatype && node.datatype !== 'varies' && $scope.model.datatypes ? $scope.model.datatypes[node.datatype].children : node.children;
+        	  return node.datatype && node.datatype.toLowerCase().indexOf('var') === -1  && $scope.model.datatypes ? $scope.model.datatypes[node.datatype].children : node.children;
+//        	  return node.datatype && node.datatype !== 'varies' && $scope.model.datatypes ? $scope.model.datatypes[node.datatype].children : node.children;         
           } else if (node.type === 'DATATYPE' || node.type == 'SEGMENT' || node.type === 'GROUP') {
             return node.children;
           }
@@ -604,7 +608,7 @@
       var processFieldChildrenConstraints = function (parent, removeCandidates) {
         var children = angular.copy(getNodeChildren(parent));
         angular.forEach(children, function (child) {
-          child.type = parent.datatype === 'varies' ? 'DATATYPE' : 'COMPONENT';
+          child.type = parent.datatype.toLowerCase().indexOf('var') !== -1 ? 'DATATYPE' : 'COMPONENT';
           child.path = parent.path + "." + child.position;
           child.nodeParent = parent;
           child.selfConformanceStatements = [];
@@ -635,7 +639,7 @@
       var processComponentChildrenConstraints = function (parent, removeCandidates) {
         var children = angular.copy(getNodeChildren(parent));
         angular.forEach(children, function (child) {
-          child.type = parent.datatype === 'varies' ? 'DATATYPE' : 'SUBCOMPONENT';
+          child.type = parent.datatype.toLowerCase().indexOf('var') !== -1 ? 'DATATYPE' : 'SUBCOMPONENT';
           child.path = parent.path + "." + child.position;
           child.nodeParent = parent;
           child.selfConformanceStatements = [];

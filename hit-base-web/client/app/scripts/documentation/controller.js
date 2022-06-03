@@ -1543,7 +1543,7 @@ angular.module('doc')
     	  $scope.domain = $rootScope.appInfo.domains[0].domain;
       }
                
-      DocumentationManager.getTestCaseDocuments($scope.domain, scope).then(function (data) {
+      DocumentationManager.getTestCaseDocuments($scope.domain, 'GLOBALANDUSER').then(function (data) {
         $scope.error = null;
         $scope.context = data;
         $scope.data = [];
