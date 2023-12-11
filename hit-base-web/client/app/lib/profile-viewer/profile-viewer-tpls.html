@@ -135,7 +135,7 @@
                                         <th class="col-xs-1 col-fixed-80">Data type</th>
                                         <th class="col-xs-1 col-fixed-150">ValueSet</th>
                                         <th class="col-xs-2" ng-style="predWidth">Predicate</th>
-                                        <th class="col-xs-4" ng-style="csWidth">Conf. Statement</th>
+                                        <th class="col-xs-4" ng-style="csWidth">Conf. Statement -</th>
                                     </tr>
 
                                     <tr class="tbl-header"
@@ -146,7 +146,7 @@
                                         <th class="col-xs-1 col-fixed-80">Data type</th>
                                         <th class="col-xs-1 col-fixed-150">ValueSet</th>
                                         <th class="col-xs-2" ng-style="predWidth">Predicate</th>
-                                        <th class="col-xs-4" ng-style="csWidth">Conf. Statement</th>
+                                        <th class="col-xs-4" ng-style="csWidth">Conf. Statement - dt</th>
                                     </tr>
 
                                     <!--<tr class="tbl-header" style="margin-right:{{scrollbarWidth}}px"-->
@@ -199,7 +199,7 @@
     </div>
 </script>
 
-
+<!-- full view -->
 <script type="text/ng-template" id="MessageFieldViewTree.html">
     <tr pv-node  is-branch="hasRelevantChild(node)" node="node">
         <td class="col-xs-2 col-fixed-350"
@@ -244,8 +244,8 @@
         </td>
         <td class="col-xs-1 col-fixed-150">
             <div>
-				<span ng-if="node.table != undefined && node.table != null">
-                    <a ng-repeat="valueSet in getValueSet(node.table)" class="point valueset"
+				<span ng-if="(node.table != undefined  && node.table !== null) || (node.selfValueSetBindings != undefined && node.selfValueSetBindings.length >0)">
+                    <a ng-repeat="valueSet in getValueSet(node)" class="point valueset"
                        ng-click="showValueSetDefinition(valueSet)"
                        class="cs-concise-view concise-view"
                        tooltip-html="valueSet"
@@ -330,8 +330,8 @@
                     tooltip-animation="false" tooltip-placement="left"/>
         </td>
         <td class="col-xs-1 col-fixed-150">
-            <div ng-if="node.table != undefined  && node.table !== null">
-                <a ng-repeat="valueSet in getValueSet(node.table)" class="point valueset"
+            <div ng-if="(node.table != undefined  && node.table !== null) || (node.selfValueSetBindings != undefined && node.selfValueSetBindings.length >0)">
+                <a ng-repeat="valueSet in getValueSet(node)" class="point valueset"
                    ng-click="showValueSetDefinition(valueSet)"
                    class="cs-concise-view concise-view"
                    tooltip-html="valueSet"
@@ -650,8 +650,8 @@
 
         <td class="col-xs-1 col-fixed-150">
             <div>
-                <div ng-if="node.table != undefined  && node.table !== null">
-                    <a ng-repeat="valueSet in getValueSet(node.table)" class="point valueset"
+                <div ng-if="(node.table != undefined  && node.table !== null) || (node.selfValueSetBindings != undefined && node.selfValueSetBindings.length >0)">
+                    <a ng-repeat="valueSet in getValueSet(node)" class="point valueset"
                        ng-click="showValueSetDefinition(valueSet)"
                        class="cs-concise-view concise-view"
                        tooltip-html="::valueSet"
@@ -730,8 +730,8 @@
         </td>
 
         <td class="col-xs-1 col-fixed-150">
-            <div ng-if="node.table != undefined  && node.table !== null">
-                <a ng-repeat="valueSet in getValueSet(node.table)" class="point valueset"
+            <div ng-if="(node.table != undefined  && node.table !== null) || (node.selfValueSetBindings != undefined && node.selfValueSetBindings.length >0)">
+                <a ng-repeat="valueSet in getValueSet(node)" class="point valueset"
                    ng-click="showValueSetDefinition(valueSet)"
                    class="cs-concise-view concise-view"
                    tooltip-html="::valueSet"
@@ -774,6 +774,7 @@
     </tr>
 </script>
 
+<!-- not used? -->
 <script type="text/ng-template" id="SegmentReadTree.html">
     <tr pv-node  is-branch="hasRelevantChild(node)" node="node">
         <td class="col-xs-2 col-fixed-350"
@@ -850,8 +851,8 @@
                      tooltip-animation="false" tooltip-placement="left"/>
         </td>
         <td class="col-xs-1 col-fixed-150">
-            <div ng-if="node.table != undefined  && node.table !== null">
-                <a ng-repeat="valueSet in getValueSet(node.table)" class="point valueset"
+            <div ng-if="(node.table != undefined  && node.table !== null) || (node.selfValueSetBindings != undefined && node.selfValueSetBindings.length >0)">
+                <a ng-repeat="valueSet in getValueSet(node)" class="point valueset"
                    ng-click="showValueSetDefinition(valueSet)"
                    class="cs-concise-view concise-view"
                    tooltip-html="::valueSet"
@@ -932,8 +933,8 @@
                      tooltip-animation="false" tooltip-placement="left"/>
         </td>
         <td class="col-xs-1 col-fixed-150">
-            <div ng-if="node.table != undefined  && node.table !== null">
-                <a ng-repeat="valueSet in getValueSet(node.table)" class="point valueset"
+            <div ng-if="(node.table != undefined  && node.table !== null) || (node.selfValueSetBindings != undefined && node.selfValueSetBindings.length >0)">
+                <a ng-repeat="valueSet in getValueSet(node)" class="point valueset"
                    ng-click="showValueSetDefinition(valueSet)"
                    class="cs-concise-view concise-view"
                    tooltip-html="::valueSet"

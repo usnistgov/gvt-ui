@@ -2592,11 +2592,11 @@ angular.module('cb')
         if (response.status === "SUCCESS") {
         	if (response.token !== undefined){
         		CBTestPlanManager.saveZip(response.token,$scope.domain.domain).then(function (response) {
+				  console.log("$scope.loading",$scope.loading);
       	          $scope.loading = false;
       	           if (response.status == "FAILURE") {
              	   			$scope.step = 1;
-      	        	   		$scope.error = "Could not saved the zip, please try again";
-      	        	   		
+      	        	   		$scope.error = "Could not saved the zip, please try again";      	        	   		      	        	   		
       	          } else {
       	        	  	
      	 	        	 if (response.action === "ADD") {
@@ -2620,12 +2620,20 @@ angular.module('cb')
       	         	        	
       	          }
       	          }, function (error) {
-      	        	  	$scope.step = 1;
+					console.log(error);
+					 Notification.error({
+     	 	 	            message: error.message,
+     	 	 	            templateUrl: "NotificationErrorTemplate.html",
+     	 	 	            scope: $rootScope,
+     	 	 	            delay: 5000
+     	 	 	          });
+	 				$scope.loading = false;
+      	        	$scope.step = 1;
       	            $scope.error = "Could not saved the zip, please try again";
       	          });
         	}else{
         		$scope.step = 1;
-  	        $scope.error = "Could not saved the zip, no token was received, please try again";
+  	        	$scope.error = "Could not saved the zip, no token was received, please try again";
         	}
         	
         

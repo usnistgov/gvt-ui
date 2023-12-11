@@ -286,7 +286,10 @@
             <th>Example Message</th>
             <th>Conformance Profile</th>
             <th>Constraints</th>
+			<th>CoConstraints</th>
             <th>ValueSet Library</th>
+			<th>ValueSet Bindings</th>
+			<th>Slicings</th>
           </tr>
           </thead>
           <tbody class=""></tbody>
@@ -369,11 +372,30 @@
          class="point"  ng-click="downloadConstraints(node)"><i class="fa fa-download fa-fw"></i></a>
     </td>
 
+	<td>
+      <span ng-if="!node.xmlCoConstraintsPresent">-</span>
+      <a  class="point" ng-if="node.xmlCoConstraintsPresent"
+         class="point"  ng-click="downloadCoConstraints(node)"><i class="fa fa-download fa-fw"></i></a>
+    </td>
+
     <td>
       <span ng-if="!node.xmlValueSetLibraryPresent">-</span>
       <a  class="point" ng-if="node.xmlValueSetLibraryPresent"
          class="point"  ng-click="downloadValueSetLib(node)"><i class="fa fa-download fa-fw"></i></a>
     </td>
+
+	<td>
+      <span ng-if="!node.xmlValueSetBindingsPresent">-</span>
+      <a  class="point" ng-if="node.xmlValueSetBindingsPresent"
+         class="point"  ng-click="downloadValueSetBindings(node)"><i class="fa fa-download fa-fw"></i></a>
+    </td>
+
+	<td>
+      <span ng-if="!node.xmlSlicingsPresent">-</span>
+      <a  class="point" ng-if="node.xmlSlicingsPresent"
+         class="point"  ng-click="downloadSlicings(node)"><i class="fa fa-download fa-fw"></i></a>
+    </td>
+
 
 
   </tr>

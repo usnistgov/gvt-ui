@@ -1,0 +1,58 @@
+{
+  "domain": "default",
+  "updateDate": 1701809949039,
+  "scope": "USER",
+  "preloaded": false,
+  "name": "Provider Sends VXU for HX 18YO HIB",
+  "persistentId": "-4396140071279984863",
+  "description": "Demonstrates the ability of the provider system to generate a VXU Test Message for an adult 18 year-old veteran being vaccinated with Haemophilus influenzae type b as a single dose formatted according to the IZ Gateway HL7 v2.5.1 IG for Multi-Jurisdiction Provider IZ Messaging.",
+  "type": "TestStep",
+  "stage": "CB",
+  "position": 1,
+  "version": 1,
+  "supplements": [],
+  "id": "510",
+  "testingType": "TA_INITIATOR",
+  "protocols": [
+    {
+      "value": "soap",
+      "position": 1,
+      "defaut": true
+    }
+  ],
+  "testContext": {
+    "domain": "default",
+    "updateDate": 1701809949039,
+    "scope": "USER",
+    "preloaded": false,
+    "id": 310,
+    "format": "hl7v2",
+    "message": {
+      "domain": "default",
+      "updateDate": null,
+      "scope": "USER",
+      "preloaded": false,
+      "id": 513,
+      "name": null,
+      "description": null,
+      "content": "MSH|^~\\&|VA VDIF|8VA-002|ICARE|ICARE|20220901131443-0400||VXU^V04^VXU_V04|to220901181443694222|T|2.5.1|||ER|AL|||||Z22^CDCPHINVS|8VA-002|ICARE\nPID|1||1013634402V344471^^^USVHA^MR||CDCIZGONE^ALPHAONE^^^^^L|LIZIZG^^^^^^M|20031201|F||2106-3^White^CDCREC|315 W 57TH ST^^NEW YORK^NY^10019-3158^USA^P^^36061||^PRN^PH^^^406^5557896|||||||||2186-5^NOT HISPANIC OR LATINO^CDCREC|||||||||||20220901131443\nNK1|1|ALPHAONE^FRIEND^^^^^L|OTH^OTHER^HL70063\nNK1|2|ALPHONE^FRIEND^^^^^L|OTH^OTHER^HL70063\nORC|RE||124769^984||||||||||||||8VA-002^DAYTON^HL70362\nRXA|0|1|20220901||48^HIB (PRP-T)^CVX|999|||08^Historical information - from public Agency^NIP001||^^^8VA-002|||||||||CP|A\nOBX|1|CE|64994-7^vaccine fund pgm elig cat^LN|1|V01^Not VFC elig^HL70064||||||F|||20220901|||VXC40^vaccine level^CDCPHINVS\nOBX|2|CE|30963-3^Vaccine funding source^LN|1|VXC50^Public^HL70064||||||F|||20220901\n"
+    },
+    "type": null,
+    "dqa": false,
+    "vocabularyLibrary": {
+      "domain": "default",
+      "updateDate": 1701809948934,
+      "scope": "USER",
+      "preloaded": false,
+      "id": 198,
+      "key": null
+    },
+    "profile": {
+      "domain": "default",
+      "updateDate": 1701809949079,
+      "scope": "USER",
+      "preloaded": false,
+      "id": 515
+    }
+  }
+}

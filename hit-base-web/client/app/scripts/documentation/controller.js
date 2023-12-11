@@ -1703,10 +1703,22 @@ angular.module('doc')
       $scope.downloadContextFile(row.id, row.type, $scope.formatUrl(row.format) + "valueset.xml", row.title);
     };
 
-
     $scope.downloadConstraints = function (row) {
       $scope.downloadContextFile(row.id, row.type, $scope.formatUrl(row.format) + "constraints.zip", row.title);
     };
+    
+    $scope.downloadCoConstraints = function (row) {
+      $scope.downloadContextFile(row.id, row.type, $scope.formatUrl(row.format) + "coconstraints.xml", row.title);
+    };
+    
+    $scope.downloadValueSetBindings = function (row) {
+      $scope.downloadContextFile(row.id, row.type, $scope.formatUrl(row.format) + "valuesetbindings.xml", row.title);
+    };
+    
+    $scope.downloadSlicings = function (row) {
+      $scope.downloadContextFile(row.id, row.type, $scope.formatUrl(row.format) + "slicings.xml", row.title);
+    };
+    
 
     $scope.downloadContextFile = function (targetId, targetType, targetUrl, targetTitle) {
       if (targetId != null && targetType != null && targetUrl != null) {

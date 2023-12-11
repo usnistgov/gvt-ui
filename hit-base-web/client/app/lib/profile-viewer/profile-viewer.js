@@ -74,6 +74,38 @@
         }
         return rs;
       };
+      
+        /**
+       *
+       * @param valueSetBindings
+       * @param targetPath
+       * @returns {Array}
+       */
+      var findValueSetBindingsByTargetPath = function (valueSetBindings, targetPath) {
+        var rs = [];
+        if (valueSetBindings != null && valueSetBindings.length > 0 && targetPath !== "" && targetPath !== null) {
+          rs = _.filter(valueSetBindings, function (valueSetBinding) {
+            return fixPath(valueSetBinding.valueSetBindingTarget) === fixPath(targetPath);
+          });
+        }
+        return rs;
+      };
+      
+      /**
+       *
+       * @param valueSetBindings
+       * @param targetPath
+       * @returns {Array}
+       */
+      var findValueSetBindingsByTargetPath = function (valuesetbindings, targetPath) {
+        var rs = [];
+        if (valuesetbindings != null && valuesetbindings.length > 0 && targetPath !== "" && targetPath !== null) {
+          rs = _.filter(valuesetbindings, function (valuesetbindings) {
+            return fixPath(valuesetbindings.valueSetBindingTarget) === fixPath(targetPath);
+          });
+        }
+        return rs;
+      };
 
       /**
        *
@@ -210,12 +242,24 @@
        * @param tableStr
        * @returns {*}
        */
-      $scope.getValueSet = function (tableStr) {
-        if (tableStr && tableStr != null) {
-          return tableStr.split(":");
-        }
-        return [];
-      };
+      $scope.getValueSet = function(node) {
+			var tables = []
+			if (node.table && node.table != null) {
+				tables = node.split(":");
+			}
+			if (node.selfValueSetBindings && node.selfValueSetBindings != null && node.selfValueSetBindings.length > 0) {
+				var parser = new DOMParser();
+				for (var j = 0; j< node.selfValueSetBindings.length; j++){
+					var xmlDoc = parser.parseFromString(node.selfValueSetBindings[j].bindings, "text/xml");
+					var vsb = xmlDoc.getElementsByTagName("Binding");
+					for (var i = 0; i < vsb.length; i++) {
+						var segRef = vsb[i].getAttribute("BindingIdentifier");
+						tables.push(segRef);
+					}
+				}			
+			}
+			return tables;
+		};
 
 
       /**
@@ -611,15 +655,20 @@
           child.type = parent.datatype.toLowerCase().indexOf('var') !== -1 ? 'DATATYPE' : 'COMPONENT';
           child.path = parent.path + "." + child.position;
           child.nodeParent = parent;
-          child.selfConformanceStatements = [];
-          child.selfPredicates = [];
+          child.selfValueSetBindings = []; //--
+          child.selfConformanceStatements = []; //
+          child.selfPredicates = [];			
+		  child.selfValueSetBindings = child.selfValueSetBindings.concat(getSegmentLevelValueSetBindings(child));
           child.selfConformanceStatements = child.selfConformanceStatements.concat(getSegmentLevelConfStatements(child));
           child.selfPredicates = child.selfPredicates.concat(getSegmentLevelPredicates(child));
+          child.selfValueSetBindings = child.selfValueSetBindings.concat(getDatatypeLevelValueSetBindings(child));
           child.selfConformanceStatements = child.selfConformanceStatements.concat(getDatatypeLevelConfStatements(child));
-          child.selfPredicates = child.selfPredicates.concat(getDatatypeLevelPredicates(child));
+          child.selfPredicates = child.selfPredicates.concat(getDatatypeLevelPredicates(child));          
           if ($scope.nodeData.type === 'MESSAGE') {
+			child.selfValueSetBindings = child.selfValueSetBindings.concat(getMessageLevelValueSetBindings(child));
             child.selfConformanceStatements = child.selfConformanceStatements.concat(getMessageLevelConfStatements(child));
             child.selfPredicates = child.selfPredicates.concat(getMessageLevelPredicates(child));
+            child.selfValueSetBindings = child.selfValueSetBindings.concat(getGroupLevelValueSetBindings(child));
             child.selfConformanceStatements = child.selfConformanceStatements.concat(getGroupLevelConfStatements(child));
             child.selfPredicates = child.selfPredicates.concat(getGroupLevelPredicates(child));
           }
@@ -642,18 +691,24 @@
           child.type = parent.datatype.toLowerCase().indexOf('var') !== -1 ? 'DATATYPE' : 'SUBCOMPONENT';
           child.path = parent.path + "." + child.position;
           child.nodeParent = parent;
-          child.selfConformanceStatements = [];
+          child.selfValueSetBindings = []; //--
+          child.selfConformanceStatements = []; //
           child.selfPredicates = [];
+          child.selfValueSetBindings = child.selfValueSetBindings.concat(getDatatypeLevelValueSetBindings(child));
           child.selfConformanceStatements = child.selfConformanceStatements.concat(getDatatypeLevelConfStatements(child));
           child.selfPredicates = child.selfPredicates.concat(getDatatypeLevelPredicates(child));
           if ($scope.nodeData.type === 'SEGMENT') {
+			child.selfValueSetBindings = child.selfValueSetBindings.concat(getSegmentLevelValueSetBindings(child));
             child.selfConformanceStatements = child.selfConformanceStatements.concat(getSegmentLevelConfStatements(child));
             child.selfPredicates = child.selfPredicates.concat(getSegmentLevelPredicates(child));
           } else if ($scope.nodeData.type === 'MESSAGE') {
+			child.selfValueSetBindings = child.selfValueSetBindings.concat(getSegmentLevelValueSetBindings(child));
             child.selfConformanceStatements = child.selfConformanceStatements.concat(getSegmentLevelConfStatements(child));
             child.selfPredicates = child.selfPredicates.concat(getSegmentLevelPredicates(child));
+            child.selfValueSetBindings = child.selfValueSetBindings.concat(getMessageLevelValueSetBindings(child));
             child.selfConformanceStatements = child.selfConformanceStatements.concat(getMessageLevelConfStatements(child));
             child.selfPredicates = child.selfPredicates.concat(getMessageLevelPredicates(child));
+            child.selfValueSetBindings = child.selfValueSetBindings.concat(getGroupLevelValueSetBindings(child));
             child.selfConformanceStatements = child.selfConformanceStatements.concat(getGroupLevelConfStatements(child));
             child.selfPredicates = child.selfPredicates.concat(getGroupLevelPredicates(child));
           }
@@ -675,8 +730,10 @@
         angular.forEach(children, function (child) {
           child.type = 'COMPONENT';
           child.path = child.position;
-          child.selfConformanceStatements = [];
+          child.selfValueSetBindings = [];
+          child.selfConformanceStatements = []; //
           child.selfPredicates = [];
+          child.selfValueSetBindings  = child.selfValueSetBindings.concat(getDatatypeLevelValueSetBindings(child));
           child.selfConformanceStatements = child.selfConformanceStatements.concat(getDatatypeLevelConfStatements(child));
           child.selfPredicates = child.selfPredicates.concat(getDatatypeLevelPredicates(child));
           if (!$scope.visible(child)) {
@@ -696,10 +753,13 @@
         var children = angular.copy(getNodeChildren(parent));
         angular.forEach(children, function (child) {
           child.nodeParent = parent;
-          child.selfConformanceStatements = [];
+          child.selfValueSetBindings = []; //--
+          child.selfConformanceStatements = []; //
           child.selfPredicates = [];
+          child.selfValueSetBindings = child.selfValueSetBindings.concat(getGroupLevelValueSetBindings(child));
           child.selfConformanceStatements = child.selfConformanceStatements.concat(getGroupLevelConfStatements(child));
           child.selfPredicates = child.selfPredicates.concat(getGroupLevelPredicates(child));
+          child.selfValueSetBindings = child.selfValueSetBindings.concat(getMessageLevelValueSetBindings(child));
           child.selfConformanceStatements = child.selfConformanceStatements.concat(getMessageLevelConfStatements(child));
           child.selfPredicates = child.selfPredicates.concat(getMessageLevelPredicates(child));
           if (!$scope.visible(child)) {
@@ -720,12 +780,16 @@
         var children = angular.copy(getNodeChildren(parent));
         angular.forEach(children, function (child) {
           child.nodeParent = parent;
-          child.selfConformanceStatements = [];
+          child.selfValueSetBindings = []; //--
+          child.selfConformanceStatements = []; //
           child.selfPredicates = [];
+          child.selfValueSetBindings = child.selfValueSetBindings.concat(getGroupLevelValueSetBindings(child));
           child.selfConformanceStatements = child.selfConformanceStatements.concat(getGroupLevelConfStatements(child));
           child.selfPredicates = child.selfPredicates.concat(getGroupLevelPredicates(child));
+          child.selfValueSetBindings = child.selfValueSetBindings.concat(getMessageLevelValueSetBindings(child));
           child.selfConformanceStatements = child.selfConformanceStatements.concat(getMessageLevelConfStatements(child));
           child.selfPredicates = child.selfPredicates.concat(getMessageLevelPredicates(child));
+          child.selfValueSetBindings = child.selfValueSetBindings.concat(getSegmentLevelValueSetBindings(child));
           child.selfConformanceStatements = child.selfConformanceStatements.concat(getSegmentLevelConfStatements(child));
           child.selfPredicates = child.selfPredicates.concat(getSegmentLevelPredicates(child));
           if (!$scope.visible(child)) {
@@ -744,8 +808,11 @@
       var processSegmentTabChildrenConstraints = function (nodeData, removeCandidates) {
         var children = nodeData.children;
         angular.forEach(children, function (child) {
-          child.selfConformanceStatements = [];
-          child.selfPredicates = [];
+		  child.selfValueSetBindings = []; //--
+          child.selfConformanceStatements = []; //
+          child.selfPredicates = [];          
+          child.selfValueSetBindings = child.selfValueSetBindings.concat(getSegmentLevelValueSetBindings(child));
+          child.selfValueSetBindings = child.selfValueSetBindings.concat(getDatatypeLevelValueSetBindings(child));
           child.selfConformanceStatements = getSegmentLevelConfStatements(child);
           child.selfPredicates = getSegmentLevelPredicates(child);
           if (!$scope.visible(child)) {
@@ -764,11 +831,14 @@
       var processMessageTabChildrenConstraints = function (nodeData, removeCandidates) {
         var children = nodeData.children;
         angular.forEach(children, function (child) {
-          child.selfConformanceStatements = [];
+	 	  child.selfValueSetBindings = []; //--
+          child.selfConformanceStatements = []; //
           child.selfPredicates = [];
+          child.selfValueSetBindings = child.selfValueSetBindings.concat(getGroupLevelValueSetBindings(child));
           child.selfConformanceStatements = child.selfConformanceStatements.concat(getGroupLevelConfStatements(child));
           child.selfPredicates = child.selfPredicates.concat(getGroupLevelPredicates(child));
-          child.selfConformanceStatements = child.selfConformanceStatements.concat(getMessageLevelConfStatements(child));
+          child.selfValueSetBindings = child.selfValueSetBindings.concat(getMessageLevelValueSetBindings(child));
+          child.selfConformanceStatements = child.selfConformanceStatements.concat(getMessageLevelConfStatements(child));          
           child.selfPredicates = child.selfPredicates.concat(getMessageLevelPredicates(child));
           if (!$scope.visible(child)) {
             removeCandidates.push(child);
@@ -785,10 +855,13 @@
        * @returns {*}
        */
       var processSegRefOrGroupConstraints = function (segORGroup) {
-        segORGroup.selfConformanceStatements = [];
+        segORGroup.selfValueSetBindings = []; //--
+        segORGroup.selfConformanceStatements = []; //
         segORGroup.selfPredicates = [];
+        segORGroup.selfValueSetBindings = segORGroup.selfValueSetBindings.concat(getGroupLevelValueSetBindings(segORGroup));
         segORGroup.selfConformanceStatements = segORGroup.selfConformanceStatements.concat(getGroupLevelConfStatements(segORGroup));
         segORGroup.selfPredicates = segORGroup.selfPredicates.concat(getGroupLevelPredicates(segORGroup));
+        segORGroup.selfValueSetBindings = segORGroup.selfValueSetBindings.concat(getMessageLevelValueSetBindings(segORGroup));
         segORGroup.selfConformanceStatements = segORGroup.selfConformanceStatements.concat(getMessageLevelConfStatements(segORGroup));
         segORGroup.selfPredicates = segORGroup.selfPredicates.concat(getMessageLevelPredicates(segORGroup));
       };
@@ -1153,6 +1226,22 @@
         }
         return conformanceStatements;
       };
+      
+      /**
+       *
+       * @param element
+       * @returns {*}
+       */
+      var getGroupLevelValueSetBindings = function (element) {
+        if (element.type === 'MESSAGE')
+          return [];
+        var group = getGroup(element); // element direct group
+        var valueSetBindings = getGroupLevelValueSetBindingsByGroup(element, group);
+        while ((group = getGroup(group)) != null) { // go through all the grand parent groups
+          valueSetBindings = valueSetBindings.concat(getGroupLevelValueSetBindingsByGroup(element, group));
+        }
+        return valueSetBindings;
+      };
 
       /**
        *
@@ -1172,6 +1261,26 @@
         }
         return conformanceStatements;
       };
+      
+      /**
+       *
+       * @param element
+       * @param group
+       * @returns {Array}
+       */
+      var getGroupLevelValueSetBindingsByGroup = function (element, group) {
+        var valueSetBindings = [];
+        if (group != null) {
+          if (group.valueSetBindings != null && group.valueSetBindings.length > 0) {
+            var targetPath = getGroupChildTargetPath(element, group);
+            if (targetPath !== "") {
+              valueSetBindings = valueSetBindings.concat(findValueSetBindingsByTargetPath(group.valueSetBindings, targetPath));
+            }
+          }
+        }
+        return valueSetBindings;
+      };
+      
 
       /**
        *
@@ -1251,6 +1360,22 @@
         }
         return predicates;
       };
+      
+       /**
+       *
+       * @param element
+       * @returns {Array}
+       */
+      var getMessageLevelValueSetBindings = function (element) {
+        var valueSetBindings = [];
+        if ($scope.model.message.valuesetbindings != null && $scope.model.message.valuesetbindings.length > 0) {
+          var targetPath = getMessageChildTargetPath(element);
+          if (targetPath !== "") {
+            valueSetBindings = valueSetBindings.concat(findValueSetBindingsByTargetPath($scope.model.message.valueSetBindings, targetPath));
+          }
+        }
+        return valueSetBindings;
+      };
 
       /**
        *
@@ -1322,6 +1447,24 @@
         return confStatements;
       };
 
+		/**
+       *
+       * @param element
+       * @returns {Array}
+       */
+      var getSegmentLevelValueSetBindings = function (element) {
+        var segment = getSegment(element); // segment
+        var valueSetBindings = [];
+        if (segment != null && segment.valuesetbindings && segment.valuesetbindings != null && segment.valuesetbindings.length > 0) {
+          var targetPath = getSegmentChildTargetPath(element);
+          if (targetPath !== "") {
+            valueSetBindings = valueSetBindings.concat(findValueSetBindingsByTargetPath(segment.valuesetbindings, targetPath));
+          }
+        }
+        return valueSetBindings;
+      };
+
+
       /**
        *
        * @param element
@@ -1355,6 +1498,24 @@
         }
         return confStatements;
       };
+      
+      /**
+       *
+       * @param element
+       * @returns {Array}
+       */
+      var getDatatypeLevelValueSetBindings = function (element) {
+        var datatype = $scope.parentsMap[element.id];
+        var valueSetBindings = [];
+        if (datatype && datatype != null && datatype.valuesetbindings.length > 0) {
+          var targetPath = getDatatypeChildTargetPath(element);
+          if (targetPath !== "") {
+            valueSetBindings = valueSetBindings.concat(findValueSetBindingsByTargetPath(datatype.valuesetbindings, targetPath));
+          }
+        }
+        return valueSetBindings;
+      };
+      
 
       /**
        *
