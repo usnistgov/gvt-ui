@@ -242,10 +242,10 @@
        * @param tableStr
        * @returns {*}
        */
-      $scope.getValueSet = function(node) {
+       $scope.getValueSet = function(node) {
 			var tables = []
 			if (node.table && node.table != null) {
-				tables = node.split(":");
+				tables = node.table.split(":");
 			}
 			if (node.selfValueSetBindings && node.selfValueSetBindings != null && node.selfValueSetBindings.length > 0) {
 				var parser = new DOMParser();
@@ -260,7 +260,6 @@
 			}
 			return tables;
 		};
-
 
       /**
        *
@@ -1507,7 +1506,7 @@
       var getDatatypeLevelValueSetBindings = function (element) {
         var datatype = $scope.parentsMap[element.id];
         var valueSetBindings = [];
-        if (datatype && datatype != null && datatype.valuesetbindings.length > 0) {
+        if (datatype && datatype.valuesetbindings != null && datatype.valuesetbindings.length > 0) {
           var targetPath = getDatatypeChildTargetPath(element);
           if (targetPath !== "") {
             valueSetBindings = valueSetBindings.concat(findValueSetBindingsByTargetPath(datatype.valuesetbindings, targetPath));
