@@ -812,6 +812,10 @@ app.run(function (Session, $rootScope, $location, $modal, TestingSettings, AppIn
     $rootScope.isDevTool = function () {
 	    return $rootScope.getAppInfo().options && ($rootScope.getAppInfo().options['IS_DEV_TOOL'] === "true");
 	};
+	
+	$rootScope.getAppURL = function () {
+        return $rootScope.appInfo.url;
+    };
     
 
 });

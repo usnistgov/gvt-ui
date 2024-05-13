@@ -21,7 +21,7 @@
           </div>
         </tab>
 
-        <tab ng-show="isAdmin()">
+        <tab ng-if="isAdmin()">
           <tab-heading>
             <i class="fa fa-cog"></i>&nbsp;<span msg key="navbar.manage"></span>
           </tab-heading>
@@ -30,7 +30,7 @@
           </div>
         </tab>
 
-        <tab ng-show="isAdmin()">
+        <tab ng-if="isAdmin()">
           <tab-heading>
             <i class="fa fa-cog"></i>&nbsp;<span msg key="navbar.manage.notifications"></span>
           </tab-heading>

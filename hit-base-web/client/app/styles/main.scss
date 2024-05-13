@@ -2740,3 +2740,11 @@ ul.dropdown-menu > li.domain-selected, ul.dropdown-menu > li.domain-selected > a
   background-color: white;
   max-width: 300px;
 }
+
+.authorities ul {
+    list-style:none;
+    li {
+      display:inline-block;
+      margin-right: 10px;
+    }
+}

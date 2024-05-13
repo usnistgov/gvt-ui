@@ -4,11 +4,36 @@
 
 'use strict';
 
-angular.module('account').factory('Account', ['$resource',
-    function ($resource) {
-        return $resource('api/accounts/:id', {id: '@id'});
-    }
-]);
+//angular.module('account').factory('notificationService', function ($http, $q) {
+   
+angular.module('account').factory('Account',  function ($http,$resource,$q) {
+		var accountService = function () { };
+		
+	 	accountService.disableAccount = function (id) {
+			//console.log("disable account "+id);
+			var delay = $q.defer();			
+			$http.post("api/accounts/"+id+"/disable").then(
+            function (object) {
+              //  var res = object.data != null && object.data != "" ? angular.fromJson(object.data) : null;
+              //  delay.resolve(res);
+            },
+            function (response) {
+                console.log("error");
+                delay.reject(response.data);
+            }
+	        );
+	        return delay.promise;
+		};
+		
+		
+		accountService.resource = function () {
+			return $resource('api/accounts/:id', {id: '@id'});
+		};
+        
+        
+        return accountService;
+    
+});
 
 angular.module('account').factory('LoginService', ['$resource', '$q',
     function ($resource, $q) {
@@ -29,7 +54,7 @@ angular.module('account').factory('AccountLoader', ['Account', '$q',
     function (Account, $q) {
         return function(acctID) {
             var delay = $q.defer();
-            Account.get({id: acctID},
+            Account.resource().get({id: acctID},
                 function(account) {
                     delay.resolve(account);
                 },
@@ -183,8 +208,7 @@ angular.module('account').factory('notificationService', function ($http, $q) {
                 var res = object.data != null && object.data != "" ? angular.fromJson(object.data) : null;
                 delay.resolve(res);
             },
-            function (response) {
-                console.log("error");
+            function (response) {              
                 delay.reject(response.data);
             }
         );

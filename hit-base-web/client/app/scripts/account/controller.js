@@ -3,8 +3,8 @@
 /* "newcap": false */
 
 angular.module('account')
-    .controller('UserProfileCtrl', ['$scope', '$resource', 'AccountLoader', 'Account', 'userInfoService', '$location','Transport','Notification',
-        function ($scope, $resource, AccountLoader, Account, userInfoService, $location,Transport,Notification) {
+    .controller('UserProfileCtrl', ['$scope', '$resource', 'AccountLoader', 'Account', 'userInfoService', '$location','Transport','Notification','$modal',
+        function ($scope, $resource, AccountLoader, Account, userInfoService, $location,Transport,Notification,$modal) {
             var PasswordChange = $resource('api/accounts/:id/passwordchange', {id:'@id'});
 
             $scope.accountpwd = {};
@@ -49,19 +49,30 @@ angular.module('account')
                 });
             };
 
-            $scope.deleteAccount = function () {
-                var tmpAcct = new Account();
-                tmpAcct.id = $scope.account.id;
-
-                tmpAcct.$remove(function() {
-                    //console.log("Account removed");
-                    //TODO: Add a real check?
+            $scope.disableAccount = function () {
+				$scope.confirmDisable($scope.account);	                          
+            };
+            
+            $scope.confirmDisable = function (accountToDisable) {
+                var modalInstance = $modal.open({
+                    templateUrl: 'ConfirmAccountDisableCtrl.html',
+                    controller: 'ConfirmAccountDisableCtrl',
+                    resolve: {
+                        accountToDisable: function () {
+                            return accountToDisable;
+                        }
+                    }
+                });               
+                 modalInstance.result.then(function (accountToDelete) {
+                    console.log("modal success");
                     userInfoService.setCurrentUser(null);
                     $scope.$emit('event:logoutRequest');
                     $location.url('/home');
-                },function(error){
-                    Notification.error({message: error.data, templateUrl: "NotificationErrorTemplate.html", scope: $scope, delay: 50000});
+
+                }, function (cancel) {
+					//console.log("modal cancel/closed");
                 });
+                
             };
 
             /*jshint newcap:false */
@@ -298,14 +309,15 @@ angular.module('account')
             $scope.accountOrig = null;
             $scope.accountType = "tester";
             $scope.scrollbarWidth = $scope.getScrollbarWidth();
-            $scope.authorities = [];
+            $scope.checkedAuthorities = [];
+            
 
 //        var PasswordChange = $resource('api/accounts/:id/passwordchange', {id:'@id'});
             var PasswordChange = $resource('api/accounts/:id/userpasswordchange', {id:'@id'});
             var ApproveAccount = $resource('api/accounts/:id/approveaccount', {id:'@id'});
             var SuspendAccount = $resource('api/accounts/:id/suspendaccount', {id:'@id'});
           var AccountTypeChange = $resource('api/accounts/:id/useraccounttypechange', {id:'@id'});
-
+ 
           $scope.msg = null;
 
             $scope.accountpwd = {};
@@ -324,6 +336,9 @@ angular.module('account')
             $scope.resetForm = function() {
                 $scope.account = angular.copy($scope.accountOrig);
             };
+			
+			 
+
 
             //TODO: Change that: formData is only supported on modern browsers
             $scope.isUnchanged = function(formData) {
@@ -343,11 +358,24 @@ angular.module('account')
                     Notification.error({message: error.data, templateUrl: "NotificationErrorTemplate.html", scope: $scope, delay: 50000});
                 });
             };
+            
+             $scope.authoritiesList = ["tester", "deployer", "publisher", "admin"];
+  
+			  
+			  $scope.toggleCheck = function (auth) {
+			//	console.log($scope.checkedAuthorities);
+			      if ($scope.checkedAuthorities.indexOf(auth) === -1) {
+			          $scope.checkedAuthorities.push(auth);
+			      } else {
+			          $scope.checkedAuthorities.splice($scope.checkedAuthorities.indexOf(auth), 1);
+			      }
+			  };
 
           $scope.saveAccountType = function() {
             var authorityChange = new AccountTypeChange();
             authorityChange.username = $scope.account.username;
             authorityChange.accountType = $scope.account.accountType;
+            authorityChange.authorities = $scope.checkedAuthorities;
             authorityChange.id = $scope.account.id;
             //TODO: Check return value???
             authorityChange.$save().then(function(result){
@@ -377,13 +405,20 @@ angular.module('account')
             $scope.selectAccount = function(row) {
                 $scope.accountpwd = {};
                 $scope.account = row;
-              $scope.authorities =
+                $scope.checkedAuthorities = $scope.account.authorities;            
                 $scope.accountOrig = angular.copy($scope.account);
             };
 
+            
+            $scope.disableAccount = function() {
+                $scope.confirmDelete($scope.account);
+            };
+            
+            
             $scope.deleteAccount = function() {
                 $scope.confirmDelete($scope.account);
             };
+                                  
 
             $scope.confirmDelete = function (accountToDelete) {
                 var modalInstance = $modal.open({
@@ -489,7 +524,7 @@ angular.module('account')
         });
 
       };
-
+	 
       $scope.getNotificationList();
     }
   ]);
@@ -500,7 +535,7 @@ angular.module('account').controller('ConfirmAccountDeleteCtrl', function ($scop
     $scope.accountList = accountList;
     $scope.delete = function () {
         //console.log('Delete for', $scope.accountList[rowIndex]);
-        Account.remove({id:accountToDelete.id},
+        Account.resource().remove({id:accountToDelete.id},
             function() {
                 $modalInstance.close($scope.accountToDelete);
             },
@@ -514,6 +549,25 @@ angular.module('account').controller('ConfirmAccountDeleteCtrl', function ($scop
         $modalInstance.dismiss('cancel');
     };
 });
+
+angular.module('account').controller('ConfirmAccountDisableCtrl', function ($scope, $modalInstance, accountToDisable,Account,Notification) {
+
+    $scope.accountToDisable = accountToDisable;
+        
+    $scope.disable = function () {
+		Account.disableAccount($scope.accountToDisable.id).then(function (result) {			
+            $modalInstance.close($scope.accountToDisable.id);
+          }, function (error) {			
+            Notification.error({ message: "An error occured, unable to disable user.", templateUrl: "NotificationErrorTemplate.html", scope: $scope, delay: 50000 });
+          });     
+    };
+
+    $scope.cancel = function () {
+        $modalInstance.dismiss('cancel');
+    };
+});
+
+
 
 angular.module('account')
     .controller('ForgottenCtrl', ['$scope', '$resource','$rootScope','Notification',

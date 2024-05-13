@@ -12,6 +12,14 @@ angular.module('domains')
         $scope.domainsErrors = null;
         
         
+        $scope.getAppInfo = function(){
+                return $rootScope.appInfo;
+        };
+
+		$scope.getAppURL = function () {
+        	return $rootScope.appInfo.url;
+    	};
+        
         $scope.hasDomainAccess = function (domain) {
             return userInfoService.isAuthenticated() && (userInfoService.isAdmin() || (domain != null && domain.owner === userInfoService.getUsername()));
         };
@@ -46,9 +54,8 @@ angular.module('domains')
             
         };
 
-        $scope.openDomain = function (domain) {
-        	var url = $window.location.protocol + "//" + $window.location.host + $window.location.pathname + "#/home?d="+ domain.domain;
-        	$window.open(url, "open_toolscope_page",'_blank');
+        $scope.getDomainUrl = function (domain) {
+        	return $scope.getAppURL() + "/#/?d="+ domain.options.DOMAIN_CUSTOM_URL;
         };
 
         $scope.displayScope = function(scope){

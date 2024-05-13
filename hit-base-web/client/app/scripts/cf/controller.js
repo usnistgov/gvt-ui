@@ -338,9 +338,8 @@ angular.module('cf')
             $scope.initTesting();
         });
 
-        console.log("inint");
-        var executeListener = $scope.$on('event:cf:execute', function (event, scope, group) {
-            console.log("Couou");
+       
+        var executeListener = $scope.$on('event:cf:execute', function (event, scope, group) {            
             $scope.selectedScope.key = scope && scope != null && (scope === 'USER' || scope === 'GLOBAL') ? scope : $scope.testPlanScopes[0] != null ? $scope.testPlanScopes[0].key: 'GLOBAL';
             if (group && group != null) {
                 $scope.selectedTP.id = group;
