@@ -343,7 +343,6 @@ angular.module('cf')
             $scope.selectedScope.key = scope && scope != null && (scope === 'USER' || scope === 'GLOBAL') ? scope : $scope.testPlanScopes[0] != null ? $scope.testPlanScopes[0].key: 'GLOBAL';
             if (group && group != null) {
                 $scope.selectedTP.id = group;
-                console.log(group);
                 StorageService.set(StorageService.CF_SELECTED_TESTPLAN_ID_KEY, group);
             }
             $scope.selectScope();
@@ -2716,15 +2715,15 @@ angular.module('cf').controller('UploadTokenCheckCtrl', ['$scope', '$http', 'CF'
     $scope.auth = decodeURIComponent($routeParams.y);
     $scope.domain = decodeURIComponent($routeParams.d);
 
-
     if ($scope.token !== undefined && $scope.auth !== undefined) {
-
 
         //check if logged in
         if (!userInfoService.isAuthenticated()) {
-            $scope.$emit('event:loginRequestWithAuth', $scope.auth, '/addprofiles?x=' + $scope.token + '&d=' + $scope.domain);
+            $scope.$emit('event:loginRequestWithAuth', $scope.auth, '/addprofiles?x=' + $scope.token + '&d=' + $scope.domain,true);
         } else {
-            $location.url('/addprofiles?x=' + $scope.token + '&d=' + $scope.domain);
+			$rootScope.appLoad();
+			$rootScope.setDomain($scope.domain);
+            $location.url('/addprofiles?x=' + $scope.token + '&d=' + $scope.domain);         
         }
     }
 

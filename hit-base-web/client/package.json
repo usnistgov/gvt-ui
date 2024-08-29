@@ -4,6 +4,7 @@
 	"dependencies": {
 		"bower": "^1.8.14",
 		"grunt-bower": "^0.21.4",
+		"grunt-contrib-uglify-es": "github:gruntjs/grunt-contrib-uglify#harmony",
 		"gyp": "^0.5.0"
 	},
 	"devDependencies": {
@@ -49,7 +50,7 @@
 		"time-grunt": "~0.2.1"
 	},
 	"engines": {
-		"node": ">=0.8.0"
+		"node": ">=6.0.0"
 	},
 	"scripts": {
 		"test": "grunt test"

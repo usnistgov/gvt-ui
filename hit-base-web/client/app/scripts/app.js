@@ -350,6 +350,124 @@ app.run(function (Session, $rootScope, $location, $modal, TestingSettings, AppIn
 	StorageService.set(StorageService.ACTIVE_SUB_TAB_KEY,null);
     var domainParam = $location.search()['d'] ? decodeURIComponent($location.search()['d']) : null;
 
+	$rootScope.appLoad = function (domainParam){
+		if (domainParam === undefined){
+			domainParam = $location.search()['d'] ? decodeURIComponent($location.search()['d']) : null;
+		}
+		AppInfo.get().then(function (appInfo) {
+                $rootScope.loadingDomain = true;
+                $rootScope.appInfo = appInfo;
+                $rootScope.apiLink = $rootScope.appInfo.url + $rootScope.appInfo.apiDocsPath;
+                httpHeaders.common['rsbVersion'] = appInfo.rsbVersion;
+                var previousToken = StorageService.get(StorageService.APP_STATE_TOKEN);
+                if (previousToken != null && previousToken !== appInfo.rsbVersion) {
+                    $rootScope.openVersionChangeDlg();
+                }
+                StorageService.set(StorageService.APP_STATE_TOKEN, appInfo.rsbVersion);
+
+                if (domainParam != undefined && domainParam != null) {
+                    StorageService.set(StorageService.APP_SELECTED_DOMAIN, domainParam);
+                }
+                var storedDomain = StorageService.get(StorageService.APP_SELECTED_DOMAIN);
+
+                var domainFound = null;
+                $rootScope.domain = null;
+                $rootScope.appInfo.selectedDomain = null;
+                $rootScope.domainsByOwner = {
+                    'my': [],
+                    'others':[]
+                };
+                DomainsManager.getDomains().then(function (domains) {
+                    $rootScope.appInfo.domains = domains;
+                    if ($rootScope.appInfo.domains != null) {                    
+                		$rootScope.initDomainsByOwner();
+                    if ($rootScope.appInfo.domains.length === 1) {
+                        domainFound = $rootScope.appInfo.domains[0].domain;
+                    } else if (storedDomain != null) {
+                        $rootScope.appInfo.domains = $filter('orderBy')($rootScope.appInfo.domains, 'position'); //sorting by position but position doesn't exist...
+                        for (var i = 0; i < $rootScope.appInfo.domains.length; i++) {
+                            if ($rootScope.appInfo.domains[i].domain === storedDomain) {
+                                domainFound = $rootScope.appInfo.domains[i].domain;
+                                break;
+                            }
+                        }
+                    }
+                    if (domainFound == null) {                        	
+                    	for (var i = 0; i < $rootScope.appInfo.domains.length; i++) {
+                            if ($rootScope.appInfo.domains[i].domain === "default") {
+                                domainFound = $rootScope.appInfo.domains[i].domain;
+                                break;
+                            }
+                        }
+                    	if (domainFound == null) {                        	
+                            $rootScope.appInfo.domains = $filter('orderBy')($rootScope.appInfo.domains, 'position'); //sorting by position but position doesn't exist...
+                            domainFound = $rootScope.appInfo.domains[0].domain;
+                    	}
+                    }
+
+                        $rootScope.clearDomainSession();
+                        DomainsManager.getDomainByKey(domainFound).then(function (result) {
+                            $rootScope.appInfo.selectedDomain = result.domain;
+                            StorageService.set(StorageService.APP_SELECTED_DOMAIN, result.domain);
+                            $rootScope.domain = result;
+                            $rootScope.loadingDomain = false;
+                            
+                            
+                            
+                            
+                            $timeout(function () {
+                                Transport.configs = {};
+                                Transport.getDomainForms($rootScope.domain.domain).then(function (transportForms) {
+                                    $rootScope.transportSupported = transportForms != null && transportForms.length > 0;
+                                    if ($rootScope.transportSupported) {
+                                        angular.forEach(transportForms, function (transportForm) {
+                                            var protocol = transportForm.protocol;
+                                            if (!Transport.configs[protocol]) {
+                                                Transport.configs[protocol] = {};
+                                            }
+                                            if (!Transport.configs[protocol]['forms']) {
+                                                Transport.configs[protocol]['forms'] = {};
+                                            }
+                                            Transport.configs[protocol]['forms'] = transportForm;
+                                            Transport.configs[protocol]['error'] = null;
+                                            Transport.configs[protocol]['description'] = transportForm.description;
+                                            Transport.configs[protocol]['key'] = transportForm.protocol;
+                                            Transport.getConfigData($rootScope.domain.domain, protocol).then(function (data) {
+                                                Transport.configs[protocol]['data'] = data;
+                                                Transport.configs[protocol]['open'] = {
+                                                    ta: true,
+                                                    sut: false
+                                                };
+                                            }, function (error) {
+                                                Transport.configs[protocol]['error'] = error.data;
+                                            });
+                                        });
+                                    }
+                                }, function (error) {
+                                    $scope.error = "No transport configs found.";
+                                });
+                            }, 500);
+                        }, function (error) {
+                            $rootScope.loadingDomain = true;
+                            $rootScope.openUnknownDomainDlg();
+                        });
+                    } else {
+                        $rootScope.openCriticalErrorDlg("No Tool scope found. Please contact the administrator");
+                    }
+                }, function (error) {
+                    $rootScope.openCriticalErrorDlg("No Tool scope found. Please contact the administrator");
+                });
+            }
+            , function (error) {
+                $rootScope.loadingDomain = true;
+                $rootScope.appInfo = {};
+                $rootScope.openCriticalErrorDlg("Failed to fetch the server. Please try again");
+            });
+            
+	};
+
+    $rootScope.appLoad(domainParam);
+
 
     $rootScope.appInfo = {};
 
@@ -370,6 +488,8 @@ app.run(function (Session, $rootScope, $location, $modal, TestingSettings, AppIn
     };
 
 
+
+	
 
 
     $rootScope.clearDomainSession = function () {
@@ -424,7 +544,14 @@ app.run(function (Session, $rootScope, $location, $modal, TestingSettings, AppIn
         if (domain != null) {
             StorageService.set(StorageService.APP_SELECTED_DOMAIN, domain);
             $location.search('d', domain);
-            $rootScope.reloadPage();
+            $location.url('/home');            
+            $rootScope.appLoad();
+        }
+    };
+    
+    $rootScope.setDomain = function (domain) {
+        if (domain != null &&  $rootScope.domainsByOwner['my'].includes(domain)) {			
+            StorageService.set(StorageService.APP_SELECTED_DOMAIN, domain);            
         }
     };
 
@@ -565,7 +692,7 @@ app.run(function (Session, $rootScope, $location, $modal, TestingSettings, AppIn
     /**
      * On 'event:loginRequest' send credentials to the server.
      */
-    $rootScope.$on('event:loginRequestWithAuth', function (event, auth, path) {
+    $rootScope.$on('event:loginRequestWithAuth', function (event, auth, path,loadApp) {
         httpHeaders.common['Accept'] = 'application/json';
         httpHeaders.common['Authorization'] = 'Basic ' + auth;
         $http.get('api/accounts/login').success(function () {
@@ -574,11 +701,18 @@ app.run(function (Session, $rootScope, $location, $modal, TestingSettings, AppIn
             $http.get('api/accounts/cuser').then(function (result) {
                 if (result.data && result.data != null) {
                     var rs = angular.fromJson(result.data);
-                    initUser(rs);
-                    $rootScope.$broadcast('event:loginConfirmed');
-                    if (path !== undefined){                    	
-                        $location.url(path);
-                    }
+                    initUser(rs);                   
+                    if (path !== undefined){         
+						if (loadApp){
+							$rootScope.appLoad();
+						}						
+						$location.url(path);      											                                             			
+                    }else{
+						if (loadApp){
+							$rootScope.appLoad();
+						}	
+					 $rootScope.$broadcast('event:loginConfirmed');
+					}
                 } else {
                     userInfoService.setCurrentUser(null);
                 }
@@ -587,6 +721,7 @@ app.run(function (Session, $rootScope, $location, $modal, TestingSettings, AppIn
             });
         });
     });
+
 
 
     /*jshint sub: true */
@@ -627,7 +762,7 @@ app.run(function (Session, $rootScope, $location, $modal, TestingSettings, AppIn
         userInfoService.setCurrentUser(null);
         $http.get('j_spring_security_logout').then(function (result) {
             $rootScope.createGuestIfNotExist();
-            $rootScope.$broadcast('event:logoutConfirmed');
+            $rootScope.$broadcast('event:logoutConfirmed');            
         });
     });
 
@@ -817,7 +952,7 @@ app.run(function (Session, $rootScope, $location, $modal, TestingSettings, AppIn
         return $rootScope.appInfo.url;
     };
     
-
+	
 });
 
 
