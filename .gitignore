@@ -23,3 +23,6 @@ hit-base-web/src/test/resources/igamtZip.zip
 hit-base-web/src/test/resources/CNI.zip
 hit-base-web/src/test/resources/igamtZip-invalid.zip
 hit-base-web/src/test/resources/tcamtZip.zip
+hit-base-web/package-lock.json
+hit-base-web/client/.python-version
+hit-base-web/client/package-lock.json
