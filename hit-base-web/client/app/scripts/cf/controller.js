@@ -2166,6 +2166,41 @@ angular.module('cf')
                 }
             );
         };
+        
+        $scope.editAPIKeys = function (item) {
+            $modalStack.dismissAll('close');
+            var modalInstance = $modal.open({
+                templateUrl: 'views/cf/manage/apikeys.html',
+                controller: 'CFManageAPIKeysCtrl',
+                controllerAs: 'ctrl',
+                windowClass: 'upload-modal',
+                backdrop: 'static',
+                keyboard: false,
+                resolve: {
+                    externalVS: function () {
+                        return item.externalVS;
+                    }
+                }
+            });
+
+            modalInstance.result.then(
+                function (externalVS) {
+                    item.externalVS = externalVS;
+                },
+                function (result) {
+                }
+            );
+        };
+        
+        
+          $scope.hasExternalCodeSets = function (profiles) {
+            for (var i = 0; i < profiles.length; i++) {
+                    if (profiles[i].externalVS.length >0) {
+                        return true;
+                    }
+                } 
+                return false;
+        };
 
 
     }
@@ -2180,6 +2215,21 @@ angular.module('cf')
 
         $scope.save = function () {
             $modalInstance.close($scope.exampleMessage);
+        };
+
+        $scope.cancel = function () {
+            $modalInstance.dismiss();
+        };
+
+    });
+    
+    angular.module('cf')
+    .controller('CFManageAPIKeysCtrl', function ($scope, $http, $window, $modal, $filter, $rootScope, $timeout, StorageService, FileUploader, Notification, $modalInstance, externalVS) {
+
+        $scope.externalVS = externalVS;
+
+        $scope.save = function () {
+            $modalInstance.close($scope.externalVS);
         };
 
         $scope.cancel = function () {

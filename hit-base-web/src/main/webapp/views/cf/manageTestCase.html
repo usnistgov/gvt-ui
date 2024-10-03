@@ -300,6 +300,7 @@
                             <th>Name</th>
                             <th>Description</th>
                             <th>Example Message</th>
+                            <th>External Code Set API Keys</th>
                             <th>Actions</th>
                             </thead>
                             <tbody>
@@ -326,6 +327,12 @@
                                 <button ng-show="item.exampleMessage == null || item.exampleMessage == undefined ||  item.exampleMessage == ''" class="btn btn-xs btn-info" ng-click="editExampleMessage(item)"><i class="fa fa-plus"></i>
                                 </button>
                               </td>
+                              
+                              <td>                               
+	                              <button ng-show="item.externalVS.length && item.externalVS.length > 0 " class="btn btn-xs btn-info" ng-click="editAPIKeys(item)">Manage API key                                                             
+	                              </button>
+                              </td>
+                              
                               <td>
                                 <button class="btn btn-sm btn-danger" ng-click="deleteOldProfile(item)"><i class="fa fa-trash"></i>
                                 </button>
@@ -364,6 +371,7 @@
                           <th>Event</th>
                           <th>StructID</th>
                           <th>Example Message</th>
+                          <th ng-show="hasExternalCodeSets(tmpNewMessages)">External Code Set API Keys</th>
                           <th>Action</th>
                           </thead>
                           <tbody>
@@ -401,7 +409,11 @@
                                   </button>
                                 </span>
 
-                              <button ng-show="item.exampleMessage == null || item.exampleMessage == undefined ||  item.exampleMessage == ''" class="btn btn-xs btn-info" ng-click="editExampleMessage(item)"><i class="fa fa-plus"></i>
+                              <button ng-show="item.exampleMessage == null || item.exampleMessage == undefined ||  item.exampleMessage == ''" class="btn btn-xs btn-info" ng-click="editExampleMessage(item)">Add message  
+                              </button>
+                            </td>
+                            <td>                               
+                              <button ng-show="item.externalVS.length > 0 " class="btn btn-xs btn-info" ng-click="editAPIKeys(item)">Manage API key                                                             
                               </button>
                             </td>
                             <td>

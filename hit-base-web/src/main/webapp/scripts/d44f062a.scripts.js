@@ -3731,10 +3731,37 @@ angular.module("cf").controller("CFEnvCtrl", [ "$scope", "$window", "$rootScope"
         modalInstance.result.then(function(exampleMessage) {
             item.exampleMessage = exampleMessage;
         }, function(result) {});
+    }, $scope.editAPIKeys = function(item) {
+        $modalStack.dismissAll("close");
+        var modalInstance = $modal.open({
+            templateUrl: "views/cf/manage/apikeys.html",
+            controller: "CFManageAPIKeysCtrl",
+            controllerAs: "ctrl",
+            windowClass: "upload-modal",
+            backdrop: "static",
+            keyboard: !1,
+            resolve: {
+                externalVS: function() {
+                    return item.externalVS;
+                }
+            }
+        });
+        modalInstance.result.then(function(externalVS) {
+            item.externalVS = externalVS;
+        }, function(result) {});
+    }, $scope.hasExternalCodeSets = function(profiles) {
+        for (var i = 0; i < profiles.length; i++) if (profiles[i].externalVS.length > 0) return !0;
+        return !1;
     };
 } ]), angular.module("cf").controller("CFManageExampleMessageCtrl", function($scope, $http, $window, $modal, $filter, $rootScope, $timeout, StorageService, FileUploader, Notification, $modalInstance, exampleMessage) {
     $scope.exampleMessage = exampleMessage, $scope.save = function() {
         $modalInstance.close($scope.exampleMessage);
+    }, $scope.cancel = function() {
+        $modalInstance.dismiss();
+    };
+}), angular.module("cf").controller("CFManageAPIKeysCtrl", function($scope, $http, $window, $modal, $filter, $rootScope, $timeout, StorageService, FileUploader, Notification, $modalInstance, externalVS) {
+    $scope.externalVS = externalVS, $scope.save = function() {
+        $modalInstance.close($scope.externalVS);
     }, $scope.cancel = function() {
         $modalInstance.dismiss();
     };
