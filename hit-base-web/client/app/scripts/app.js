@@ -641,6 +641,10 @@ app.run(function (Session, $rootScope, $location, $modal, TestingSettings, AppIn
 //            console.log("in loginRequired event");
         $rootScope.showLoginDialog();
     });
+	
+	$rootScope.$on('event:loginRequiredWithRedirect', function (event, path) {
+	   $rootScope.showLoginDialog(path);
+	 });
 
     /**
      * On 'event:loginConfirmed', resend all the 401 requests.
