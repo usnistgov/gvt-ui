@@ -973,7 +973,9 @@
        * @returns {Array}
        */
       var processDataTypeTabChildrenConstraints = function () {
-        var children = $scope.model.datatypeList;
+        var children = $scope.model.datatypeList.toSorted(function(a, b) {
+          return a.name.localeCompare(b.name);
+        });
         return children;
       };
 
@@ -2118,37 +2120,7 @@
         }
       });
     };
-
-    //        $scope.addRelevantChildren = function (parentElement, shouldExpand) {
-    //            var parentNode = parentElement && parentElement.scope() ? parentElement.scope().node : null;
-    //            var parentId = parentElement ? parentElement.data('ttId') : null;
-    //
-    //            if (parentElement) {
-    //                parentElement.scope().loading = true;
-    //            }
-    //
-    //            var data = params.getNodes(parentNode);
-    //            var elementPromises = [];
-    //            angular.forEach(data, function (node) {
-    //                //if (params.isRelevant(node)) {
-    //                    elementPromises.push($scope.compileElement(node, parentId, parentNode));
-    //                //}
-    //            });
-    //
-    //            $q.all(elementPromises).then(function (newElements) {
-    //                var parentTtNode = parentId != null ? table.treetable("node", parentId) : null;
-    //                $element.treetable('loadBranch', parentTtNode, newElements);
-    //                if (params.shouldExpand(parentNode)) {
-    //                    angular.forEach(newElements, function (el) {
-    //                        $scope.addChildren($(el), shouldExpand);
-    //                    });
-    //                }
-    //                if (parentElement && parentElement.scope()) {
-    //                    parentElement.scope().loading = false;
-    //                }
-    //            });
-    //        };
-
+ 
 
     /**
      * Callback for onNodeExpand to add nodes.
