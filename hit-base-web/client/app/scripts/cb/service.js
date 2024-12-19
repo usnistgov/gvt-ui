@@ -275,7 +275,21 @@ angular.module('cb').factory('CBTestPlanManager', ['$q', '$http',
                 }
             );
             return delay.promise;
-        }
+        },
+		
+		getTestStepsWithExternalValueSets:  function (testPlanId) {
+	        var delay = $q.defer();
+	        $http.get("api/cb/management/testPlans/" + testPlanId+'/testStepsWithExternalValueSets', {timeout: 180000}).then(
+	          function (testSteps) {
+	            delay.resolve(angular.fromJson(testSteps.data));
+	          },
+	          function (response) {
+	            delay.reject(response.data);
+	          }
+	        );
+
+	        return delay.promise;
+	      }
 
 
 

@@ -2303,8 +2303,60 @@ angular.module('cb')
         }, function (result) {
 
         });
-
     };
+	
+
+	  $scope.editAPIKeys = function(testPlan) {
+		  $modalStack.dismissAll('close');
+		  var modalInstance = $modal.open({
+			  templateUrl: 'views/cb/manage/apikeys.html',
+			  controller: 'CBManageAPIKeysCtrl',
+			  controllerAs: 'ctrl',
+			  windowClass: 'upload-modal',
+			  backdrop: 'static',
+			  keyboard: false,
+			  resolve: {
+				  testPlan: function() {
+					  return testPlan;
+				  }
+			  }
+		  });
+
+		  modalInstance.opened.then(function() {
+//call the getTestStepsWithExternalValueSets function from the CBManageAPIKeysCtrl  controller
+//        modalInstance.controller.getTestStepsWithExternalValueSets();
+
+
+		  });
+
+		  modalInstance.result.then(
+			  function(externalVS) {
+				  item.externalVS = externalVS;
+			  },
+			  function(result) {
+			  }
+		  );
+	  };
+
+		// $scope.getApiKeys = function (testPlan) {				
+		// 	CBTestPlanManager.getTestStepsWithExternalValueSets(testPlan.id).then(function (testSteps) {
+	  //           console.log(testSteps);
+	  //           $scope.loading = false;
+	  //         }, function (error) {
+	  //           $scope.error = "Sorry, Cannot load the test steps. Please try again";
+	  //       });
+	 	// };
+
+   
+
+	 function dig(obj, target) {
+	   return target in obj
+	     ? obj[target]
+	     : Object.values(obj).reduce(function(acc, val) {
+	         if (acc !== undefined) return acc;
+	         if (typeof val === 'object') return dig(val, target);
+	       }, undefined);
+	 }
 
 
     $scope.editNodeName = function (node) {
@@ -2559,6 +2611,32 @@ angular.module('cb')
 
 
   });
+  
+  angular.module('cb')
+      .controller('CBManageAPIKeysCtrl', function ($scope, $http, $window, $modal, $filter, $rootScope, $timeout, StorageService, FileUploader, Notification, $modalInstance,CBTestPlanManager, testPlan) {
+
+          $scope.testPlan = testPlan;
+
+          $scope.save = function () {
+              $modalInstance.close($scope.externalVS);
+          };
+
+          $scope.cancel = function () {
+              $modalInstance.dismiss();
+          };
+		  
+		  $scope.getTestStepsWithExternalValueSets = function (testPlan) {				
+  			CBTestPlanManager.getTestStepsWithExternalValueSets(testPlan.id).then(function (testSteps) {
+  	            $scope.loading = false;
+				$scope.testSteps = testSteps;
+  	          }, function (error) {
+  	            $scope.error = "Sorry, Cannot load the test steps. Please try again";
+  	        });
+ 		  };
+		  
+		  $scope.getTestStepsWithExternalValueSets($scope.testPlan)
+
+      });
 
 
 angular.module('cb')
@@ -2636,15 +2714,7 @@ angular.module('cb')
   	        	$scope.error = "Could not saved the zip, no token was received, please try again";
         	}
         	
-        
-        	
-        
-        	
-        	
-        
-          
-          
-          
+       
           
         }
         
@@ -2718,8 +2788,7 @@ angular.module('cb').controller('UploadCBTokenCheckCtrl', ['$scope', '$http', 'C
                   });
 	        		modalInstance.close();        
 	           $location.url('/cb?scope=USER&group='+response.id);
-	        		//set private
-	//                		$scope.selectedScope.key = $scope.testPlanScopes[1].key;
+	        		
 	          }
 	          }, function (error) {
 	            $scope.error = "Could not saved the zip, please try again";

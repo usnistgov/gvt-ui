@@ -73,13 +73,9 @@
           
           	<span ng-show="(selectedTestCase.type == 'TestPlan')">
 
-                               <!--<button title="Upload File"-->
-                                 <!--type="button"-->
-                                 <!--class="btn btn-xs btn-info"-->
-                                 <!--ng-show="(selectedTestCase.type == 'TestPlan')"-->
-                                 <!--ng-click="openUploadTestPlanModal()">-->
-                                 <!--<i class="fa fa-upload"></i>Upload Test Plan (.Zip)-->
-                                 <!--</button>-->
+                               <button title="Manage API Keys" ng-show="true" type="button" class="btn btn-sm btn-success" ng-click="editAPIKeys(selectedTestCase)">
+                                    <i class="fa fa-paper-plane"></i>Manage API Keys
+                                </button>
 
                                    <button title="Make Test Plan Public"
                                            ng-show="selectedTestCase.scope === 'USER'&& (isAdmin() || isPublisher())"
