@@ -289,7 +289,19 @@ angular.module('cb').factory('CBTestPlanManager', ['$q', '$http',
 	        );
 
 	        return delay.promise;
-	      }
+	      },
+		  updateTestContextApiKeys:  function (testContextId,apikeys) {
+		         var delay = $q.defer();
+		         $http.post('api/hl7v2/testcontext/'+ testContextId + '/apikey', apikeys).then(
+		           function (object) {
+		             delay.resolve(angular.fromJson(object.data));
+		           },
+		           function (response) {
+		             delay.reject(response.data);
+		           }
+		         );
+		         return delay.promise;
+		       },
 
 
 

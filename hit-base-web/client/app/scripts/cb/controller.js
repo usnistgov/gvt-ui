@@ -2331,7 +2331,7 @@ angular.module('cb')
 
 		  modalInstance.result.then(
 			  function(externalVS) {
-				  item.externalVS = externalVS;
+//				  item.externalVS = externalVS;
 			  },
 			  function(result) {
 			  }
@@ -2612,31 +2612,52 @@ angular.module('cb')
 
   });
   
-  angular.module('cb')
-      .controller('CBManageAPIKeysCtrl', function ($scope, $http, $window, $modal, $filter, $rootScope, $timeout, StorageService, FileUploader, Notification, $modalInstance,CBTestPlanManager, testPlan) {
+angular.module('cb')
+	.controller('CBManageAPIKeysCtrl', function($scope, $http, $window, $modal, $filter, $rootScope, $timeout, StorageService, FileUploader, Notification, $modalInstance, CBTestPlanManager, testPlan) {
 
-          $scope.testPlan = testPlan;
+		$scope.testPlan = testPlan;
+		$scope.testSteps;
 
-          $scope.save = function () {
-              $modalInstance.close($scope.externalVS);
-          };
+		$scope.save = function() {
+			//for each teststep that changed, save
+			for (var i = 0; i < $scope.testSteps.length; i++) {
+				var hasEditedKeys = $scope.testSteps[i].testContext.apikeys.find(function(obj) {
+				  return obj.editBindingKey === true;
+				});
+						
+				if (hasEditedKeys){
+					CBTestPlanManager.updateTestContextApiKeys($scope.testSteps[i].testContext.id,$scope.testSteps[i].testContext.apikeys).then(function(response) {
+										console.log(response);
+									}, function(error) {
+										$scope.error = "Sorry, Cannot load the test steps. Please try again";
+									});
+				}				
+			}
+			$modalInstance.close($scope.testPlan);
+		};
 
-          $scope.cancel = function () {
-              $modalInstance.dismiss();
-          };
-		  
-		  $scope.getTestStepsWithExternalValueSets = function (testPlan) {				
-  			CBTestPlanManager.getTestStepsWithExternalValueSets(testPlan.id).then(function (testSteps) {
-  	            $scope.loading = false;
+		$scope.cancel = function() {
+			$modalInstance.dismiss();
+		};
+
+		$scope.getTestStepsWithExternalValueSets = function(testPlan) {
+			CBTestPlanManager.getTestStepsWithExternalValueSets(testPlan.id).then(function(testSteps) {
+				$scope.loading = false;
+				//set all as not being edited to start
+				for (var i = 0; i < testSteps.length; i++) {
+					for(var j =0; j< testSteps[i].testContext.apikeys.length; j++ )		
+					testSteps[i].testContext.apikeys[j].editBindingKey = false;
+				}
 				$scope.testSteps = testSteps;
-  	          }, function (error) {
-  	            $scope.error = "Sorry, Cannot load the test steps. Please try again";
-  	        });
- 		  };
-		  
-		  $scope.getTestStepsWithExternalValueSets($scope.testPlan)
+				
+			}, function(error) {
+				$scope.error = "Sorry, Cannot load the test steps. Please try again";
+			});
+		};
 
-      });
+		$scope.getTestStepsWithExternalValueSets($scope.testPlan)
+
+	});
 
 
 angular.module('cb')
