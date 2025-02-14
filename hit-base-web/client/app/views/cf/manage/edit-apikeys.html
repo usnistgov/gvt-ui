@@ -14,28 +14,26 @@ body {
 
 <div style="margin: 10px">
 	<div class="modal-header">
-		<span style="font-weight: bold; font-size: 20px"> Code Set API keys
-			management </span> <span class="pull-right">
+		<span style="font-weight: bold; font-size: 20px"> Code Set API
+			keys management - EDIT </span> <span class="pull-right">
 			<button class="btn btn-xs btn-primary" ng-click="cancel()">
 				<i class="fa fa-times"></i>
 			</button>
 		</span>
 	</div>
-	<div class="modal-body" style="padding: 10px 0px 0px 0px">
+	<div class="modal-body" style="padding: 10px 0px 0px 0px;">
+
 		<div class="row">
-			<div class="col-md-12" style="min-height: 350px">
+			<div class="col-md-12" style="min-height: 350px;">
 
 				<table class="table table-striped table-condensed table-bordered">
 					<thead class="">
-						<th style="max-width: 75px">Binding identifier</th>
+						<th style="max-width: 75px;">Binding identifier</th>
 						<th>URL</th>
 						<th>API KEY</th>
 					</thead>
-					<tbody ng-repeat="testStep in testSteps | orderBy:'name'">
-						<tr>
-							<td colspan="3" style="font-weight: bold">{{ testStep.name }}</td>
-						</tr>
-						<tr ng-repeat="apiKey in testStep.testContext.apikeys | orderBy:'bindingIdentifier	'">
+					<tbody>
+						<tr ng-repeat="apiKey in apikeys | orderBy:'bindingIdentifier	'">
 
 							<td>{{ apiKey.bindingIdentifier }}</td>
 							<td>{{ apiKey.bindingUrl}}</td>
@@ -44,20 +42,21 @@ body {
 								<span ng-if="apiKey.hasBindingKey && !apiKey.editBindingKey">***<span ng-click="apiKey.editBindingKey = true" class="point fa fa-pencil"></span></span>
 								<span ng-if="apiKey.hasBindingKey && apiKey.editBindingKey" ng-click="apiKey.editBindingKey = false" title="Revert changes" class="point fa fa-repeat"></span>
 							</td>
-						</tr>
-				</tbody></table>
+						</tr>				
+					</tbody>
+				</table>
 
 			</div>
 		</div>
+
+
 	</div>
 	<div class="modal-footer">
 
 		<div class="pull-right">
-			<button type="button" class="btn btn-primary btn-md" ng-click="save()">
-				<i class="fa fa-check"></i>Save and close
-			</button>
-			<button type="button" class="btn btn-primary btn-md" ng-click="cancel()">
-				<i class="fa fa-check"></i>Cancel
+			<button type="button" class="btn btn-primary btn-md"
+				ng-click="save()">
+				<i class="fa fa-check"></i>DONE
 			</button>
 		</div>
 

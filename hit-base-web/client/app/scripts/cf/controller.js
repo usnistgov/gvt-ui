@@ -2035,7 +2035,7 @@ angular.module('cf')
 
 
         $scope.deleteOldProfile = function (profile) {
-            profile['removed'] = true;
+            profile.removed = true;
             $scope.tmpOldMessages = $scope.filterMessages($scope.oldProfileMessages);
         };
 
@@ -2055,6 +2055,7 @@ angular.module('cf')
 
 
         $scope.getUpdatedProfiles = function () {
+			console.log($scope.oldProfileMessage);
             return _.reject($scope.oldProfileMessages, function (message) {
                 return message.removed == true;
             });
@@ -2167,11 +2168,11 @@ angular.module('cf')
             );
         };
         
-        $scope.editAPIKeys = function (item) {
+        $scope.addAPIKeys = function (item) {
             $modalStack.dismissAll('close');
             var modalInstance = $modal.open({
-                templateUrl: 'views/cf/manage/apikeys.html',
-                controller: 'CFManageAPIKeysCtrl',
+                templateUrl: 'views/cf/manage/add-apikeys.html',
+                controller: 'CFManageADDAPIKeysCtrl',
                 controllerAs: 'ctrl',
                 windowClass: 'upload-modal',
                 backdrop: 'static',
@@ -2179,7 +2180,8 @@ angular.module('cf')
                 resolve: {
                     externalVS: function () {
                         return item.externalVS;
-                    }
+                    },
+					mode: function () { return "add"}
                 }
             });
 
@@ -2191,6 +2193,32 @@ angular.module('cf')
                 }
             );
         };
+		
+		$scope.editAPIKeys = function (item) {
+		           $modalStack.dismissAll('close');
+		           var modalInstance = $modal.open({
+		               templateUrl: 'views/cf/manage/edit-apikeys.html',
+		               controller: 'CFManageEDITAPIKeysCtrl',
+		               controllerAs: 'ctrl',
+		               windowClass: 'upload-modal',
+		               backdrop: 'static',
+		               keyboard: false,
+		               resolve: {
+		                   apiKeys: function () {
+		                       return item.apikeys;
+		                   },
+						   mode: function () { return "edit"}
+		               }
+		           });
+
+		           modalInstance.result.then(
+		               function (apiKeys) {
+		                   item.apikeys = apiKeys;
+		               },
+		               function (result) {
+		               }
+		           );
+		       };
         
         
           $scope.hasExternalCodeSets = function (profiles) {
@@ -2224,12 +2252,16 @@ angular.module('cf')
     });
     
     angular.module('cf')
-    .controller('CFManageAPIKeysCtrl', function ($scope, $http, $window, $modal, $filter, $rootScope, $timeout, StorageService, FileUploader, Notification, $modalInstance, externalVS) {
+    .controller('CFManageADDAPIKeysCtrl', function ($scope, $http, $window, $modal, $filter, $rootScope, $timeout, StorageService, FileUploader, Notification, $modalInstance, externalVS) {
 
         $scope.externalVS = externalVS;
-
+		
+		
+		
         $scope.save = function () {
-            $modalInstance.close($scope.externalVS);
+				$modalInstance.close($scope.externalVS);
+			
+            
         };
 
         $scope.cancel = function () {
@@ -2238,6 +2270,22 @@ angular.module('cf')
 
     });
 
+	angular.module('cf')
+	   .controller('CFManageEDITAPIKeysCtrl', function ($scope, $http, $window, $modal, $filter, $rootScope, $timeout, StorageService, FileUploader, Notification, $modalInstance,apiKeys) {
+
+		$scope.apikeys = apiKeys;
+
+		
+	       $scope.save = function () {
+				$modalInstance.close($scope.apikeys);
+			          
+	       };
+
+	       $scope.cancel = function () {
+	           $modalInstance.dismiss();
+	       };
+
+	   });
 
 angular.module('cf')
     .controller('UploadCtrl', ['$scope', '$http', '$window', '$modal', '$filter', '$rootScope', '$timeout', 'StorageService', 'TestCaseService', 'TestStepService', 'FileUploader', 'Notification', 'userInfoService', 'CFTestPlanManager', 'isValidationOnly', function ($scope, $http, $window, $modal, $filter, $rootScope, $timeout, StorageService, TestCaseService, TestStepService, FileUploader, Notification, userInfoService, CFTestPlanManager, isValidationOnly) {

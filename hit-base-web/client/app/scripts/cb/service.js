@@ -301,7 +301,7 @@ angular.module('cb').factory('CBTestPlanManager', ['$q', '$http',
 		           }
 		         );
 		         return delay.promise;
-		       },
+		    }
 
 
 

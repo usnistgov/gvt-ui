@@ -461,3 +461,93 @@ angular.module('account').factory('userInfoService', ['StorageService', 'userLoa
         };
     }
 ]);
+
+angular.module('account').factory('apikeysService', function($http, $q) {
+	var apikeysService = function() { };
+
+	apikeysService.getCBTestStepsWithExternalValueSets = function(scope,domain) {
+			var delay = $q.defer();
+			$http.get("api/cb/management/testStepsWithExternalValueSetsFromAllTestPlans", { timeout: 180000,params: {"scope": scope,"domain": domain} }).then(
+				function(testSteps) {
+					delay.resolve(angular.fromJson(testSteps.data));
+				},
+				function(response) {
+					delay.reject(response.data);
+				}
+			);
+
+			return delay.promise;
+		};
+	
+	apikeysService.getCBTestPlans = function(scope,domain) {
+			var delay = $q.defer();
+			$http.get("api/cb/management/testPlans", { timeout: 180000,params: {"scope": scope,"domain": domain} }).then(
+				function(testSteps) {
+					delay.resolve(angular.fromJson(testSteps.data));
+				},
+				function(response) {
+					delay.reject(response.data);
+				}
+			);
+
+			return delay.promise;
+		};
+
+	apikeysService.getCFTestStepsWithExternalValueSets = function(scope,domain) {
+			var delay = $q.defer();
+			$http.get("api/cf/management/testStepsWithExternalValueSetsFromAllTestPlans", { timeout: 180000,params: {"scope": scope,"domain": domain}}).then(
+				function(testSteps) {
+					delay.resolve(angular.fromJson(testSteps.data));
+				},
+				function(response) {
+					delay.reject(response.data);
+				}
+			);
+
+			return delay.promise;
+		};
+		
+		apikeysService.getTestStepsWithExternalValueSets = function (testPlanId) {
+			        var delay = $q.defer();
+			        $http.get("api/cb/management/testPlans/" + testPlanId+'/testStepsWithExternalValueSets', {timeout: 180000}).then(
+			          function (testSteps) {
+			            delay.resolve(angular.fromJson(testSteps.data));
+			          },
+			          function (response) {
+			            delay.reject(response.data);
+			          }
+			        );
+
+			        return delay.promise;
+			      },
+
+		apikeysService.updateTestContextApiKeys = function(testContextId, apikeys) {
+			var delay = $q.defer();
+			$http.post('api/hl7v2/testcontext/' + testContextId + '/apikey', apikeys).then(
+				function(object) {
+					delay.resolve(angular.fromJson(object.data));
+				},
+				function(response) {
+					delay.reject(response.data);
+				}
+			);
+			return delay.promise;
+		};
+		
+		apikeysService.updateTestContextApiKeys =  function (testContextId,apikeys) {
+				         var delay = $q.defer();
+				         $http.post('api/hl7v2/testcontext/'+ testContextId + '/apikey', apikeys).then(
+				           function (object) {
+				             delay.resolve(angular.fromJson(object.data));
+				           },
+				           function (response) {
+				             delay.reject(response.data);
+				           }
+				         );
+				         return delay.promise;
+				    }
+
+
+
+	return apikeysService;
+});

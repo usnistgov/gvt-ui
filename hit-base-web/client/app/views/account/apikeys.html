@@ -1,0 +1,113 @@
+<style id="antiClickjack">
+body {
+	display: none !important;
+}
+</style>
+<script type="text/javascript">
+	if (self === top) {
+		var antiClickjack = document.getElementById("antiClickjack");
+		antiClickjack.parentNode.removeChild(antiClickjack);
+	} else {
+		top.location = self.location;
+	}
+</script>
+<div ng-controller="APIKeysCtrl" ng-init="loadAPIkeys()">
+
+	<div style="margin: 10px">
+		<div class="modal-header">
+			<span style="font-weight: bold; font-size: 20px"> Code Set API keys
+				management for Context Based tests </span>
+		</div>
+		<div class="modal-body" style="padding: 10px 0px 0px 0px">
+			<div class="row">
+				<div class="col-md-2" style="min-height: 350px">
+					<ul>
+
+						<li ng-click="fetchCBTestStep(tp.id)" ng-repeat="tp in CBtestplans">{{
+							tp.name }}</li>
+
+					</ul>
+				</div>
+				<div class="col-md-10" style="min-height: 350px">
+
+					<table class="table table-striped table-condensed table-bordered">
+						<thead class="">
+							<th style="max-width: 75px">Binding identifier</th>
+							<th>URL</th>
+							<th>API KEY</th>
+						</thead>
+						<tbody ng-repeat="testStep in CBtestSteps | orderBy:'name'">
+							<tr>
+								<td colspan="3" style="font-weight: bold">{{ testStep.name }}</td>
+							</tr>
+							<tr
+								ng-repeat="apiKey in testStep.testContext.apikeys | orderBy:'bindingIdentifier	'">
+
+								<td>{{ apiKey.bindingIdentifier }}</td>
+								<td>{{ apiKey.bindingUrl}}</td>
+								<td><input
+									ng-if="!apiKey.hasBindingKey || (apiKey.hasBindingKey && apiKey.editBindingKey)"
+									type="text" ng-model="apiKey.bindingKey" style="width: 100%"
+									ng-change="apiKey.editBindingKey = true"> <span
+									ng-if="apiKey.hasBindingKey && !apiKey.editBindingKey">***<span
+										ng-click="apiKey.editBindingKey = true" class="point fa fa-pencil"></span></span>
+									<span ng-if="apiKey.hasBindingKey && apiKey.editBindingKey"
+									ng-click="apiKey.editBindingKey = false" title="Revert changes"
+									class="point fa fa-repeat"></span></td>
+							</tr>
+						</tbody>
+					</table>
+
+					<div ng-show="CBtestSteps" class="pull-right">
+						<button type="button" class="btn btn-primary btn-md" ng-click="saveCB()">
+							<i class="fa fa-check"></i>Save
+						</button>
+					</div>
+
+
+				</div>
+			</div>
+		</div>
+		<div class="modal-header">
+			<span style="font-weight: bold; font-size: 20px"> Code Set API keys
+				management for Context Free tests </span>
+		</div>
+		<div class="modal-body" style="padding: 10px 0px 0px 0px">
+			<div class="row">
+				<div class="col-md-10" style="min-height: 350px">
+
+					<table class="table table-striped table-condensed table-bordered">
+						<thead class="">
+							<th style="max-width: 75px">Binding identifier</th>
+							<th>URL</th>
+							<th>API KEY</th>
+						</thead>
+						<tbody ng-repeat="testStep in CFtestSteps | orderBy:'name'">
+							<tr>
+								<td colspan="3" style="font-weight: bold">{{ testStep.name }}</td>
+							</tr>
+							<tr
+								ng-repeat="apiKey in testStep.testContext.apikeys | orderBy:'bindingIdentifier	'">
+
+								<td>{{ apiKey.bindingIdentifier }}</td>
+								<td>{{ apiKey.bindingUrl}}</td>
+								<td><input
+									ng-if="!apiKey.hasBindingKey || (apiKey.hasBindingKey && apiKey.editBindingKey)"
+									type="text" ng-model="apiKey.bindingKey" style="width: 100%"
+									ng-change="apiKey.editBindingKey = true"> <span
+									ng-if="apiKey.hasBindingKey && !apiKey.editBindingKey">***<span
+										ng-click="apiKey.editBindingKey = true" class="point fa fa-pencil"></span></span>
+									<span ng-if="apiKey.hasBindingKey && apiKey.editBindingKey"
+									ng-click="apiKey.editBindingKey = false" title="Revert changes"
+									class="point fa fa-repeat"></span></td>
+							</tr>
+						</tbody>
+					</table>
+
+				</div>
+			</div>
+		</div>
+		<div class="modal-footer"></div>
+
+	</div>
+</div>
