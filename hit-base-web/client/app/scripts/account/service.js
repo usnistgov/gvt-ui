@@ -492,6 +492,20 @@ angular.module('account').factory('apikeysService', function($http, $q) {
 
 			return delay.promise;
 		};
+		
+		apikeysService.getCFTestPlans = function(scope,domain) {
+				var delay = $q.defer();
+				$http.get("api/cf/management/testPlans", { timeout: 180000,params: {"scope": scope,"domain": domain} }).then(
+					function(testSteps) {
+						delay.resolve(angular.fromJson(testSteps.data));
+					},
+					function(response) {
+						delay.reject(response.data);
+					}
+				);
+
+				return delay.promise;
+			};
 
 	apikeysService.getCFTestStepsWithExternalValueSets = function(scope,domain) {
 			var delay = $q.defer();
@@ -507,7 +521,7 @@ angular.module('account').factory('apikeysService', function($http, $q) {
 			return delay.promise;
 		};
 		
-		apikeysService.getTestStepsWithExternalValueSets = function (testPlanId) {
+		apikeysService.getCBTestStepsWithExternalValueSets = function (testPlanId) {
 			        var delay = $q.defer();
 			        $http.get("api/cb/management/testPlans/" + testPlanId+'/testStepsWithExternalValueSets', {timeout: 180000}).then(
 			          function (testSteps) {
@@ -520,6 +534,20 @@ angular.module('account').factory('apikeysService', function($http, $q) {
 
 			        return delay.promise;
 			      },
+				  
+			apikeysService.getCFTestStepsWithExternalValueSets = function(testPlanId) {
+				var delay = $q.defer();
+				$http.get("api/cf/management/testPlans/" + testPlanId + '/testStepsWithExternalValueSets', { timeout: 180000 }).then(
+					function(testSteps) {
+						delay.resolve(angular.fromJson(testSteps.data));
+					},
+					function(response) {
+						delay.reject(response.data);
+					}
+				);
+
+				return delay.promise;
+			},
 
 		apikeysService.updateTestContextApiKeys = function(testContextId, apikeys) {
 			var delay = $q.defer();

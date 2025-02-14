@@ -734,53 +734,37 @@ angular.module('account')
 
 
 angular.module('account')
-	.controller('APIKeysCtrl', ['$scope', '$rootScope', 'MultiTestersLoader', 'MultiSupervisorsLoader', 'Account', '$modal', '$resource', 'AccountLoader', 'userInfoService', '$location', 'Notification', 'CBTestPlanListLoader', 'apikeysService',
-		function($scope, $rootScope, MultiTestersLoader, MultiSupervisorsLoader, Account, $modal, $resource, AccountLoader, userInfoService, $location, Notification, CBTestPlanListLoader, apikeysService) {
+	.controller('APIKeysCtrl', ['$scope', '$rootScope', 'MultiTestersLoader', 'MultiSupervisorsLoader', 'Account', '$modal', '$resource', 'AccountLoader', 'userInfoService', '$location', 'Notification', 'CBTestPlanListLoader', 'apikeysService', '$q','StorageService',
+		function($scope, $rootScope, MultiTestersLoader, MultiSupervisorsLoader, Account, $modal, $resource, AccountLoader, userInfoService, $location, Notification, CBTestPlanListLoader, apikeysService, $q, StorageService) {
 
-
+			
+			var currentDomain = StorageService.get(StorageService.APP_SELECTED_DOMAIN);
 			$scope.loadAPIkeys = function() {
 
-				apikeysService.getCBTestPlans("GLOBALANDUSER", $rootScope.domain.domain).then(function(testPlans) {
-					$scope.loading = false;
+				apikeysService.getCBTestPlans("GLOBALANDUSER", currentDomain).then(function(testPlans) {
+					//					$scope.loading = false;
 					$scope.CBtestplans = testPlans;
 
 				}, function(error) {
-					$scope.error = "Sorry, Cannot load the context based test steps. Please try again";
+					$scope.error = "Sorry, Cannot load the context based test plans. Please try again";
 				});
 
+				apikeysService.getCFTestPlans("GLOBALANDUSER", currentDomain).then(function(testPlans) {
+					//					$scope.loading = false;
+					$scope.CFtestplans = testPlans;
 
-//				apikeysService.getCBTestStepsWithExternalValueSets("GLOBALANDUSER", $rootScope.domain.domain).then(function(testSteps) {
-//					$scope.loading = false;
-//					//set all as not being edited to start
-//					for (var i = 0; i < testSteps.length; i++) {
-//						for (var j = 0; j < testSteps[i].testContext.apikeys.length; j++)
-//							testSteps[i].testContext.apikeys[j].editBindingKey = false;
-//					}
-//					$scope.CBtestSteps = testSteps;
-//
-//				}, function(error) {
-//					$scope.error = "Sorry, Cannot load the context based test steps. Please try again";
-//				});
-				//
-				//				apikeysService.getCFTestStepsWithExternalValueSets("GLOBALANDUSER", $rootScope.domain.domain).then(function(testSteps) {
-				//					$scope.loading = false;
-				//					//set all as not being edited to start
-				//					for (var i = 0; i < testSteps.length; i++) {
-				//						for (var j = 0; j < testSteps[i].testContext.apikeys.length; j++)
-				//							testSteps[i].testContext.apikeys[j].editBindingKey = false;
-				//					}
-				//					$scope.CFtestSteps = testSteps;
-				//
-				//				}, function(error) {
-				//					$scope.error = "Sorry, Cannot load the context free test steps. Please try again";
-				//				});
-
+				}, function(error) {
+					$scope.error = "Sorry, Cannot load the context free test plans. Please try again";
+				});
 			};
 
+
 			$scope.fetchCBTestStep = function(cbTestplanId) {
+				if (!cbTestplanId) return;
+				$scope.loadingCB = true;
 				$scope.currentCBTestplanId = cbTestplanId;
-				apikeysService.getTestStepsWithExternalValueSets(cbTestplanId).then(function(testSteps) {
-					$scope.loading = false;
+				apikeysService.getCBTestStepsWithExternalValueSets(cbTestplanId).then(function(testSteps) {
+					$scope.loadingCB = false;
 					//set all as not being edited to start
 					for (var i = 0; i < testSteps.length; i++) {
 						for (var j = 0; j < testSteps[i].testContext.apikeys.length; j++)
@@ -792,29 +776,76 @@ angular.module('account')
 					$scope.error = "Sorry, Cannot load the context based test steps. Please try again";
 				});
 			}
-			
+
+			$scope.fetchCFTestStep = function(cfTestplanId) {
+				if (!cfTestplanId) return;
+				$scope.loadingCF = true;
+				$scope.currentCFTestplanId = cfTestplanId;
+				apikeysService.getCFTestStepsWithExternalValueSets(cfTestplanId).then(function(testSteps) {
+					$scope.loadingCF = false;
+					//set all as not being edited to start
+					for (var i = 0; i < testSteps.length; i++) {
+						for (var j = 0; j < testSteps[i].testContext.apikeys.length; j++)
+							testSteps[i].testContext.apikeys[j].editBindingKey = false;
+					}
+					$scope.CFtestSteps = testSteps;
+
+				}, function(error) {
+					$scope.error = "Sorry, Cannot load the free based test steps. Please try again";
+				});
+			}
+
 			$scope.saveCB = function() {
-						//for each teststep that changed, save
-						for (var i = 0; i < $scope.CBtestSteps.length; i++) {
-							var hasEditedKeys = $scope.CBtestSteps[i].testContext.apikeys.find(function(obj) {
-							  return obj.editBindingKey === true;
-							});
-									
-							if (hasEditedKeys){
-								apikeysService.updateTestContextApiKeys($scope.CBtestSteps[i].testContext.id,$scope.CBtestSteps[i].testContext.apikeys).then(function(response) {
-													console.log(response);
-												}, function(error) {
-													$scope.error = "Sorry, Cannot load the test steps. Please try again";
-												});
-							}				
-						}
-						//wait for all calls to be done 
-						//refresh the list 
-						if ($scope.currentCBTestplanId){
-							$scope.fetchCBTestStep($scope.currentCBTestplanId);
-						}
-						console.log("done saving cb");				
-					};
+				//for each teststep that changed, save
+				var promises = [];
+				for (var i = 0; i < $scope.CBtestSteps.length; i++) {
+					var hasEditedKeys = $scope.CBtestSteps[i].testContext.apikeys.find(function(obj) {
+						return obj.editBindingKey === true;
+					});
+
+					if (hasEditedKeys) {
+						promises.push(apikeysService.updateTestContextApiKeys($scope.CBtestSteps[i].testContext.id, $scope.CBtestSteps[i].testContext.apikeys).then(function(response) {
+						}, function(error) {
+							$scope.error = "Sorry, Cannot load the test steps. Please try again";
+						}));
+					}
+				}
+				//wait for all calls to be done 
+				//refresh the list 
+				if ($scope.currentCBTestplanId) {
+					$q.all(promises).then(function() {
+						$scope.fetchCBTestStep($scope.currentCBTestplanId);
+					});
+				}
+			};
+
+			$scope.saveCF = function() {
+				//for each teststep that changed, save
+				var promises = [];
+				for (var i = 0; i < $scope.CFtestSteps.length; i++) {
+					var hasEditedKeys = $scope.CFtestSteps[i].testContext.apikeys.find(function(obj) {
+						return obj.editBindingKey === true;
+					});
+
+					if (hasEditedKeys) {
+						promises.push(apikeysService.updateTestContextApiKeys($scope.CFtestSteps[i].testContext.id, $scope.CFtestSteps[i].testContext.apikeys).then(function(response) {
+
+						}, function(error) {
+							$scope.error = "Sorry, Cannot load the test steps. Please try again";
+						}));
+					}
+				}
+				//wait for all calls to be done 
+				//refresh the list 
+				if ($scope.currentCFTestplanId) {
+					$q.all(promises).then(function() {
+						$scope.fetchCFTestStep($scope.currentCFTestplanId);
+					});
+
+				}
+			};
+
+
 
 
 		}
