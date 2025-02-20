@@ -8,8 +8,7 @@
 	by applicable law or agreed to in writing, software distributed under the 
 	License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS 
 	OF ANY KIND, either express or implied. See the License for the specific 
-	language governing permissions and limitations under the License. --><!-- The contents of this file will be loaded for each web
-application -->
+	language governing permissions and limitations under the License. --><!-- The contents of this file will be loaded for each web application -->
 <Context>
 
 	<!-- Default set of monitored resources. If one of these changes, the -->
@@ -22,14 +21,19 @@ application -->
 	<!-- <Manager pathname="" /> -->
 
 
-	<Resource auth="Container" driverClassName="com.mysql.jdbc.Driver" maxActive="100" maxIdle="30"
-		maxWait="10000" name="jdbc/base_tool_account_jndi" password="db_password"
-		type="javax.sql.DataSource" url="jdbc:mysql://container-mysql:3306/gvt_account" username="gvt" />
-	<Resource auth="Container" driverClassName="com.mysql.jdbc.Driver" maxActive="100" maxIdle="30"
+	<Resource auth="Container"
+		driverClassName="com.mysql.jdbc.Driver" maxActive="100" maxIdle="30"
+		maxWait="10000" name="jdbc/base_tool_account_jndi"
+		password="db_password" type="javax.sql.DataSource"
+		url="jdbc:mysql://container-mysql:3306/gvt_account" username="gvt" />
+	<Resource auth="Container"
+		driverClassName="com.mysql.jdbc.Driver" maxActive="100" maxIdle="30"
 		maxWait="10000" name="jdbc/base_tool_jndi" password="db_password"
-		type="javax.sql.DataSource" url="jdbc:mysql://container-mysql:3306/gvt" username="gvt" />
+		type="javax.sql.DataSource"
+		url="jdbc:mysql://container-mysql:3306/gvt" username="gvt" />
 
 	<Resources cacheMaxSize="512000" />
 
-
+	<CookieProcessor sameSiteCookies="strict" />
+	
 </Context>

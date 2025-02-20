@@ -674,7 +674,7 @@ app.run(function (Session, $rootScope, $location, $modal, TestingSettings, AppIn
         httpHeaders.common['Authorization'] = 'Basic ' + base64.encode(username + ':' + password);
 //        httpHeaders.common['withCredentials']=true;
 //        httpHeaders.common['Origin']="http://localhost:9000";
-        $http.get('api/accounts/login').success(function () {
+        $http.post('api/accounts/login').success(function () {
             //If we are here in this callback, login was successfull
             //Let's get user info now
             httpHeaders.common['Authorization'] = null;
@@ -699,7 +699,7 @@ app.run(function (Session, $rootScope, $location, $modal, TestingSettings, AppIn
     $rootScope.$on('event:loginRequestWithAuth', function (event, auth, path,loadApp) {
         httpHeaders.common['Accept'] = 'application/json';
         httpHeaders.common['Authorization'] = 'Basic ' + auth;
-        $http.get('api/accounts/login').success(function () {
+        $http.post('api/accounts/login').success(function () {
 //            console.log("logging success...");
             httpHeaders.common['Authorization'] = null;
             $http.get('api/accounts/cuser').then(function (result) {
