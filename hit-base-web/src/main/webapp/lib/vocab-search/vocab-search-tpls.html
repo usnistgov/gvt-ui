@@ -387,6 +387,21 @@
                                                     <td>Value Set Name</td>
                                                     <td ng-bind="selectedValueSetDefinition.name"></td>
                                                 </tr>
+												<tr
+                                                    ng-show="selectedValueSetDefinition.extensibility != null && selectedValueSetDefinition.extensibility != ''">
+                                                    <td>Extensibility</td>
+                                                    <td ng-bind="selectedValueSetDefinition.extensibility"></td>
+                                                </tr>
+												<tr
+                                                    ng-show="selectedValueSetDefinition.stability != null && selectedValueSetDefinition.stability != ''">
+                                                    <td>Stability</td>
+                                                    <td ng-bind="selectedValueSetDefinition.stability"></td>
+                                                </tr>
+												<tr
+                                                    ng-show="selectedValueSetDefinition.contentDefinition != null && selectedValueSetDefinition.contentDefinition != ''">
+                                                    <td>Content Definition</td>
+                                                    <td ng-bind="selectedValueSetDefinition.contentDefinition"></td>
+                                                </tr>
                                                 <tr
                                                     ng-show="selectedValueSetDefinition.url != null && selectedValueSetDefinition.url != ''">
                                                     <td>URL</td>
@@ -558,6 +573,18 @@
                         <td>Value Set Name</td>
                         <td ng-bind="valueSet.name"></td>
                     </tr>
+                    <tr ng-if="valueSet.stability != null && valueSet.stability != ''">
+                        <td>Stability</td>
+                        <td ng-bind="valueSet.stability"></td>
+                    </tr>
+                    <tr ng-if="valueSet.extensibility != null && valueSet.extensibility != ''">
+                        <td>Extensibility</td>
+                        <td ng-bind="valueSet.extensibility"></td>
+                    </tr>
+                    <tr ng-if="valueSet.contentDefinition != null && valueSet.contentDefinition != ''">
+                        <td>Content Definition</td>
+                        <td ng-bind="valueSet.contentDefinition"></td>
+                    </tr>
  					<tr ng-show="valueSet.url != null && valueSet.url != ''">
                        <td>URL</td>
                        <td ng-bind="valueSet.url"></td>
@@ -569,7 +596,7 @@
             </div>
             <br/>
 
-            <div class="panel panel-info" ng-if="selectedValueSetDefinition.valueSetElements.length > 0">
+            <div class="panel panel-info" ng-if="valueSet.valueSetElements.length > 0">
                 <div class="panel-heading">Value Set Elements</div>
 
                 <div class="table-container">

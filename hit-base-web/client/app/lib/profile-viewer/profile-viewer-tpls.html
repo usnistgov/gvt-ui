@@ -53,14 +53,16 @@
                             <!--<input type="radio"  ng-model="options.concise" autocomplete="off">Expanded View-->
                         <!--</label>-->
                     <!--</div>-->
-                    <!--<div class="btn-group btn-group-sm" data-toggle="buttons" style="margin-right: 10px;">-->
-                    <!--<label class="btn   btn-cf-outline"   ng-click="collapseAll(true)" ng-class="{'active': options.collapse}">-->
-                    <!--<input type="radio"   ng-model="options.collapse"  autocomplete="off" checked>Collapse All-->
-                    <!--</label>-->
-                    <!--<label class="btn btn-cf-outline"  ng-click="collapseAll(false)" ng-class="{'active': !options.collapse}">-->
-                    <!--<input type="radio" ng-model="options.collapse" autocomplete="off">Expand All-->
-                    <!--</label>-->
-                    <!--</div>-->
+
+                 <!--  <div class="btn-group btn-group-sm" data-toggle="buttons" style="margin-right: 10px;"> -->
+              <!--     <label class="btn   btn-cf-outline"   ng-click="collapseAll(true)" ng-class="{'active': options.collapse}"> -->
+              <!--     <input type="radio"   ng-model="options.collapse"  autocomplete="off" checked>Collapse All -->
+              <!--     </label> -->
+             <!--      <label class="btn btn-cf-outline"  ng-click="collapseAll(false)" ng-class="{'active': !options.collapse}"> -->
+             <!--      <input type="radio" ng-model="options.collapse" autocomplete="off">Expand All -->
+             <!--      </label> -->
+            <!--       </div> -->
+
                 <span class="pull-right">
                      <span style="margin-left:10px">
                          <span class="label label-success label-icon">G</span>Group
@@ -105,7 +107,7 @@
 
                         <li
                                 ng-class="{'active':confStatementsActive}"><a
-                                ng-click="showConfStatements()">Conf. Statements</a></li>
+                                ng-click="showConfStatements()">Conformance Statements</a></li>
 
                     </ul>
                     <div class="panel panel-info">
@@ -132,12 +134,12 @@
                                         ng-if="nodeData.type !== 'DATATYPE'">
                                         <th class="col-xs-2 col-fixed-350">Name</th>
                                         <th class="col-xs-1 col-fixed-80">Usage</th>
-                                        <th class="col-xs-1 col-fixed-80">Cardinality</th>
+                                        <th class="col-xs-1 col-fixed-85">Cardinality</th>
                                         <th class="col-xs-1 col-fixed-100">Length</th>
                                         <th class="col-xs-1 col-fixed-80">Data type</th>
                                         <th class="col-xs-1 col-fixed-150">ValueSet</th>
                                         <th class="col-xs-2" ng-style="predWidth">Predicate</th>
-                                        <th class="col-xs-4" ng-style="csWidth">Conf. Statement -</th>
+                                        <th class="col-xs-4" ng-style="csWidth">Conformance Statements</th>
                                     </tr>
 
                                     <tr class="tbl-header"
@@ -148,7 +150,7 @@
                                         <th class="col-xs-1 col-fixed-80">Data type</th>
                                         <th class="col-xs-1 col-fixed-150">ValueSet</th>
                                         <th class="col-xs-2" ng-style="predWidth">Predicate</th>
-                                        <th class="col-xs-4" ng-style="csWidth">Conf. Statement - dt</th>
+                                        <th class="col-xs-4" ng-style="csWidth">Conformance Statements</th>
                                     </tr>
 
                                     <!--<tr class="tbl-header" style="margin-right:{{scrollbarWidth}}px"-->
@@ -166,7 +168,7 @@
 
                         <div ng-if="confStatementsActive" class="confstatement-table-container fixed-table-container">
 
-                          <div style="margin-bottom: 10px"><i># Conf. Statements : </i><span class="badge">{{model.tmpConfStatementList.length}}</span></div>
+                          <div style="margin-bottom: 10px"><i># Conformance Statements : </i><span class="badge">{{model.tmpConfStatementList.length}}</span></div>
 
 
                           <table st-table="model.tmpConfStatementList" st-safe-src="model.confStatementList"
@@ -231,24 +233,28 @@
                 <span>[{{::node.min}},{{::node.max}}]</span>
             </div>
         </td>
-        <td class="col-xs-1 col-fixed-100">
-            <div>
-                <span>[{{::node.minLength}},{{::node.maxLength}}]</span>
-            </div>
+		<td ng-if = "!hasRelevantChild(node)" class="col-xs-1 col-fixed-100">            				
+                <span ng-if="node.minLength || node.maxLength">[{{::node.minLength}},{{::node.maxLength}}]</span>
+				<span ng-if="!node.minLength && !node.maxLength">[ ]</span>            
         </td>
+ 		<td ng-if="hasRelevantChild(node)" class="col-xs-1 col-fixed-80 nodata">              
+        </td>
+
         <td class="col-xs-1 col-fixed-80">
-            <span
+            <a
                     tooltip-html="model.datatypes[node.datatype].id"
+					class="point"
+					ng-click="showDataType(model.datatypes[node.datatype].id)"
                     tooltip-append-to-body="true"
                     tooltip-class="constraints-tooltip"
                     ng-bind-html="model.datatypes[node.datatype].id" tooltip-trigger
-                    tooltip-animation="false" tooltip-placement="left"></span>
+                    tooltip-animation="false" tooltip-placement="left"></a>
         </td>
         <td class="col-xs-1 col-fixed-150">
 			<div ng-if="(node.table != undefined  && node.table !== null)">
-				<a ng-repeat="valueSet in getValueSet(node)" class="point valueset"
+				<a ng-repeat="valueSet in getValueSet(node)"
                    ng-click="showValueSetDefinition(valueSet)"
-                   class="cs-concise-view concise-view"
+                   class="point valueset cs-concise-view concise-view"
                    tooltip-html="valueSet"
                    tooltip-append-to-body="true"
                    tooltip-class="constraints-tooltip"
@@ -339,18 +345,22 @@
         </td>
         <td class="col-xs-1 col-fixed-80 nodata">
         </td>
-        <td class="col-xs-1 col-fixed-100">
-            <div>
-                [{{::node.minLength}},{{::node.maxLength}}]
-            </div>
+        <td ng-if = "!hasRelevantChild(node)" class="col-xs-1 col-fixed-100">            				
+                <span ng-if="node.minLength || node.maxLength">[{{::node.minLength}},{{::node.maxLength}}]</span>
+				<span ng-if="!node.minLength && !node.maxLength">[ ]</span>            
         </td>
+ 		<td ng-if="hasRelevantChild(node)" class="col-xs-1 col-fixed-80 nodata">              
+        </td>
+
         <td class="col-xs-1 col-fixed-80">
-            <span
+            <a
                     tooltip-html="model.datatypes[node.datatype].id"
+					class="point"
+					ng-click="showDataType(model.datatypes[node.datatype].id)"
                     tooltip-append-to-body="true"
                     tooltip-class="constraints-tooltip"
                     ng-bind-html="model.datatypes[node.datatype].id" tooltip-trigger
-                    tooltip-animation="false" tooltip-placement="left"></span>
+                    tooltip-animation="false" tooltip-placement="left"></a>
         </td>
         <td class="col-xs-1 col-fixed-150">
 			<div ng-if="(node.table != undefined  && node.table !== null)">
@@ -678,17 +688,22 @@
 				</span>
             </div>
         </td>
-        <td class="col-xs-1 col-fixed-100">
-            [{{::node.minLength}},{{::node.maxLength}}]
+        <td ng-if = "!hasRelevantChild(node)" class="col-xs-1 col-fixed-100">            				
+                <span ng-if="node.minLength || node.maxLength">[{{::node.minLength}},{{::node.maxLength}}]</span>
+				<span ng-if="!node.minLength && !node.maxLength">[ ]</span>            
+        </td>
+ 		<td ng-if="hasRelevantChild(node)" class="col-xs-1 col-fixed-80 nodata">              
         </td>
 
         <td class="col-xs-1 col-fixed-80">
-            <span
+            <a
                     tooltip-html="model.datatypes[node.datatype].id"
+					class="point"
+					ng-click="showDataType(model.datatypes[node.datatype].id)"
                     tooltip-append-to-body="true"
                     tooltip-class="constraints-tooltip"
                     ng-bind-html="model.datatypes[node.datatype].id" tooltip-trigger
-                    tooltip-animation="false" tooltip-placement="left"></span>
+                    tooltip-animation="false" tooltip-placement="left"></a>
         </td>
 
         <td class="col-xs-1 col-fixed-150">
@@ -782,16 +797,19 @@
             </div>
         </td>
         <td class="col-xs-1 col-fixed-100">
-            [{{::node.minLength}},{{::node.maxLength}}]
+            <span ng-if="node.minLength || node.maxLength">[{{::node.minLength}},{{::node.maxLength}}]</span>
+			<span ng-if="!node.minLength && !node.maxLength">[ ]</span>
         </td>
 
         <td class="col-xs-1 col-fixed-80">
-            <span
+            <a
                     tooltip-html="model.datatypes[node.datatype].id"
+					class="point"
+					ng-click="showDataType(model.datatypes[node.datatype].id)"
                     tooltip-append-to-body="true"
                     tooltip-class="constraints-tooltip"
                     ng-bind-html="model.datatypes[node.datatype].id" tooltip-trigger
-                    tooltip-animation="false" tooltip-placement="left"></span>
+                    tooltip-animation="false" tooltip-placement="left"></a>
         </td>
 
         <td class="col-xs-1 col-fixed-150">
@@ -926,16 +944,21 @@
         <td class="col-xs-1 col-fixed-80">
             [{{::node.min}}, {{::node.max}}]
         </td>
-        <td class="col-xs-1 col-fixed-100">
-            [{{::node.minLength}}, {{::node.maxLength}}]
+		<td ng-if = "!hasRelevantChild(node)" class="col-xs-1 col-fixed-100">            				
+                <span ng-if="node.minLength || node.maxLength">[{{::node.minLength}},{{::node.maxLength}}]</span>
+				<span ng-if="!node.minLength && !node.maxLength">[ ]</span>            
+        </td>
+ 		<td ng-if="hasRelevantChild(node)" class="col-xs-1 col-fixed-80 nodata">              
         </td>
         <td class="col-xs-1 col-fixed-80">
-             <span
+             <a
                      tooltip-html="model.datatypes[node.datatype].id"
+					 class="point"
+					 ng-click="showDataType(model.datatypes[node.datatype].id)"
                      tooltip-append-to-body="true"
                      tooltip-class="constraints-tooltip"
                      ng-bind-html="model.datatypes[node.datatype].id" tooltip-trigger
-                     tooltip-animation="false" tooltip-placement="left"></span>
+                     tooltip-animation="false" tooltip-placement="left"></a>
         </td>
         <td class="col-xs-1 col-fixed-150">
             <div ng-if="(node.table != undefined  && node.table !== null)">
@@ -986,6 +1009,7 @@
             </span>
         </td>
         <td class="col-xs-4 col-cs" ng-style="csWidth">
+
             <span class="cs-concise-view concise-view" ng-if="options.concise"
                   tooltip-html="getConfStatementsAsMultipleLinesString(node)"
                   tooltip-append-to-body="true"
@@ -1029,18 +1053,21 @@
         </td>
         <td class="col-xs-1 col-fixed-80 nodata">
         </td>
-        <td class="col-xs-1 col-fixed-100 ">
-            <div>
-                [{{::node.minLength}},{{::node.maxLength}}]
-            </div>
+        <td ng-if = "!hasRelevantChild(node)" class="col-xs-1 col-fixed-100">            				
+                <span ng-if="node.minLength || node.maxLength">[{{::node.minLength}},{{::node.maxLength}}]</span>
+				<span ng-if="!node.minLength && !node.maxLength">[ ]</span>            
+        </td>
+ 		<td ng-if="hasRelevantChild(node)" class="col-xs-1 col-fixed-80 nodata">              
         </td>
         <td class="col-xs-1 col-fixed-80">
-             <span
+             <a
                      tooltip-html="model.datatypes[node.datatype].id"
+					 class="point"
+					 ng-click="showDataType(model.datatypes[node.datatype].id)"
                      tooltip-append-to-body="true"
                      tooltip-class="constraints-tooltip"
                      ng-bind-html="model.datatypes[node.datatype].id" tooltip-trigger
-                     tooltip-animation="false" tooltip-placement="left"></span>
+                     tooltip-animation="false" tooltip-placement="left"></a>
         </td>
         <td class="col-xs-1 col-fixed-150">
             <div ng-if="(node.table != undefined  && node.table !== null)">
@@ -1231,6 +1258,146 @@
         <td class="col-xs-4  nodata" ng-style="csWidth">
         </td>
     </tr>
+</script>
+
+<script type="text/ng-template" id="DataTypeDetailsModal.html">
+<div class="modal-header">
+  <span style="font-weight: bold; font-size: 20px">
+            <span ng-if="valueSet !== null" class="modal-title">Data Type: {{dt.id}}</span>
+      <span ng-if="valueSet === null" class="modal-title">Value Set Not Found</span>
+        </span>
+        <span class="pull-right">
+         <button class="btn btn-xs btn-primary" title="Close" type="button" class="pull-right point"
+                 ng-click="cancel()">
+             <i class="fa fa-times"></i>Close
+         </button>
+            </span>
+</div>
+<div class="modal-body">
+    <div class="valueset-modal-content">
+        
+	<table class="table table-bordered">
+                    <tr ng-if="dt">
+                        <td><span style="font-weight: bold;">Description:</span> {{dt.description}}</td>
+                    </tr>                    
+                </table>
+	
+ <table class="table treetable table-condensed table-bordered table-line-break">
+    <thead>
+
+        <tr class="tbl-header">
+            <th class="col-xs-2 col-fixed-350">Name</th>
+            <th class="col-xs-1 col-fixed-80">Usage</th>
+            <th class="col-xs-1 col-fixed-100">Length</th>
+            <th class="col-xs-1 col-fixed-80">Data type</th>
+            <th class="col-xs-1 col-fixed-150">ValueSet</th>
+            <th class="col-xs-2" ng-style="predWidth">Predicate</th>
+            <th class="col-xs-4" ng-style="csWidth">Conformance Statements</th>
+        </tr>
+
+    </thead>
+    <tbody>
+        <tr ng-show="child.type === 'COMPONENT' || (child.type === 'SUBCOMPONENT' && isDisplayed(child.nodeParent))" ng-class="isDisplayed(child)? 'expanded': 'collapsed' " ng-repeat="child in dt.children">
+            <td>
+				
+				<span ng-if="child.type === 'COMPONENT'" class="indenter" >
+					<a ng-if="hasChild(child)" class="point" ng-click="toggleChilds(child)">&nbsp;</a>
+				</span>
+				<span ng-if="child.type === 'COMPONENT'" class="label label-component label-icon">C</span>
+
+				<span ng-if="child.type === 'SUBCOMPONENT'" class="indenter" style="padding-left: 19px;"></span>
+				<span ng-if="child.type === 'SUBCOMPONENT'"class="label label-sub-component label-icon">S</span>
+				{{ child.name }}
+			</td>
+			<td>{{ child.usage }}</td>
+			<td ng-if = "!hasChild(child)" class="col-xs-1 col-fixed-100">            				
+                <span ng-if="child.minLength || child.maxLength">[{{::child.minLength}},{{::child.maxLength}}]</span>
+				<span ng-if="!child.minLength && !child.maxLength">[ ]</span>            
+        	</td>
+ 			<td ng-if="hasChild(child)" class="col-xs-1 col-fixed-100 nodata">              
+       		</td>
+
+
+            <td>{{ child.datatype }}</td>
+ 			<td>
+			<div ng-if="(child.table != undefined  && child.table !== null)">
+				<a ng-repeat="valueSet in getValueSet(child)" class="point valueset"
+                   ng-click="showValueSetDefinition(valueSet)"
+                   class="cs-concise-view concise-view"
+                   tooltip-html="valueSet"
+                   tooltip-append-to-body="true"
+                   tooltip-class="constraints-tooltip"
+                   ng-bind-html=""
+                   tooltip-trigger tooltip-animation="false" tooltip-placement="left"></a>
+			</div>
+
+            <div ng-if="(child.selfValueSetBindings != undefined && child.selfValueSetBindings.length >0)">
+                <span ng-repeat="vsb in getValueSetBindings(child)">
+					<a ng-repeat="v in vsb.bindingList" class="point valueset"    
+				   		ng-click="showValueSetDefinition(v.bindingIdentifier)"               
+                   		class="cs-concise-view concise-view"
+                   		tooltip-html="(v.isExternal? 'External Code Set <br>' : '') + ' ' +getValueSetBindingLocations(vsb)"
+                   		tooltip-append-to-body="true"
+                   		tooltip-class="constraints-tooltip"                
+                   		tooltip-trigger tooltip-animation="false" tooltip-placement="left"> <i ng-if="v.isExternal" class="fa fa-link" aria-hidden="true"></i> {{v.bindingIdentifier}}</a>
+				</span>
+            </div>
+				<div ng-if="(child.selfSingleCodeBindings != undefined && child.selfSingleCodeBindings.length >0)">
+					<span ng-repeat="scb in getSingleCodes(child)">
+						<a class="point valueset"                      
+                       		class="cs-concise-view concise-view"
+                       		tooltip-html="getSingleCodeBindingLocation(scb)"
+                       		tooltip-append-to-body="true"
+                       		tooltip-class="constraints-tooltip"
+                       		ng-bind-html="scb.singleCodeBindingCode"
+                       		tooltip-trigger tooltip-animation="false" tooltip-placement="left">
+						</a>					
+					</span>
+                </div>
+            </div>
+
+			</td>  
+			<td>
+            <span class="predicate-concise-view concise-view" ng-if="options.concise"
+                  tooltip-html="getPredicatesAsMultipleLinesString(child)"
+                  tooltip-append-to-body="true"
+                  tooltip-class="constraints-tooltip"
+                  ng-bind-html="getPredicatesAsOneLineString(child)" tooltip-trigger
+                  tooltip-animation="false" tooltip-placement="left"></span>
+            	<span ng-repeat="predicate in child.selfPredicates"
+                  ng-if="!options.concise">
+                <span class="expanded-view">
+                    {{::predicate.description}}
+                </span>
+            </span>
+        	</td>
+        	<td>
+            	<span class="cs-concise-view concise-view" ng-if="options.concise"
+                  tooltip-html="getConfStatementsAsMultipleLinesString(child)"
+                  tooltip-append-to-body="true"
+                  tooltip-class="constraints-tooltip"
+                  ng-bind-html="getConfStatementsAsOneLineString(child)"
+                  tooltip-trigger tooltip-animation="false" tooltip-placement="left"></span>
+            	<span ng-repeat="confStatement in child.selfConformanceStatements"
+                  ng-if="!options.concise">
+                <span class="expanded-view">
+                   {{::confStatement.constraintId}} : {{::confStatement.description}}
+                </span>
+            	</span>
+        	</td>
+                   
+        </tr>
+    </tbody>
+
+</table>
+            
+    </div>
+
+    <p ng-if="dataType === null" style="text-align:center">
+        Sorry, Could not find this table in the data type.
+    </p>
+</div>
+
 </script>
 
 

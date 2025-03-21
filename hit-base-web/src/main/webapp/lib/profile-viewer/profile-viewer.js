@@ -234,9 +234,66 @@
             }
           }
         });
-
-
       };
+	  
+	  function findDataTypetById(list, targetId) {
+	      for (let i = 0; i < list.length; i++) {
+	        if (list[i].id === targetId) {
+	          return list[i];
+	        }
+	      }
+	      return null; 
+	    }
+	  
+	  /**
+	     *
+	     * @param dataType
+	     */
+	    $scope.showDataType = function (dataType) {
+	      $modalStack.dismissAll('close');
+		  $scope.allChildren = [];
+	      		  		  
+	       function flattenChildren(items, parentId, type) {
+	           angular.forEach(items, function(child) {
+	               child.parentID = parentId;
+	   	  		   child.realType= type;
+	               $scope.allChildren.push(child);
+	               if (child.children && child.children.length > 0) {	
+					   child.children = processComponentChildrenConstraints(child,[]);				
+	                   flattenChildren(child.children, child.id, "SUBCOMPONENT");
+	               }
+	           });
+	       }
+		   
+//		   function processChildren(items, type) {
+//		              angular.forEach(items, function(child) {
+//		      	  		  child.realType= type;
+//		                  if (child.children && child.children.length > 0) {	
+//		   				   child.children = processComponentChildrenConstraints(child,[]);				
+//		                  }
+//		              });
+//		          }
+		   
+		   var dt = angular.copy(findDataTypetById($scope.model.datatypeList,dataType));
+		   dt.children = processFieldChildrenConstraints(dt,[]);		   
+//		   processChildren(dt.children);
+		   
+          flattenChildren(dt.children, dt.id,"COMPONENT");
+		  dt.children = $scope.allChildren;
+	      $modal.open({
+	        templateUrl: 'DataTypeDetailsModal.html',
+	        controller: 'ProfileViewerDataTypeDetailsCtrl',
+	        windowClass: 'valueset-modal',
+	        animation: false,
+	        keyboard: true,
+	        backdrop: true,
+	        resolve: {
+	          dt: function () {
+	            return  dt;
+	          }
+	        }
+	      });
+	    };
 
       /**
        *
@@ -725,37 +782,42 @@
       var processFieldChildrenConstraints = function (parent, removeCandidates) {
         var children = angular.copy(getNodeChildren(parent));
         angular.forEach(children, function (child) {
-          child.type = parent.datatype.toLowerCase().indexOf('var') !== -1 ? 'DATATYPE' : 'COMPONENT';
-          child.path = parent.path + "." + child.position;
-          child.nodeParent = parent;
-          child.selfValueSetBindings = []; //--
-          child.selfSingleCodeBindings = [];
-          child.selfConformanceStatements = []; //
-          child.selfPredicates = [];
-          child.selfValueSetBindings = child.selfValueSetBindings.concat(getSegmentLevelValueSetBindings(child));
-          child.selfSingleCodeBindings = child.selfSingleCodeBindings.concat(getSegmentLevelSingleCodeBindings(child));
-          child.selfConformanceStatements = child.selfConformanceStatements.concat(getSegmentLevelConfStatements(child));
-          child.selfPredicates = child.selfPredicates.concat(getSegmentLevelPredicates(child));
-          child.selfValueSetBindings = child.selfValueSetBindings.concat(getDatatypeLevelValueSetBindings(child));
-          child.selfSingleCodeBindings = child.selfSingleCodeBindings.concat(getDatatypeLevelSingleCodeBindings(child));
-          child.selfConformanceStatements = child.selfConformanceStatements.concat(getDatatypeLevelConfStatements(child));
-          child.selfPredicates = child.selfPredicates.concat(getDatatypeLevelPredicates(child));
-          if ($scope.nodeData.type === 'MESSAGE') {
-            child.selfValueSetBindings = child.selfValueSetBindings.concat(getMessageLevelValueSetBindings(child));
-            child.selfSingleCodeBindings = child.selfSingleCodeBindings.concat(getMessageLevelSingleCodeBindings(child));
-            child.selfConformanceStatements = child.selfConformanceStatements.concat(getMessageLevelConfStatements(child));
-            child.selfPredicates = child.selfPredicates.concat(getMessageLevelPredicates(child));
-            child.selfValueSetBindings = child.selfValueSetBindings.concat(getGroupLevelValueSetBindings(child));
-            child.selfSingleCodeBindings = child.selfSingleCodeBindings.concat(getGroupLevelSingleCodeBindings(child));
-            child.selfConformanceStatements = child.selfConformanceStatements.concat(getGroupLevelConfStatements(child));
-            child.selfPredicates = child.selfPredicates.concat(getGroupLevelPredicates(child));
-          }
-          if (!$scope.visible(child)) {
-            removeCandidates.push(child);
-          }
-        });
-        return children;
-      };
+			if (parent.datatype) {
+				child.type = parent.datatype.toLowerCase().indexOf('var') !== -1 ? 'DATATYPE' : 'COMPONENT';
+			} else if (parent.type) {
+				child.type = parent.type.toLowerCase().indexOf('var') !== -1 ? 'DATATYPE' : 'COMPONENT';
+			}	
+			child.path = parent.path + "." + child.position;
+			child.nodeParent = parent;
+			child.selfValueSetBindings = []; //--
+			child.selfSingleCodeBindings = [];
+			child.selfConformanceStatements = []; //
+			child.selfPredicates = [];
+			child.selfValueSetBindings = child.selfValueSetBindings.concat(getSegmentLevelValueSetBindings(child));
+			child.selfSingleCodeBindings = child.selfSingleCodeBindings.concat(getSegmentLevelSingleCodeBindings(child));
+			child.selfConformanceStatements = child.selfConformanceStatements.concat(getSegmentLevelConfStatements(child));
+			child.selfPredicates = child.selfPredicates.concat(getSegmentLevelPredicates(child));
+			child.selfValueSetBindings = child.selfValueSetBindings.concat(getDatatypeLevelValueSetBindings(child));
+			child.selfSingleCodeBindings = child.selfSingleCodeBindings.concat(getDatatypeLevelSingleCodeBindings(child));
+			child.selfConformanceStatements = child.selfConformanceStatements.concat(getDatatypeLevelConfStatements(child));
+			child.selfConformanceStatements = child.selfConformanceStatements.concat(getDatatypeConfStatements(child));
+			child.selfPredicates = child.selfPredicates.concat(getDatatypeLevelPredicates(child));
+			if ($scope.nodeData.type === 'MESSAGE') {
+				child.selfValueSetBindings = child.selfValueSetBindings.concat(getMessageLevelValueSetBindings(child));
+				child.selfSingleCodeBindings = child.selfSingleCodeBindings.concat(getMessageLevelSingleCodeBindings(child));
+				child.selfConformanceStatements = child.selfConformanceStatements.concat(getMessageLevelConfStatements(child));
+				child.selfPredicates = child.selfPredicates.concat(getMessageLevelPredicates(child));
+				child.selfValueSetBindings = child.selfValueSetBindings.concat(getGroupLevelValueSetBindings(child));
+				child.selfSingleCodeBindings = child.selfSingleCodeBindings.concat(getGroupLevelSingleCodeBindings(child));
+				child.selfConformanceStatements = child.selfConformanceStatements.concat(getGroupLevelConfStatements(child));
+				child.selfPredicates = child.selfPredicates.concat(getGroupLevelPredicates(child));
+			}
+			if (!$scope.visible(child)) {
+				removeCandidates.push(child);
+			}
+		});
+		  return children;
+	  };
 
       /**
        *
@@ -766,7 +828,11 @@
       var processComponentChildrenConstraints = function (parent, removeCandidates) {
         var children = angular.copy(getNodeChildren(parent));
         angular.forEach(children, function (child) {
-          child.type = parent.datatype.toLowerCase().indexOf('var') !== -1 ? 'DATATYPE' : 'SUBCOMPONENT';
+		  if(parent.datatype){
+			child.type = parent.datatype.toLowerCase().indexOf('var') !== -1 ? 'DATATYPE' : 'SUBCOMPONENT';
+		  }else if (parent.type){
+			child.type = parent.type.toLowerCase().indexOf('var') !== -1 ? 'DATATYPE' : 'SUBCOMPONENT';
+		  }		  
           child.path = parent.path + "." + child.position;
           child.nodeParent = parent;
           child.selfValueSetBindings = []; //--
@@ -776,6 +842,7 @@
           child.selfValueSetBindings = child.selfValueSetBindings.concat(getDatatypeLevelValueSetBindings(child));
           child.selfSingleCodeBindings = child.selfSingleCodeBindings.concat(getDatatypeLevelSingleCodeBindings(child));
           child.selfConformanceStatements = child.selfConformanceStatements.concat(getDatatypeLevelConfStatements(child));
+		  child.selfConformanceStatements = child.selfConformanceStatements.concat(getDatatypeConfStatements(child));
           child.selfPredicates = child.selfPredicates.concat(getDatatypeLevelPredicates(child));
           if ($scope.nodeData.type === 'SEGMENT') {
             child.selfValueSetBindings = child.selfValueSetBindings.concat(getSegmentLevelValueSetBindings(child));
@@ -818,6 +885,8 @@
           child.selfSingleCodeBindings = [];
           child.selfConformanceStatements = []; //
           child.selfPredicates = [];
+		  
+		  //missing something?
           child.selfValueSetBindings = child.selfValueSetBindings.concat(getDatatypeLevelValueSetBindings(child));
           child.selfSingleCodeBindings = child.selfSingleCodeBindings.concat(getDatatypeLevelSingleCodeBindings(child));
           child.selfConformanceStatements = child.selfConformanceStatements.concat(getDatatypeLevelConfStatements(child));
@@ -873,6 +942,12 @@
           child.selfSingleCodeBindings = [];
           child.selfConformanceStatements = []; //
           child.selfPredicates = [];
+		  child.selfValueSetBindings = child.selfValueSetBindings.concat(getDatatypeLevelValueSetBindings(child));
+		  child.selfSingleCodeBindings = child.selfSingleCodeBindings.concat(getDatatypeLevelSingleCodeBindings(child));
+		  child.selfConformanceStatements = child.selfConformanceStatements.concat(getDatatypeLevelConfStatements(child));
+		  child.selfConformanceStatements = child.selfConformanceStatements.concat(getDatatypeConfStatements(child));
+
+		  
           child.selfValueSetBindings = child.selfValueSetBindings.concat(getGroupLevelValueSetBindings(child));
           child.selfSingleCodeBindings = child.selfSingleCodeBindings.concat(getGroupLevelSingleCodeBindings(child));
           child.selfConformanceStatements = child.selfConformanceStatements.concat(getGroupLevelConfStatements(child));
@@ -891,6 +966,23 @@
         });
         return children;
       };
+	  
+	  
+	  //get conf statement of the datatype (usefull for DTM that can have conf statement and are not complex)
+	  var getDatatypeConfStatements = function (element) {
+	         var datatype = findDataTypetById($scope.model.datatypeList,element.datatype);
+	         var confStatements = [];
+	         if (datatype && datatype != null && datatype.conformanceStatements.length > 0) {
+				for( i =0 ; i< datatype.conformanceStatements.length ; i++){
+					var targetPath = datatype.conformanceStatements[i].constraintTarget;
+					if (targetPath && targetPath === ".") {
+			          confStatements = confStatements.concat(findConstraintsByTargetPath(datatype.conformanceStatements, "."));
+				   }
+				}	       
+	           
+	         }
+	         return confStatements;
+	       };
 
       /**
        *
@@ -909,7 +1001,8 @@
           child.selfValueSetBindings = child.selfValueSetBindings.concat(getDatatypeLevelValueSetBindings(child));
           child.selfSingleCodeBindings = child.selfSingleCodeBindings.concat(getSegmentLevelSingleCodeBindings(child));
           child.selfSingleCodeBindings = child.selfSingleCodeBindings.concat(getDatatypeLevelSingleCodeBindings(child));
-          child.selfConformanceStatements = getSegmentLevelConfStatements(child);
+		  child.selfConformanceStatements = child.selfConformanceStatements.concat(getDatatypeConfStatements(child));
+          child.selfConformanceStatements = child.selfConformanceStatements.concat(getSegmentLevelConfStatements(child));
           child.selfPredicates = getSegmentLevelPredicates(child);
           if (!$scope.visible(child)) {
             removeCandidates.push(child);
@@ -2288,6 +2381,132 @@
     };
 
   });
+  
+  mod.controller('ProfileViewerDataTypeDetailsCtrl', function ($scope, $modalInstance, dt, $rootScope, $filter,PvTreetableParams,VocabularyService,$modalStack,$modal) {
+		$scope.displayMap = {};
+		$scope.dt = angular.copy(dt);
+	  
+	  for (var i = 0; i < dt.children.length; i++) {
+		if (dt.children[i].type === "COMPONENT"){
+			$scope.displayMap[dt.children[i].id] = false;
+		}		
+	  }
+	  
+	  
+	  
+	  $scope.toggleChilds = function(child){
+		if($scope.displayMap[child.id] !== undefined){
+			$scope.displayMap[child.id] = !$scope.displayMap[child.id];
+		}		
+	  };
+	  
+	  $scope.isDisplayed = function (parent){
+		if(parent){
+			return $scope.displayMap[parent.id];
+		}else{
+			return true;
+		}
+	  };
+	  
+	  
+	  
+	  $scope.getConfStatementsAsMultipleLinesString = function(node) {
+		  var confStatements = node.selfConformanceStatements;
+		  var html = "";
+		  if (confStatements && confStatements != null && confStatements.length > 0) {
+			  angular.forEach(confStatements, function(conStatement) {
+				  html = html + "<p>" + conStatement.constraintId + " : " + conStatement.description + "</p>";
+			  });
+		  }
+		  return html;
+	  };
+	  
+	  $scope.getPredicatesAsOneLineString = function (node) {
+	          var predicates = node.selfPredicates;
+	          var html = "";
+	          if (predicates && predicates != null && predicates.length > 0) {
+	            angular.forEach(predicates, function (predicate) {
+	              html = html + predicate.description;
+	            });
+	          }
+	          return $sce.trustAsHtml(html);
+	        };
+
+	  $scope.getValueSet = function(node) { //older
+		  var tables = []
+		  if (node.table && node.table != null) {
+			  var tables = node.table.split(":");
+		  }
+		  return tables;
+	  };
+
+	  /**
+		 *
+		 * @param tableStr
+		 * @returns {*}
+		 */
+	  $scope.getValueSetBindings = function(node) {
+		  var tables = []
+		  if (node.selfValueSetBindings && node.selfValueSetBindings != null && node.selfValueSetBindings.length > 0) {
+			  var parser = new DOMParser();
+			  for (var j = 0; j < node.selfValueSetBindings.length; j++) {
+				  tables.push(node.selfValueSetBindings[j]);
+			  }
+		  }
+		  return tables;
+	  };
+
+	  $scope.hasChild = function(node) {
+		  if (node != undefined) {
+			  var children = node.children;
+			  if (children && children != null && children.length > 0) {
+				  return true;
+			  }
+		  }
+		  return false;
+	  };
+
+	  $scope.getSingleCodes = function(node) {
+		  var singleCodes = []
+		  if (node.table && node.table != null) {
+			  tables = node.table.split(":");
+		  }
+		  if (node.selfSingleCodeBindings && node.selfSingleCodeBindings != null && node.selfSingleCodeBindings.length > 0) {
+			  var parser = new DOMParser();
+			  for (var j = 0; j < node.selfSingleCodeBindings.length; j++) {
+				  singleCodes.push(node.selfSingleCodeBindings[j]);
+			  }
+		  }
+		  return singleCodes;
+	  };
+	  
+	  $scope.showValueSetDefinition = function (tableId) {
+	          var t = VocabularyService.findValueSetDefinition(tableId);
+	          $modal.open({
+	            templateUrl: 'TableFoundCtrl.html',
+	            controller: 'ProfileViewerValueSetDetailsCtrl',
+	            windowClass: 'valueset-modal',
+	            animation: false,
+	            keyboard: true,
+	            backdrop: true,
+	            resolve: {
+	              table: function () {
+	                return t;
+	              }
+	            }
+	          });
+	        };
+	   
+      $scope.scrollbarWidth = $rootScope.getScrollbarWidth();
+//      $scope.tmpValueSetElements = [].concat(table != null ? table.valueSetElements : []);
+      $scope.cancel = function () {
+        $modalInstance.close();
+      };
+      $scope.close = function () {
+        $modalInstance.close();
+      };
+
+    });
 
 
 
