@@ -976,7 +976,8 @@
 				for( i =0 ; i< datatype.conformanceStatements.length ; i++){
 					var targetPath = datatype.conformanceStatements[i].constraintTarget;
 					if (targetPath && targetPath === ".") {
-			          confStatements = confStatements.concat(findConstraintsByTargetPath(datatype.conformanceStatements, "."));
+						confStatements = confStatements.concat(datatype.conformanceStatements[i]);
+//			          confStatements = confStatements.concat(findConstraintsByTargetPath(datatype.conformanceStatements, "."));
 				   }
 				}	       
 	           
@@ -2496,6 +2497,22 @@
 	            }
 	          });
 	        };
+		
+		$scope.hasContextConfStatement = function(){
+			for (var i=0;i <dt.conformanceStatements.length; i++){
+				if ($scope.isContextConfStatement(dt.conformanceStatements[i])){
+					return true;
+				}
+			}	
+			return false;
+		};
+			
+		$scope.isContextConfStatement = function(item) {	      
+	          if (item.constraintTarget === ".") {
+	            return true; 
+	          } 	        	      
+	      return false; 
+	    };
 	   
       $scope.scrollbarWidth = $rootScope.getScrollbarWidth();
 //      $scope.tmpValueSetElements = [].concat(table != null ? table.valueSetElements : []);

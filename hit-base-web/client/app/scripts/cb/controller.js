@@ -2684,8 +2684,11 @@ angular.module('cb')
       
       $scope.error = null;
       if (response.status == "FAILURE") {
-    	  	$scope.step = 1;
-        $scope.error = response.message;
+    	$scope.step = 1;
+//        $scope.error = response.message;
+		$scope.validationReports = response.reports;
+		$scope.currentItem = $scope.validationReports[0];
+		$scope.currentIndex = 0;
         $scope.loading = false;
        } else {
         if (response.status === "SUCCESS") {
@@ -2695,7 +2698,7 @@ angular.module('cb')
       	          $scope.loading = false;
       	           if (response.status == "FAILURE") {
              	   			$scope.step = 1;
-      	        	   		$scope.error = "Could not saved the zip, please try again";      	        	   		      	        	   		
+      	        	   		$scope.savingError = "The resouce bundle could not be saved successfully. Please contact admin if issue persist.";      	        	   		      	        	   		
       	          } else {
       	        	  	
      	 	        	 if (response.action === "ADD") {
@@ -2738,8 +2741,7 @@ angular.module('cb')
        
           
         }
-        
-        
+                
       }
     };
 
@@ -2747,6 +2749,21 @@ angular.module('cb')
       $scope.step = step;
     };
 
+	
+	
+	$scope.goBack = function() {
+	    if ($scope.currentIndex > 0) {
+	      $scope.currentIndex--;
+	      $scope.currentItem = $scope.validationReports[$scope.currentIndex];
+	    }
+	  };
+
+	  $scope.goNext = function() {
+	    if ($scope.currentIndex < $scope.validationReports.length - 1) {
+	      $scope.currentIndex++;
+	      $scope.currentItem = $scope.validationReports[$scope.currentIndex];
+	    }
+	  };
 
     $scope.dismissModal = function () {
       $modalInstance.dismiss();

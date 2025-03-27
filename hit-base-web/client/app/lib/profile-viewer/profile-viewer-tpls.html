@@ -1282,7 +1282,24 @@
                     </tr>                    
                 </table>
 	
- <table class="table treetable table-condensed table-bordered table-line-break">
+<table ng-if="hasContextConfStatement()" class="table treetable table-condensed table-bordered table-line-break">
+    <thead>
+        <tr class="tbl-header">
+            <th class="col-xs-4" ng-style="csWidth">Conformance Statements</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr ng-repeat="cst in dt.conformanceStatements | filter: isContextConfStatement">           
+        	<td>
+            	<span>{{::cst.constraintId}} : {{::cst.description}}</span>            	
+        	</td>
+                   
+        </tr>
+    </tbody>
+
+</table>
+
+ <table ng-if="dt.children.length > 0" class="table treetable table-condensed table-bordered table-line-break">
     <thead>
 
         <tr class="tbl-header">
