@@ -1772,8 +1772,8 @@ angular.module('cf')
                 $scope.saveTestStepGroup();
             }
         };
-
-
+		
+	
         $scope.saveTestPlan = function () {
             $scope.loading = true;
             $scope.error = null;
@@ -1851,93 +1851,54 @@ angular.module('cf')
                     }
 
                 } else {
-                    // Notification.error({
-                    //   message: result.message,
-                    //   templateUrl: "NotificationErrorTemplate.html",
-                    //   scope: $rootScope,
-                    //   delay: 10000
-                    // });
-
                     $scope.executionError.push(response.debugError);
                 }
                 $scope.loading = false;
             }, function (error) {
                 $scope.loading = false;
-                // Notification.error({
-                //   message: error.data,
-                //   templateUrl: "NotificationErrorTemplate.html",
-                //   scope: $rootScope,
-                //   delay: 10000
-                // });
-
                 $scope.executionError.push(error.data);
 
             });
         };
-
-
-        // $scope.saveTestPlan = function () {
-        //   $scope.loading = true;
-        //   $scope.error = null;
-        //   $scope.executionError = null;
-        //   CFTestPlanManager.saveTestPlan("hl7v2", $scope.testcase.scope, $scope.token, $scope.getUpdatedProfiles(), $scope.getRemovedProfiles(), $scope.getAddedProfiles(), $scope.testcase).then(function (result) {
-        //     if (result.status === "SUCCESS") {
-        //       $scope.selectedNode = $scope.findGroup($scope.testcase.groupId, 'TestPlan', $scope.existingTestPlans);
-        //       if ($scope.selectedNode != null) {
-        //         $scope.selectedNode['name'] = $scope.testcase.name;
-        //         $scope.selectedNode['description'] = $scope.testcase.description;
-        //       }
-        //       Notification.success({
-        //         message: "Profile Group saved successfully!",
-        //         templateUrl: "NotificationSuccessTemplate.html",
-        //         scope: $rootScope,
-        //         delay: 5000
-        //       });
-        //
-        //       $scope.uploaded = false;
-        //       $scope.profileMessages = [];
-        //       $scope.oldProfileMessages = [];
-        //       $scope.tmpNewMessages = [];
-        //       $scope.tmpOldMessages = [];
-        //       $scope.originalOldProfileMessages = [];
-        //       $scope.originalProfileMessages = [];
-        //
-        //       $scope.token = null;
-        //       $scope.selectGroup($scope.selectedNode);
-        //       // if($scope.uploaded == true){
-        //       //   $scope.uploaded = false;
-        //       //   $scope.profileMessages = [];
-        //       //   $scope.oldProfileMessages = [];
-        //       //   $scope.token = null;
-        //       //   $scope.selectGroup($scope.selectedNode);
-        //       // }else {
-        //       //   $location.url('/cf?nav=execution&&group=' + $scope.testcase.groupId + "&scope=" + $scope.testcase.scope + "&cat=" + $scope.testcase.category);
-        //       // }
-        //
-        //     } else {
-        //       // Notification.error({
-        //       //   message: result.message,
-        //       //   templateUrl: "NotificationErrorTemplate.html",
-        //       //   scope: $rootScope,
-        //       //   delay: 10000
-        //       // });
-        //
-        //       $scope.executionError = result.message;
-        //
-        //     }
-        //     $scope.loading = false;
-        //   }, function (error) {
-        //     $scope.loading = false;
-        //     // Notification.error({
-        //     //   message: error.data,
-        //     //   templateUrl: "NotificationErrorTemplate.html",
-        //     //   scope: $rootScope,
-        //     //   delay: 10000
-        //     // });
-        //     $scope.executionError = error.data;
-        //   });
-        // };
-
+		
+		
+		$scope.refreshProfileGroupTestContextModels = function(node){
+			if (node.type === 'TestPlan') {
+		        $CFTestPlanManager.refreshTestPlanTestContextModels("hl7v2",node).then(function (result) {
+					Notification.success({
+                       message: "Test Plan TestContext model successfully updated",
+                       templateUrl: "NotificationSuccessTemplate.html",
+                       scope: $rootScope,
+                       delay: 5000
+                   });
+				}, function (error) {
+					Notification.error({
+		                message: "There was an error while refreshing " + error.data,
+		                templateUrl: "NotificationErrorTemplate.html",
+		                scope: $rootScope,
+		                delay: 5000
+		            });	
+	            });
+		    } else {
+				$CFTestPlanManager.refreshTestStepGroupTestContextModels("hl7v2",node).then(function (result) {
+					Notification.success({
+                       message: "Test Plan TestContext model successfully updated",
+                       templateUrl: "NotificationSuccessTemplate.html",
+                       scope: $rootScope,
+                       delay: 5000
+                   });
+				}, function (error) {	               
+					Notification.error({
+		                message: "There was an error while refreshing " + error.data,
+		                templateUrl: "NotificationErrorTemplate.html",
+		                scope: $rootScope,
+		                delay: 5000
+		            });
+	            });
+		    }
+		}
+		
+		
 
         $scope.reset = function () {
             $scope.error = null;
@@ -2033,7 +1994,10 @@ angular.module('cf')
 
         };
 
-
+		$scope.refreshTestContextModels = function (profile) {
+			console.log(profile);
+		};
+		
         $scope.deleteOldProfile = function (profile) {
             profile.removed = true;
             $scope.tmpOldMessages = $scope.filterMessages($scope.oldProfileMessages);
@@ -2407,10 +2371,14 @@ angular.module('cf')
                 $scope.executionError.push(response.debugError);
             } else {
                 $scope.profileUploadDone = true;
-                if ($scope.vsUploadDone === true && $scope.profileUploadDone === true && $scope.constraintsUploadDone === true) {
-                    $scope.validatefiles($scope.token);
-                }
-                $scope.profileMessagesTmp = response.profiles;
+//                if ($scope.vsUploadDone === true && $scope.profileUploadDone === true && $scope.constraintsUploadDone === true) {
+//                    $scope.validatefiles($scope.token);
+//                }
+				//commented now using /profile call that uses all files to get info.
+//                $scope.profileMessagesTmp = response.profiles;
+				if($scope.getAreAllDoneUploading()){
+					$scope.validatefiles($scope.token);
+				}
 
             }
         };
@@ -2422,9 +2390,12 @@ angular.module('cf')
                 $scope.executionError.push(response.debugError);
             } else {
                 $scope.vsUploadDone = true;
-                if ($scope.vsUploadDone === true && $scope.profileUploadDone === true && $scope.constraintsUploadDone === true) {
-                    $scope.validatefiles($scope.token);
-                }
+//                if ($scope.vsUploadDone === true && $scope.profileUploadDone === true && $scope.constraintsUploadDone === true) {
+//                    $scope.validatefiles($scope.token);
+//                }
+				if($scope.getAreAllDoneUploading()){
+					$scope.validatefiles($scope.token);
+				}
             }
         };
 
@@ -2434,9 +2405,12 @@ angular.module('cf')
                 $scope.executionError.push(response.debugError);
             } else {
                 $scope.constraintsUploadDone = true;
-                if ($scope.vsUploadDone === true && $scope.profileUploadDone === true && $scope.constraintsUploadDone === true) {
-                    $scope.validatefiles($scope.token);
-                }
+//                if ($scope.vsUploadDone === true && $scope.profileUploadDone === true && $scope.constraintsUploadDone === true) {
+//                    $scope.validatefiles($scope.token);
+//                }
+				if($scope.getAreAllDoneUploading()){
+					$scope.validatefiles($scope.token);
+				}
             }
         };
 
@@ -2451,6 +2425,9 @@ angular.module('cf')
            //     if ($scope.vsUploadDone === true && $scope.profileUploadDone === true && $scope.constraintsUploadDone === true) {
            //         $scope.validatefiles($scope.token);
            //     }
+		   		if($scope.getAreAllDoneUploading()){
+   					$scope.validatefiles($scope.token);
+   				}
             }
         };
         
@@ -2464,6 +2441,9 @@ angular.module('cf')
             //    if ($scope.vsUploadDone === true && $scope.profileUploadDone === true && $scope.constraintsUploadDone === true) {
             //        $scope.validatefiles($scope.token);
             //	  }
+			if($scope.getAreAllDoneUploading()){
+				$scope.validatefiles($scope.token);
+			}			
             }
         };
         
@@ -2477,8 +2457,28 @@ angular.module('cf')
               //  if ($scope.vsUploadDone === true && $scope.profileUploadDone === true && $scope.constraintsUploadDone === true) {
               //      $scope.validatefiles($scope.token);
               //  }
+			  if($scope.getAreAllDoneUploading()){
+			  	$scope.validatefiles($scope.token);
+			  }
             }
         };
+		
+		
+		$scope.getAreAllDoneUploading = function () {
+				   if ($scope.vsUploadDone === false || $scope.profileUploadDone === false || $scope.constraintsUploadDone === false) {
+			       		return false;
+			       }					
+		           if (valueSetBindingsUploader.queue.length > 0 && $scope.valueSetBindingsUploadDone === false) {
+		           		return false;
+		           }
+				   if (coConstraintsUploader.queue.length > 0 && $scope.coConstraintsUploadDone === false) {
+				   		return false;
+				   }
+				   if (slicingsUploader.queue.length > 0 && $scope.slicingsUploadDone === false) {
+   				   		return false;
+   				   }
+		           return true;
+		       };
 
         profileUploader.onBeforeUploadItem = function (fileItem) {
             $scope.profileValidationErrors = [];
@@ -2651,9 +2651,44 @@ angular.module('cf')
             $http.get("api/cf/hl7v2/management/validate", {params: {token: token}}).then(
                 function (response) {
                     if (response.data.success == true) {
-                        $scope.profileMessages = $scope.profileMessagesTmp;
-                        $scope.profileMessagesTmp = [];
-                        $scope.addSelectedTestCases();
+						
+						
+						CFTestPlanManager.getTokenProfiles("hl7v2", token).then(
+			                    function (response) {
+			                        if (response.success == false) {
+			                            if (response.debugError === undefined) {
+			                                Notification.error({
+			                                    message: "The profiles could not be retrieved.",
+			                                    templateUrl: "NotificationErrorTemplate.html",
+			                                    scope: $rootScope,
+			                                    delay: 10000
+			                                });
+			                                $scope.step = 1;
+			                                $scope.validationReport = response.report;
+			                            } else {
+			                                Notification.error({
+			                                    message: "  " + response.message + '<br>' + response.debugError,
+			                                    templateUrl: "NotificationErrorTemplate.html",
+			                                    scope: $rootScope,
+			                                    delay: 10000
+			                                });
+			                                $scope.step = 1;
+			                            }
+			                        } else {
+			                            $scope.profileMessages = response.profiles;
+			                            $scope.addSelectedTestCases();
+			                        }
+			                    },
+			                    function (response) {
+
+			                    }
+			                );
+						
+						
+//                        $scope.profileMessages = $scope.profileMessagesTmp;
+//                        $scope.profileMessagesTmp = [];
+//                        $scope.addSelectedTestCases();
+
                     } else {
                         $scope.profileMessagesTmp = [];
                         $scope.step = 1;

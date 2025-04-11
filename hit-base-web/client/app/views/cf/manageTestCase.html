@@ -336,6 +336,9 @@
                               <td>
                                 <button class="btn btn-sm btn-danger" ng-click="deleteOldProfile(item)"><i class="fa fa-trash"></i>
                                 </button>
+                                <button nf-if="isAdmin()" class="btn btn-sm btn-info" ng-click="refreshProfileTestContextModels()"><i class="fa fa-refresh"></i>
+                                </button>
+                                
                               </td>
                             </tr>
                             </tbody>
@@ -443,6 +446,7 @@
                         <i class="fa fa-paper-plane"></i> Make Private
                       </button>
 
+					  <button class="btn btn-md btn-info" ng-disabled="loading" type="button" ng-click="refreshProfileGroupTestContextModels(selectedNode)"><i class="fa fa-trash"></i>Refresh all profiles</button>                
                     </span>
 
                     <span class="pull-right">

@@ -258,7 +258,7 @@
                    tooltip-html="valueSet"
                    tooltip-append-to-body="true"
                    tooltip-class="constraints-tooltip"
-                   ng-bind-html=""
+                   ng-bind-html="valueSet"
                    tooltip-trigger tooltip-animation="false" tooltip-placement="left"></a>
 			</div>
             <div ng-if="(node.selfValueSetBindings != undefined && node.selfValueSetBindings.length >0)">
@@ -274,14 +274,14 @@
             </div>
 				<span ng-if="(node.selfSingleCodeBindings != undefined && node.selfSingleCodeBindings.length >0)">
                     <span ng-repeat="scb in getSingleCodes(node)">
-						<a class="point valueset"                      
+						<span class="point valueset"                      
                        		class="cs-concise-view concise-view"
                        		tooltip-html="getSingleCodeBindingLocation(scb)"
                        		tooltip-append-to-body="true"
                        		tooltip-class="constraints-tooltip"
-                       		ng-bind-html="scb.singleCodeBindingCode"
+                       		ng-bind-html="getSingleCodeBindingText(scb)"
                        		tooltip-trigger tooltip-animation="false" tooltip-placement="left">
-						</a>					
+						</span>					
 					</span>
                 </span>
             </div>
@@ -370,7 +370,7 @@
                    tooltip-html="valueSet"
                    tooltip-append-to-body="true"
                    tooltip-class="constraints-tooltip"
-                   ng-bind-html=""
+                   ng-bind-html="valueSet"
                    tooltip-trigger tooltip-animation="false" tooltip-placement="left"></a>
 			</div>
             <div ng-if="(node.selfValueSetBindings != undefined && node.selfValueSetBindings.length >0)">
@@ -385,13 +385,14 @@
 				</span>
             </div>
 			<div ng-if="(node.selfSingleCodeBindings != undefined && node.selfSingleCodeBindings.length >0)">
-                <a ng-repeat="scb in getSingleCodes(node)" class="point valueset"                   
+                <span ng-repeat="scb in getSingleCodes(node)" class="point valueset"                   
                    class="cs-concise-view concise-view"
-                   tooltip-html="scb"
+                   tooltip-html="getSingleCodeBindingLocation(scb)"
                    tooltip-append-to-body="true"
                    tooltip-class="constraints-tooltip"
-                   ng-bind-html="getValueSetIdentifier(valueSet)"
-                   tooltip-trigger tooltip-animation="false" tooltip-placement="left"></a>
+                   ng-bind-html="getSingleCodeBindingText(scb)"
+                   tooltip-trigger tooltip-animation="false" tooltip-placement="left">
+				</span>
             </div>
         </td>
         <td class="col-xs-2 col-predicate" ng-style="predWidth">
@@ -660,8 +661,21 @@
         <td class="col-xs-2 col-predicate  nodata" ng-style="predWidth">
         </td>
 
-        <td class="col-xs-4 col-cs  nodata" ng-style="csWidth">
+        <td ng-if="node.selfConformanceStatements.length >0" class="col-xs-4 col-cs" ng-style="csWidth">
+			<span class="cs-concise-view concise-view" ng-if="options.concise"
+                  tooltip-html="getConfStatementsAsMultipleLinesString(node)"
+                  tooltip-append-to-body="true"
+                  tooltip-class="constraints-tooltip"
+                  ng-bind-html="getConfStatementsAsOneLineString(node)"
+                  tooltip-trigger tooltip-animation="false" tooltip-placement="left"></span>
+            <span ng-repeat="confStatement in node.selfConformanceStatements"
+                  ng-if="!options.concise">
+                <span class="expanded-view">
+                   {{::confStatement.constraintId}} : {{::confStatement.description}}
+                </span>
+            </span>
         </td>
+		<td ng-if="node.selfConformanceStatements.length == 0" class="col-xs-4 col-cs nodata" ng-style="csWidth"></td>
     </tr>
 </script>
 
@@ -714,7 +728,7 @@
                    tooltip-html="valueSet"
                    tooltip-append-to-body="true"
                    tooltip-class="constraints-tooltip"
-                   ng-bind-html=""
+                   ng-bind-html="valueSet"
                    tooltip-trigger tooltip-animation="false" tooltip-placement="left"></a>
 			</div>
             <div ng-if="(node.selfValueSetBindings != undefined && node.selfValueSetBindings.length >0)">
@@ -730,14 +744,14 @@
             </div>
 				<div ng-if="(node.selfSingleCodeBindings != undefined && node.selfSingleCodeBindings.length >0)">
 					<span ng-repeat="scb in getSingleCodes(node)">
-						<a class="point valueset"                      
+						<span class="point valueset"                      
                        		class="cs-concise-view concise-view"
                        		tooltip-html="getSingleCodeBindingLocation(scb)"
                        		tooltip-append-to-body="true"
                        		tooltip-class="constraints-tooltip"
-                       		ng-bind-html="scb.singleCodeBindingCode"
+                       		ng-bind-html="getSingleCodeBindingText(scb)"
                        		tooltip-trigger tooltip-animation="false" tooltip-placement="left">
-						</a>					
+						</span>					
 					</span>
                 </div>
             </div>
@@ -820,7 +834,7 @@
                    tooltip-html="valueSet"
                    tooltip-append-to-body="true"
                    tooltip-class="constraints-tooltip"
-                   ng-bind-html=""
+                   ng-bind-html="valueSet"
                    tooltip-trigger tooltip-animation="false" tooltip-placement="left"></a>
 			</div>
             <div ng-if="(node.selfValueSetBindings != undefined && node.selfValueSetBindings.length >0)">
@@ -836,14 +850,14 @@
             </div>
 			<div ng-if="(node.selfSingleCodeBindings != undefined && node.selfSingleCodeBindings.length >0)">
 					<span ng-repeat="scb in getSingleCodes(node)">
-						<a class="point valueset"                      
+						<span class="point valueset"                      
                        		class="cs-concise-view concise-view"
                        		tooltip-html="getSingleCodeBindingLocation(scb)"
                        		tooltip-append-to-body="true"
                        		tooltip-class="constraints-tooltip"
-                       		ng-bind-html="scb.singleCodeBindingCode"
+                       		ng-bind-html="getSingleCodeBindingText(scb)"
                        		tooltip-trigger tooltip-animation="false" tooltip-placement="left">
-						</a>					
+						</span>					
 					</span>
             </div>
         </td>
@@ -968,7 +982,7 @@
                    tooltip-html="valueSet"
                    tooltip-append-to-body="true"
                    tooltip-class="constraints-tooltip"
-                   ng-bind-html=""
+                   ng-bind-html="valueSet"
                    tooltip-trigger tooltip-animation="false" tooltip-placement="left"></a>
 			</div>
             <div ng-if="(node.selfValueSetBindings != undefined && node.selfValueSetBindings.length >0)">
@@ -984,14 +998,14 @@
             </div>
 			<div ng-if="(node.selfSingleCodeBindings != undefined && node.selfSingleCodeBindings.length >0)">
 					<span ng-repeat="scb in getSingleCodes(node)">
-						<a class="point valueset"                      
+						<span class="point valueset"                      
                        		class="cs-concise-view concise-view"
                        		tooltip-html="getSingleCodeBindingLocation(scb)"
                        		tooltip-append-to-body="true"
                        		tooltip-class="constraints-tooltip"
-                       		ng-bind-html="scb.singleCodeBindingCode"
+                       		ng-bind-html="getSingleCodeBindingText(scb)"
                        		tooltip-trigger tooltip-animation="false" tooltip-placement="left">
-						</a>					
+						</span>					
 					</span>
             </div>
         </td>
@@ -1077,7 +1091,7 @@
                    tooltip-html="valueSet"
                    tooltip-append-to-body="true"
                    tooltip-class="constraints-tooltip"
-                   ng-bind-html=""
+                   ng-bind-html="valueSet"
                    tooltip-trigger tooltip-animation="false" tooltip-placement="left"></a>
 			</div>
             <div ng-if="(node.selfValueSetBindings != undefined && node.selfValueSetBindings.length >0)">
@@ -1093,14 +1107,14 @@
             </div>
 			<div ng-if="(node.selfSingleCodeBindings != undefined && node.selfSingleCodeBindings.length >0)">
 					<span ng-repeat="scb in getSingleCodes(node)">
-						<a class="point valueset"                      
+						<span class="point valueset"                      
                        		class="cs-concise-view concise-view"
                        		tooltip-html="getSingleCodeBindingLocation(scb)"
                        		tooltip-append-to-body="true"
                        		tooltip-class="constraints-tooltip"
-                       		ng-bind-html="scb.singleCodeBindingCode"
+                       		ng-bind-html="getSingleCodeBindingText(scb)"
                        		tooltip-trigger tooltip-animation="false" tooltip-placement="left">
-						</a>					
+						</span>					
 					</span>
             </div>
         </td>
@@ -1361,14 +1375,14 @@
             </div>
 				<div ng-if="(child.selfSingleCodeBindings != undefined && child.selfSingleCodeBindings.length >0)">
 					<span ng-repeat="scb in getSingleCodes(child)">
-						<a class="point valueset"                      
+						<span class="point valueset"                      
                        		class="cs-concise-view concise-view"
                        		tooltip-html="getSingleCodeBindingLocation(scb)"
                        		tooltip-append-to-body="true"
                        		tooltip-class="constraints-tooltip"
-                       		ng-bind-html="scb.singleCodeBindingCode"
+                       		ng-bind-html="getSingleCodeBindingText(scb)"
                        		tooltip-trigger tooltip-animation="false" tooltip-placement="left">
-						</a>					
+						</span>					
 					</span>
                 </div>
             </div>

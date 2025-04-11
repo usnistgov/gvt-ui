@@ -329,6 +329,32 @@ angular.module('cf').factory('CFTestPlanManager', ['$q', '$http',
       //
       //
 
+	  refreshTestStepGroupTestContextModels:  function (format,testStepGroup) {
+	       var delay = $q.defer();
+	       $http.post('api/cf/'+ format + '/management/testStepGroups/' +testStepGroup.id +'/refreshTestContext').then(
+	         function (object) {
+	           delay.resolve(angular.fromJson(object.data));
+	         },
+	         function (response) {
+	           delay.reject(response.data);
+	         }
+	       );
+	       return delay.promise;
+	     },
+		 
+		 refreshTestPlanTestContextModels:  function (format,testPlan) {
+ 	       var delay = $q.defer();
+ 	       $http.post('api/cf/'+ format + '/management/testPlans/' +testPlan.id+'/refreshTestContext').then(
+ 	         function (object) {
+ 	           delay.resolve(angular.fromJson(object.data));
+ 	         },
+ 	         function (response) {
+ 	           delay.reject(response.data);
+ 	         }
+ 	       );
+ 	       return delay.promise;
+ 	     },
+		 
 
 
       saveTestStepGroup:  function (format, scope, token, updated, removed, added, metadata) {

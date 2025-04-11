@@ -244,6 +244,15 @@
 	      }
 	      return null; 
 	    }
+		
+		function findSegmentById(list, targetId) {
+	      for (let i = 0; i < list.length; i++) {
+	        if (list[i].id === targetId) {
+	          return list[i];
+	        }
+	      }
+	      return null; 
+	    }
 	  
 	  /**
 	     *
@@ -385,9 +394,14 @@
             }
           }
         }
-
         return res;
       };
+	  
+	  $scope.getSingleCodeBindingText = function (scb) {
+	     	return $sce.trustAsHtml(scb.singleCodeBindingCode +" : " +scb.singleCodeBindingCodeSystem);
+	     		        
+	        };
+
 
 
 
@@ -920,6 +934,8 @@
           child.selfSingleCodeBindings = child.selfSingleCodeBindings.concat(getMessageLevelSingleCodeBindings(child));
           child.selfConformanceStatements = child.selfConformanceStatements.concat(getMessageLevelConfStatements(child));
           child.selfPredicates = child.selfPredicates.concat(getMessageLevelPredicates(child));
+		  
+		  child.selfConformanceStatements = child.selfConformanceStatements.concat(getSegmentConfStatements(child));
           if (!$scope.visible(child)) {
             removeCandidates.push(child);
           }
@@ -976,14 +992,32 @@
 				for( i =0 ; i< datatype.conformanceStatements.length ; i++){
 					var targetPath = datatype.conformanceStatements[i].constraintTarget;
 					if (targetPath && targetPath === ".") {
-						confStatements = confStatements.concat(datatype.conformanceStatements[i]);
-//			          confStatements = confStatements.concat(findConstraintsByTargetPath(datatype.conformanceStatements, "."));
+			          confStatements = confStatements.concat(datatype.conformanceStatements[i]);
+//					  confStatements = confStatements.concat(findConstraintsByTargetPath(datatype.conformanceStatements, "."));
 				   }
 				}	       
 	           
 	         }
 	         return confStatements;
-	       };
+       };
+		   
+		   
+	   //TODO done
+	    var getSegmentConfStatements = function (element) {
+	   	         var segment = findSegmentById($scope.model.segmentList, element.ref);
+				 var confStatements = [];
+				 if (segment && segment != null && segment.conformanceStatements.length > 0) {
+	 				for( i =0 ; i< segment.conformanceStatements.length ; i++){
+	 					var targetPath = segment.conformanceStatements[i].constraintTarget;
+	 					if (targetPath && targetPath === ".") {
+	 			          confStatements = confStatements.concat(segment.conformanceStatements[i]);
+	 				   }
+	 				}	       
+	 	           
+	 	         }				
+	   	         return confStatements;
+	          };   
+		   
 
       /**
        *
@@ -1070,6 +1104,21 @@
         var children = $scope.model.datatypeList.toSorted(function(a, b) {
           return a.name.localeCompare(b.name);
         });
+		//we add the conformence statement at the datatype level
+		angular.forEach(children, function (child) {
+			var datatype = findDataTypetById($scope.model.datatypeList,child.id);
+	         var confStatements = [];
+	         if (datatype && datatype != null && datatype.conformanceStatements.length > 0) {
+				for( i =0 ; i< datatype.conformanceStatements.length ; i++){
+					var targetPath = datatype.conformanceStatements[i].constraintTarget;
+					if (targetPath && targetPath === ".") {
+			          confStatements = confStatements.concat(datatype.conformanceStatements[i]);
+				   }
+				}	       
+	           
+	         }
+			 child.selfConformanceStatements  = confStatements;
+		});
         return children;
       };
 
@@ -1196,7 +1245,7 @@
             $scope.csWidth = 0;
             $scope.predWidth = 0;
             $scope.confStatementsActive = false;
-            $scope.nodeData = selectedNode;
+            $scope.nodeData = angular.copy(selectedNode); // copy to not remove segment children when viewing segment tab concise 
             //                    $scope.options.collapse = selectedNode.type !== 'MESSAGE';
             $scope.options.collapse = true;
             refresh();
@@ -1382,7 +1431,8 @@
         if (isDirectParent(element, group)) {
           return getGroupDirectChildTargetPath(element);
         } else {
-          var parent = $scope.parentsMap[element.id];
+		  var parent = element.nodeParent;
+//          var parent = $scope.parentsMap[element.id];
           var pTarget = getGroupChildTargetPath(parent, group);
           return pTarget === "" ? getGroupDirectChildTargetPath(element) : pTarget + "."
             + getGroupDirectChildTargetPath(element);
@@ -1405,7 +1455,13 @@
        * @returns {string}
        */
       var getGroupDirectChildTargetPath = function (element) {
-        return element.position + "[1]";
+//		if (element.position === undefined){
+//			return  "1[1]";
+
+//		}else{
+			return element.position + "[1]";
+
+//		}
       };
 
       /**

@@ -1,6 +1,6 @@
 services:
   gvt-tomcat:
-    image:  nist775hit/gvt-tool:latest
+    image:  nist775hit/gvt-tool:1.3.0
     platform: linux/amd64
     ports:
       - "13101:8080"
@@ -9,7 +9,7 @@ services:
         condition: service_healthy
         restart: true
     environment:
-      - JAVA_OPTS=-Xmx4096m -Xms4096m -DRELOAD_DB=true -DIS_DEV_TOOL=false -Dpropfile=/tool_config/app-config.properties
+      - JAVA_OPTS=-Xmx4096m -Xms4096m -DCACHE_AT_STARTUP=false -DRELOAD_DB=true -DIS_DEV_TOOL=false -Dpropfile=/tool_config/app-config.properties
     restart: unless-stopped
     volumes:
       - ./tool_upload/:/tool_upload
