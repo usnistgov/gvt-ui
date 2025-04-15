@@ -2305,6 +2305,26 @@ angular.module('cb')
         });
     };
 	
+	$scope.refreshTestPlanTestContextModels = function(testPlan){
+		if (testPlan.type === 'TestPlan') {
+	        CBTestPlanManager.refreshTestPlanTestContextModels(testPlan).then(function (result) {
+				Notification.success({
+                   message: "Test Plan TestContext model successfully updated",
+                   templateUrl: "NotificationSuccessTemplate.html",
+                   scope: $rootScope,
+                   delay: 5000
+               });
+			}, function (error) {
+				Notification.error({
+	                message: "There was an error while refreshing " + error.data,
+	                templateUrl: "NotificationErrorTemplate.html",
+	                scope: $rootScope,
+	                delay: 5000
+	            });	
+            });
+	    } 
+	}
+	
 
 	  $scope.editAPIKeys = function(testPlan) {
 		  $modalStack.dismissAll('close');

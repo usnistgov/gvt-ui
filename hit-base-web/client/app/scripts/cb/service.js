@@ -185,8 +185,7 @@ angular.module('cb').factory('CBTestPlanManager', ['$q', '$http',
           }
         );
         return delay.promise;
-      },
-
+      },	  	 
       deleteTestCaseGroup:  function (testCaseGroup) {
         var delay = $q.defer();
         var context = testCaseGroup.parent.type === 'TestPlan' ? 'testPlans/' : 'testCaseGroups/';
@@ -301,7 +300,21 @@ angular.module('cb').factory('CBTestPlanManager', ['$q', '$http',
 		           }
 		         );
 		         return delay.promise;
-		    }
+		    },
+			refreshTestPlanTestContextModels:  function (testPlan) {
+		       var delay = $q.defer();
+		       $http.post('api/cb/management/testPlans/' +testPlan.id+'/refreshTestContext').then(
+		         function (object) {
+		           delay.resolve(angular.fromJson(object.data));
+		         },
+		         function (response) {
+		           delay.reject(response.data);
+		         }
+		       );
+		       return delay.promise;
+		     }
+			  
+			  
 
 
 

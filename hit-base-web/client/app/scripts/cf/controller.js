@@ -1864,7 +1864,7 @@ angular.module('cf')
 		
 		$scope.refreshProfileGroupTestContextModels = function(node){
 			if (node.type === 'TestPlan') {
-		        $CFTestPlanManager.refreshTestPlanTestContextModels("hl7v2",node).then(function (result) {
+		        CFTestPlanManager.refreshTestPlanTestContextModels("hl7v2",node).then(function (result) {
 					Notification.success({
                        message: "Test Plan TestContext model successfully updated",
                        templateUrl: "NotificationSuccessTemplate.html",
@@ -1879,8 +1879,8 @@ angular.module('cf')
 		                delay: 5000
 		            });	
 	            });
-		    } else {
-				$CFTestPlanManager.refreshTestStepGroupTestContextModels("hl7v2",node).then(function (result) {
+		    } else if (node.type === 'TestStepGroup'){
+				CFTestPlanManager.refreshTestStepGroupTestContextModels("hl7v2",node).then(function (result) {
 					Notification.success({
                        message: "Test Plan TestContext model successfully updated",
                        templateUrl: "NotificationSuccessTemplate.html",

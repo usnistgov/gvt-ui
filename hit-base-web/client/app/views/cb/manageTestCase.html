@@ -73,8 +73,11 @@
           
           	<span ng-show="(selectedTestCase.type == 'TestPlan')">
 
+							 <button title="Refresh all test steps" ng-show="isAdmin()" type="button" class="btn btn-sm btn-info" ng-click="refreshTestPlanTestContextModels(selectedTestCase)">
+                                    <i class="fa fa-refresh"></i>Refresh all test steps
+                                </button>
                                <button title="Manage API Keys" ng-show="true" type="button" class="btn btn-sm btn-success" ng-click="editAPIKeys(selectedTestCase)">
-                                    <i class="fa fa-paper-plane"></i>Manage API Keys
+                                    <i class="fa fa-pencil-square-o"></i>Manage API Keys
                                 </button>
 
                                    <button title="Make Test Plan Public"
