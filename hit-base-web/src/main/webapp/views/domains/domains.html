@@ -180,7 +180,7 @@ body {
 												<button title="Reset" type="button" class="btn btn-md btn-warning" ng-disabled="domainForm.$pristine || (!isAdmin() && !isPublisher())" ng-click="resetDomain()">
 													<i class="fa fa-check"></i>Reset
 												</button>
-												<button title="Save" type="button" ng-disabled="domainForm.$invalid || domainForm.$pristine || ((userDomain.scope === 'GLOBAL') && (!isAdmin() && !isPublisher()))" class="btn btn-md btn-success" ng-click="saveDomain()">
+												<button title="Save" type="button" ng-disabled="domainForm.$invalid || domainForm.$pristine || ( (!isAdmin() && !isPublisher()))" class="btn btn-md btn-success" ng-click="saveDomain()">
 													<i class="fa fa-check"></i>Save
 												</button>
 
@@ -190,7 +190,7 @@ body {
 
 												<button title="Make Private" ng-if="userDomain.scope === 'GLOBAL' && canPublish(userDomain)" type="button" ng-disabled="domainForm.$invalid || (!isAdmin() && !isPublisher())" class="btn btn-md btn-info" ng-click="saveAndUnpublishDomain()">
 													<i class="fa fa-check"></i>Make Private
-												</button>												
+												</button>	
 											</span>
 											<span class="pull-right" style="">
 												<button title="Reset" type="button" ng-disabled="userDomain.scope === 'GLOBAL' && (!isAdmin() && !isPublisher())" class="btn btn-md btn-danger" ng-click="deleteDomain()">

@@ -329,9 +329,9 @@ angular.module('cf').factory('CFTestPlanManager', ['$q', '$http',
       //
       //
 
-	  refreshTestStepGroupTestContextModels:  function (format,testStepGroup) {
+	  refreshTestStepGroupTestContextModels:  function (format,testStepGroupId) {
 	       var delay = $q.defer();
-	       $http.post('api/cf/'+ format + '/management/testStepGroups/' +testStepGroup.id +'/refreshTestContext').then(
+	       $http.post('api/cf/'+ format + '/management/testStepGroups/' +testStepGroupId +'/refreshTestContext').then(
 	         function (object) {
 	           delay.resolve(angular.fromJson(object.data));
 	         },
@@ -342,9 +342,9 @@ angular.module('cf').factory('CFTestPlanManager', ['$q', '$http',
 	       return delay.promise;
 	     },
 		 
-		 refreshTestPlanTestContextModels:  function (format,testPlan) {
+		 refreshTestPlanTestContextModels:  function (format,testPlanId) {
  	       var delay = $q.defer();
- 	       $http.post('api/cf/'+ format + '/management/testPlans/' +testPlan.id+'/refreshTestContext').then(
+ 	       $http.post('api/cf/'+ format + '/management/testPlans/' +testPlanId+'/refreshTestContext').then(
  	         function (object) {
  	           delay.resolve(angular.fromJson(object.data));
  	         },
@@ -354,6 +354,18 @@ angular.module('cf').factory('CFTestPlanManager', ['$q', '$http',
  	       );
  	       return delay.promise;
  	     },
+		 refreshTestStepTestContextModels:  function (format, testStepId) {
+ 	         var delay = $q.defer();
+ 	         $http.post('api/cf/'+ format + '/management/testSteps/'+ testStepId + '/refreshTestContext').then(
+ 	           function (object) {
+ 	             delay.resolve(angular.fromJson(object.data));
+ 	           },
+ 	           function (response) {
+ 	             delay.reject(response.data);
+ 	           }
+ 	         );
+ 	         return delay.promise;
+ 	    },
 		 
 
 

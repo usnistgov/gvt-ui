@@ -964,6 +964,7 @@ table.forumline > tr > td  {
 .nav-tabs {min-height:32px !important}
 
 #appcontainer{
+	min-height: 500px;
 //  border:1px;
 //  border-color: #000000;
  }
@@ -2821,5 +2822,11 @@ ul.dropdown-menu > li.domain-selected, ul.dropdown-menu > li.domain-selected > a
 	 color: white;
 	 filter: brightness(125%);
 	text-decoration: underline;
+}
+
+.disabledDiv
+{
+  pointer-events: none;     // <---- key point
+  opacity: 0.7;
 }
 

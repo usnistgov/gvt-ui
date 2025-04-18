@@ -412,7 +412,7 @@ app.run(function (Session, $rootScope, $location, $modal, TestingSettings, AppIn
                             $rootScope.domain = result;
                             $rootScope.loadingDomain = false;
                             
-                            
+							$location.url('/home');   
                             
                             
                             $timeout(function () {
@@ -543,8 +543,7 @@ app.run(function (Session, $rootScope, $location, $modal, TestingSettings, AppIn
     $rootScope.selectDomain = function (domain) {
         if (domain != null) {
             StorageService.set(StorageService.APP_SELECTED_DOMAIN, domain);
-            $location.search('d', domain);
-            $location.url('/home');            
+//            $location.search('d', domain);                   
             $rootScope.appLoad();
         }
     };

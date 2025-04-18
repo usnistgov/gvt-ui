@@ -42,6 +42,7 @@ angular.module('domains')
                         $scope.errorDomain = null;
                         $scope.userDomain = angular.copy(domain);
                         $scope.originalUserDomain = angular.copy($scope.userDomain);
+						$scope.domainForm.$setPristine();
                         $scope.loadingDomain = false;
                     } else {
                         $scope.loadingDomain = false;
@@ -55,7 +56,11 @@ angular.module('domains')
         };
 
         $scope.getDomainUrl = function (domain) {
-        	return $scope.getAppURL() + "/#/?d="+ domain.options.DOMAIN_CUSTOM_URL;
+			if(domain && domain.options){
+				return $scope.getAppURL() + "/#/?d="+ domain.options.DOMAIN_CUSTOM_URL;
+			}else{
+				return null;
+			}
         };
 
         $scope.displayScope = function(scope){
