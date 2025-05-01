@@ -106,6 +106,6 @@
 		</snapshotRepository>
 	</distributionManagement>
 	<properties>
-		<config.version>1.0.0-SNAPSHOT</config.version>
+		<config.version>1.0.1-SNAPSHOT</config.version>
 	</properties>
 </project>

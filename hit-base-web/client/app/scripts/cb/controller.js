@@ -2721,7 +2721,7 @@ angular.module('cb')
       $scope.error = null;
       if (response.status == "FAILURE") {
     	$scope.step = 1;
-//        $scope.error = response.message;
+        $scope.error = response.message;
 		$scope.validationReports = response.reports;
 		$scope.currentItem = $scope.validationReports[0];
 		$scope.currentIndex = 0;

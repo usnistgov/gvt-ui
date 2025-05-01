@@ -443,6 +443,9 @@
               for (var i = 0; i < datatype.referencers.length; i++) {
                 var fieldOrComponent = datatype.referencers[i];
                 var parent = $scope.parentsMap[fieldOrComponent.id];
+				
+				
+				
                 if ($scope.visible(fieldOrComponent) && ((fieldOrComponent.type === "FIELD" && $scope.isSegmentVisible(parent)) || fieldOrComponent.type === 'COMPONENT' && $scope.isDatatypeVisible(parent))) {
                   datatype.visible = true;
                   break;
@@ -715,7 +718,9 @@
             initAll();
             $scope.originalModel = angular.fromJson(jsonObject);
             $scope.executeRelevance();
-            $scope.getTabContent($scope.model.message);
+//			not yet implemented
+//			$scope.findDatatypePotentialPredicates($scope.model.message);
+			$scope.getTabContent($scope.model.message);
             $scope.loading = false;
           }, function (error) {
             $scope.error = "Sorry, Cannot load the profile.";
@@ -730,6 +735,43 @@
         }
       });
 
+	  
+	  $scope.findDatatypePotentialPredicates= function(node){
+		if (node.type === "MESSAGE" || node.type === "GROUP"){
+			angular.forEach(node.children, function (child) {
+				child.nodeParent = node;
+				$scope.findDatatypePotentialPredicates(child);
+			});
+		}else if (node.type == "SEGMENT_REF"){
+			var children =  getNodeChildren(node);
+			angular.forEach(children, function (child) {
+				child.nodeParent = node;
+				$scope.findDatatypePotentialPredicates(child);
+			});
+		}else if (node.type == "FIELD" || node.type == "COMPONENT"){
+//			var children = node.children;
+			var children =  getNodeChildren(node);
+			angular.forEach(children, function (child) {
+			  child.nodeParent = node;
+			  child.selfPredicates = [];
+			  child.selfPredicates = child.selfPredicates.concat(getDatatypeLevelPredicates(child));
+			  child.selfPredicates = child.selfPredicates.concat(getSegmentLevelPredicates(child));
+			  child.selfPredicates = child.selfPredicates.concat(getMessageLevelPredicates(child));
+			  child.selfPredicates = child.selfPredicates.concat(getGroupLevelPredicates(child));
+			  
+				  angular.forEach($scope.model.datatypeList, function (datatype) {
+					if (child.datatype === datatype.id && child.selfPredicates.length > 0){
+						datatype.possiblePredicates = child.selfPredicates;
+						console.log(datatype.id + " possiblePredicates ",datatype.possiblePredicates );
+					}	
+			      });
+			  
+			  		
+	      });
+		}
+		
+	  }
+	  
       /**
        *
        */
@@ -816,6 +858,13 @@
 			child.selfConformanceStatements = child.selfConformanceStatements.concat(getDatatypeLevelConfStatements(child));
 			child.selfConformanceStatements = child.selfConformanceStatements.concat(getDatatypeConfStatements(child));
 			child.selfPredicates = child.selfPredicates.concat(getDatatypeLevelPredicates(child));
+			
+//			angular.forEach($scope.model.datatypeList, function (datatype) {
+//					if (child.datatype === datatype.id && child.selfPredicates.length > 0){
+//						datatype.possiblePredicates = child.selfPredicates;
+//					}	
+//			      });
+			
 			if ($scope.nodeData.type === 'MESSAGE') {
 				child.selfValueSetBindings = child.selfValueSetBindings.concat(getMessageLevelValueSetBindings(child));
 				child.selfSingleCodeBindings = child.selfSingleCodeBindings.concat(getMessageLevelSingleCodeBindings(child));
@@ -858,6 +907,14 @@
           child.selfConformanceStatements = child.selfConformanceStatements.concat(getDatatypeLevelConfStatements(child));
 		  child.selfConformanceStatements = child.selfConformanceStatements.concat(getDatatypeConfStatements(child));
           child.selfPredicates = child.selfPredicates.concat(getDatatypeLevelPredicates(child));
+		  
+//		  angular.forEach($scope.model.datatypeList, function (datatype) {
+//			if (child.datatype === datatype.id){
+//				datatype.possiblePredicates = child.selfPredicates;
+//			}	
+//	      });
+		  
+		  
           if ($scope.nodeData.type === 'SEGMENT') {
             child.selfValueSetBindings = child.selfValueSetBindings.concat(getSegmentLevelValueSetBindings(child));
             child.selfSingleCodeBindings = child.selfSingleCodeBindings.concat(getSegmentLevelSingleCodeBindings(child));
@@ -883,7 +940,9 @@
         });
         return children;
       };
+	  
 
+	  
       /**
        *
        * @param parent
@@ -897,7 +956,7 @@
           child.path = child.position;
           child.selfValueSetBindings = [];
           child.selfSingleCodeBindings = [];
-          child.selfConformanceStatements = []; //
+          child.selfConformanceStatements = []; 
           child.selfPredicates = [];
 		  
 		  //missing something?
@@ -1114,8 +1173,7 @@
 					if (targetPath && targetPath === ".") {
 			          confStatements = confStatements.concat(datatype.conformanceStatements[i]);
 				   }
-				}	       
-	           
+				}
 	         }
 			 child.selfConformanceStatements  = confStatements;
 		});

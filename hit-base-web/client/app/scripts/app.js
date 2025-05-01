@@ -350,8 +350,8 @@ app.run(function (Session, $rootScope, $location, $modal, TestingSettings, AppIn
 	StorageService.set(StorageService.ACTIVE_SUB_TAB_KEY,null);
     var domainParam = $location.search()['d'] ? decodeURIComponent($location.search()['d']) : null;
 
-	$rootScope.appLoad = function (domainParam){
-		if (domainParam === undefined){
+	$rootScope.appLoad = function (domainParam,redirect){
+		if (domainParam === undefined || domainParam === null){
 			domainParam = $location.search()['d'] ? decodeURIComponent($location.search()['d']) : null;
 		}
 		AppInfo.get().then(function (appInfo) {
@@ -412,7 +412,9 @@ app.run(function (Session, $rootScope, $location, $modal, TestingSettings, AppIn
                             $rootScope.domain = result;
                             $rootScope.loadingDomain = false;
                             
-							$location.url('/home');   
+							if (redirect != undefined && redirect === true){
+								$location.url('/home'); 
+							}							  
                             
                             
                             $timeout(function () {
@@ -544,7 +546,7 @@ app.run(function (Session, $rootScope, $location, $modal, TestingSettings, AppIn
         if (domain != null) {
             StorageService.set(StorageService.APP_SELECTED_DOMAIN, domain);
 //            $location.search('d', domain);                   
-            $rootScope.appLoad();
+            $rootScope.appLoad(null,true);
         }
     };
     
