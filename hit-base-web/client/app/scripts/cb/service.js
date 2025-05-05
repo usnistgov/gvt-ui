@@ -185,8 +185,7 @@ angular.module('cb').factory('CBTestPlanManager', ['$q', '$http',
           }
         );
         return delay.promise;
-      },
-
+      },	  	 
       deleteTestCaseGroup:  function (testCaseGroup) {
         var delay = $q.defer();
         var context = testCaseGroup.parent.type === 'TestPlan' ? 'testPlans/' : 'testCaseGroups/';
@@ -204,7 +203,7 @@ angular.module('cb').factory('CBTestPlanManager', ['$q', '$http',
 
       updateTestCaseGroupName:  function (node) {
         var delay = $q.defer();
-        $http.post('api/cb/management/testCaseGroups/'+ node.id + '/name', node.editName).then(
+        $http.post('api/cb/management/testCaseGroups/'+ node.id + '/name', {name:node.editName}).then(
           function (object) {
             delay.resolve(angular.fromJson(object.data));
           },
@@ -217,7 +216,7 @@ angular.module('cb').factory('CBTestPlanManager', ['$q', '$http',
 
       updateTestCaseName:  function (node) {
         var delay = $q.defer();
-        $http.post('api/cb/management/testCases/'+ node.id + '/name', node.editName).then(
+        $http.post('api/cb/management/testCases/'+ node.id + '/name', {name:node.editName}).then(
           function (object) {
             delay.resolve(angular.fromJson(object.data));
           },
@@ -229,7 +228,7 @@ angular.module('cb').factory('CBTestPlanManager', ['$q', '$http',
       },
       updateTestStepName:  function (node) {
         var delay = $q.defer();
-        $http.post('api/cb/management/testSteps/'+ node.id + '/name', node.editName).then(
+        $http.post('api/cb/management/testSteps/'+ node.id + '/name', {name:node.editName}).then(
           function (object) {
             delay.resolve(angular.fromJson(object.data));
           },
@@ -241,7 +240,7 @@ angular.module('cb').factory('CBTestPlanManager', ['$q', '$http',
       },
       updateTestPlanName:  function (node) {
         var delay = $q.defer();
-        $http.post('api/cb/management/testPlans/'+ node.id + '/name', node.editName).then(
+        $http.post('api/cb/management/testPlans/'+ node.id + '/name', {name:node.editName}).then(
           function (object) {
             delay.resolve(angular.fromJson(object.data));
           },
@@ -275,7 +274,47 @@ angular.module('cb').factory('CBTestPlanManager', ['$q', '$http',
                 }
             );
             return delay.promise;
-        }
+        },
+		
+		getTestStepsWithExternalValueSets:  function (testPlanId) {
+	        var delay = $q.defer();
+	        $http.get("api/cb/management/testPlans/" + testPlanId+'/testStepsWithExternalValueSets', {timeout: 180000}).then(
+	          function (testSteps) {
+	            delay.resolve(angular.fromJson(testSteps.data));
+	          },
+	          function (response) {
+	            delay.reject(response.data);
+	          }
+	        );
+
+	        return delay.promise;
+	      },
+		  updateTestContextApiKeys:  function (testContextId,apikeys) {
+		         var delay = $q.defer();
+		         $http.post('api/hl7v2/testcontext/'+ testContextId + '/apikey', apikeys).then(
+		           function (object) {
+		             delay.resolve(angular.fromJson(object.data));
+		           },
+		           function (response) {
+		             delay.reject(response.data);
+		           }
+		         );
+		         return delay.promise;
+		    },
+			refreshTestPlanTestContextModels:  function (testPlan) {
+		       var delay = $q.defer();
+		       $http.post('api/cb/management/testPlans/' +testPlan.id+'/refreshTestContext').then(
+		         function (object) {
+		           delay.resolve(angular.fromJson(object.data));
+		         },
+		         function (response) {
+		           delay.reject(response.data);
+		         }
+		       );
+		       return delay.promise;
+		     }
+			  
+			  
 
 
 

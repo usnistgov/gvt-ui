@@ -318,6 +318,7 @@
     	$scope.savedReports = [];
         $scope.eId = $scope.target + "-savedReports";
         $scope.$on($scope.eId, function (event, savedReports, title) {
+            $scope.selectedSavedReport = null;
             $scope.savedReports = savedReports;
         });
 
@@ -400,6 +401,7 @@
 
     	$scope.selectReport = function (report) {
     		if (report && report.userTestStepReports){
+                $scope.loading = true;
     			ReportService.getUserTCReport(report.id).then(function (report) {
                 	if (report !== null){
                 		$scope.selectedSavedReport = report;
@@ -414,8 +416,11 @@
                         scope: $rootScope,
                         delay: 10000
                       });                         
+                }).finally(function () {
+                    $scope.loading = false;
                 });
     		}else if (report && report.userTestStepReports === undefined){
+                $scope.loading = true;
     			ReportService.getUserTSReport(report.id).then(function (report) {
                 	if (report !== null){
                 		$scope.selectedSavedReport = report;
@@ -430,6 +435,8 @@
                         scope: $rootScope,
                         delay: 10000
                       });                         
+                }).finally(function () {
+                    $scope.loading = false;
                 });
     		}
     		
@@ -475,7 +482,8 @@
                 $scope.testCase = testCase;
                 $scope.loading = true;
                 $scope.error = null;
-                $scope.editor = null;
+                $scope.editor = null;               
+                
 
                 var testContext = testCase['testContext'];
                 if (testContext && testContext != null) {

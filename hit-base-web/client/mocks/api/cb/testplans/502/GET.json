@@ -1,0 +1,183 @@
+{
+    "domain": "default",
+    "updateDate": 1701809949011,
+    "scope": "USER",
+    "preloaded": false,
+    "name": "DRAFT: Ai VistA IZ Gateway Test Script v0.4",
+    "persistentId": "-3012105197946747392",
+    "description": "This test plan is to be used for provider onboarding testing to the Immunization Gateway developed under Contract-No: XXX-2020-XXXXX. IIS systems connecting to the provider are required to execute the following test cases:\n1. Connect via the IZ Gateway using the IZ Gateway WSDL\n2. Receive and respond to Vaccine Update Notifications (HL7 V2.5.1 VXU/Z22) \n2. Receive and respond to Query for Vaccine History  (Evaluated History and Forecast Group Z34/Z32) \n\nProvider systems are required to generate 10 test cases for both VXU and QBP as follows:\n1. These messages must demonstrate conformance to the IZ Gateway Implementation Guide for Multi-Jurisdictional Providers by message validation without errors.\n2. Interoperability testing with the partner IIS will be conducted using those same validated messages.",
+    "type": "TestPlan",
+    "stage": "CB",
+    "position": 1,
+    "version": 1.0,
+    "supplements": [],
+    "id": "502",
+    "testPlanSummary": {
+        "domain": "default",
+        "updateDate": 1701809949035,
+        "scope": "GLOBAL",
+        "preloaded": false,
+        "id": "505",
+        "name": "TestPlanSummary",
+        "pdfPath": null
+    },
+    "testPackage": {
+        "domain": "default",
+        "updateDate": 1701809949035,
+        "scope": "GLOBAL",
+        "preloaded": false,
+        "id": "504",
+        "name": "TestPackage",
+        "pdfPath": null
+    },
+    "testCases": [],
+    "testCaseGroups": [
+        {
+            "domain": "default",
+            "updateDate": 1701809949038,
+            "scope": "USER",
+            "preloaded": false,
+            "name": "DAYSHR",
+            "persistentId": "7920184753072217893",
+            "description": "This test group uses the VistA DAYSHR (Pre-32B) environment to test sending new vaccine administrations as historical doses",
+            "type": "TestCaseGroup",
+            "stage": "CB",
+            "position": 1,
+            "version": 1.0,
+            "supplements": [],
+            "id": "506",
+            "testCaseGroups": [],
+            "testCases": [
+                {
+                    "domain": "default",
+                    "updateDate": 1701809949038,
+                    "scope": "USER",
+                    "preloaded": false,
+                    "name": "Test Case 1 DAYSHR",
+                    "persistentId": "-2185598171980644968",
+                    "description": "An 18-year old veteran is vaccinated with Haemophilus influenzae type b as a single dose.",
+                    "type": "TestCase",
+                    "stage": "CB",
+                    "position": 1,
+                    "version": 1.0,
+                    "supplements": [],
+                    "id": "508",
+                    "testSteps": [
+                        {
+                            "domain": "default",
+                            "updateDate": 1701809983656,
+                            "scope": "USER",
+                            "preloaded": false,
+                            "name": "New Test Step",
+                            "persistentId": "-6176577773607947040",
+                            "description": "",
+                            "type": "TestStep",
+                            "stage": "CB",
+                            "position": 2,
+                            "version": 1.0,
+                            "supplements": [],
+                            "id": "517",
+                            "testingType": "TA_RESPONDER",
+                            "protocols": [],
+                            "testContext": {
+                                "domain": "default",
+                                "updateDate": 1701809983656,
+                                "scope": "USER",
+                                "preloaded": false,
+                                "id": 311,
+                                "format": "hl7v2",
+                                "message": {
+                                    "domain": "default",
+                                    "updateDate": null,
+                                    "scope": "USER",
+                                    "preloaded": false,
+                                    "id": 520,
+                                    "name": null,
+                                    "description": null,
+                                    "content": "MSH|^~\\&|VA VDIF|8VA-002|ICARE|ICARE|20220901131443-0400||VXU^V04^VXU_V04|to220901181443694222|T|2.5.1|||ER|AL|||||Z22^CDCPHINVS|8VA-002|ICARE\nPID|1||1013634402V344471^^^USVHA^MR||CDCIZGONE^ALPHAONE^^^^^L|LIZIZG^^^^^^M|20031201|F||2106-3^White^CDCREC|315 W 57TH ST^^NEW YORK^NY^10019-3158^USA^P^^36061||^PRN^PH^^^406^5557896|||||||||2186-5^NOT HISPANIC OR LATINO^CDCREC|||||||||||20220901131443\nNK1|1|ALPHAONE^FRIEND^^^^^L|OTH^OTHER^HL70063\nNK1|2|ALPHONE^FRIEND^^^^^L|OTH^OTHER^HL70063\nORC|RE||124769^984||||||||||||||8VA-002^DAYTON^HL70362\nRXA|0|1|20220901||48^HIB (PRP-T)^CVX|999|||08^Historical information - from public Agency^NIP001||^^^8VA-002|||||||||CP|A\nOBX|1|CE|64994-7^vaccine fund pgm elig cat^LN|1|V01^Not VFC elig^HL70064||||||F|||20220901|||VXC40^vaccine level^CDCPHINVS\nOBX|2|CE|30963-3^Vaccine funding source^LN|1|VXC50^Public^HL70064||||||F|||20220901"
+                                },
+                                "type": null,
+                                "dqa": false,
+                                "vocabularyLibrary": {
+                                    "domain": "default",
+                                    "updateDate": 1701809948954,
+                                    "scope": "USER",
+                                    "preloaded": false,
+                                    "id": 199,
+                                    "key": null
+                                },
+                                "profile": {
+                                    "domain": "default",
+                                    "updateDate": 1701809983664,
+                                    "scope": "USER",
+                                    "preloaded": false,
+                                    "id": 522
+                                }
+                            }
+                        },
+                        {
+                            "domain": "default",
+                            "updateDate": 1701809949039,
+                            "scope": "USER",
+                            "preloaded": false,
+                            "name": "Provider Sends VXU for HX 18YO HIB",
+                            "persistentId": "-4396140071279984863",
+                            "description": "Demonstrates the ability of the provider system to generate a VXU Test Message for an adult 18 year-old veteran being vaccinated with Haemophilus influenzae type b as a single dose formatted according to the IZ Gateway HL7 v2.5.1 IG for Multi-Jurisdiction Provider IZ Messaging.",
+                            "type": "TestStep",
+                            "stage": "CB",
+                            "position": 1,
+                            "version": 1.0,
+                            "supplements": [],
+                            "id": "510",
+                            "testingType": "TA_INITIATOR",
+                            "protocols": [
+                                {
+                                    "value": "soap",
+                                    "position": 1,
+                                    "defaut": true
+                                }
+                            ],
+                            "testContext": {
+                                "domain": "default",
+                                "updateDate": 1701809949039,
+                                "scope": "USER",
+                                "preloaded": false,
+                                "id": 310,
+                                "format": "hl7v2",
+                                "message": {
+                                    "domain": "default",
+                                    "updateDate": null,
+                                    "scope": "USER",
+                                    "preloaded": false,
+                                    "id": 513,
+                                    "name": null,
+                                    "description": null,
+                                    "content": "MSH|^~\\&|VA VDIF|8VA-002|ICARE|ICARE|20220901131443-0400||VXU^V04^VXU_V04|to220901181443694222|T|2.5.1|||ER|AL|||||Z22^CDCPHINVS|8VA-002|ICARE\nPID|1||1013634402V344471^^^USVHA^MR||CDCIZGONE^ALPHAONE^^^^^L|LIZIZG^^^^^^M|20031201|F||2106-3^White^CDCREC|315 W 57TH ST^^NEW YORK^NY^10019-3158^USA^P^^36061||^PRN^PH^^^406^5557896|||||||||2186-5^NOT HISPANIC OR LATINO^CDCREC|||||||||||20220901131443\nNK1|1|ALPHAONE^FRIEND^^^^^L|OTH^OTHER^HL70063\nNK1|2|ALPHONE^FRIEND^^^^^L|OTH^OTHER^HL70063\nORC|RE||124769^984||||||||||||||8VA-002^DAYTON^HL70362\nRXA|0|1|20220901||48^HIB (PRP-T)^CVX|999|||08^Historical information - from public Agency^NIP001||^^^8VA-002|||||||||CP|A\nOBX|1|CE|64994-7^vaccine fund pgm elig cat^LN|1|V01^Not VFC elig^HL70064||||||F|||20220901|||VXC40^vaccine level^CDCPHINVS\nOBX|2|CE|30963-3^Vaccine funding source^LN|1|VXC50^Public^HL70064||||||F|||20220901\n"
+                                },
+                                "type": null,
+                                "dqa": false,
+                                "vocabularyLibrary": {
+                                    "domain": "default",
+                                    "updateDate": 1701809948934,
+                                    "scope": "USER",
+                                    "preloaded": false,
+                                    "id": 198,
+                                    "key": null
+                                },
+                                "profile": {
+                                    "domain": "default",
+                                    "updateDate": 1701809949079,
+                                    "scope": "USER",
+                                    "preloaded": false,
+                                    "id": 515
+                                }
+                            }
+                        }
+                    ],
+                    "dataMappings": []
+                }
+            ]
+        }
+    ],
+    "transport": true
+}

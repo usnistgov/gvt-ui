@@ -174,13 +174,15 @@ angular.module('reports').factory('ReportService',['$rootScope', '$http', '$q', 
 	    		      },
 	    		      
 	    		      
-	    		      saveTestCaseValidationReport: function   (testCaseId,testStepReportIds, result, comments) {
+	    		      saveTestCaseValidationReport: function   (testCaseId,testStepReportIds, result, comments, testPlanName, testGroupName) {
 	    		          var delay = $q.defer();
 	    		          var data = angular.fromJson({	    		        	
 	  	    		        "testCaseId": testCaseId,
 	  	    		        "testStepReportIds":testStepReportIds,
 	  	    		        "result": result,
-	  	    		        "comments": comments
+							"comments": comments,
+							"testPlan": testPlanName,
+							"testGroup": testGroupName
 	  	    		      });
 	    		          $http.post("api/userTCReport/savePersistentUserTestCaseReport", data).then(
 	    		            function (object) {
@@ -309,11 +311,38 @@ angular.module('reports').factory('ReportService',['$rootScope', '$http', '$q', 
 			    		            );
 			    		            return delay.promise;
 			    		          },
-			    		          
+			    		          getUserTSReportHTML: function  (id) {
+			    		            var delay = $q.defer();
+
+			    		            $http.get("api/userTSReport/"+id+"/html", {timeout: 180000} ).then(
+			    		              function (object) {
+			    		            	  var res = object.data != null && object.data != "" ? angular.fromJson(object.data) : null;
+			    		            	  delay.resolve(res);
+			    		              },
+			    		              function (response) {
+			    		            	  	delay.reject(response.data);
+			    		              }
+			    		            );
+			    		            return delay.promise;
+			    		          },
 			    		          getUserTCReport: function  (id) {
 				    		            var delay = $q.defer();
 
 				    		            $http.get("api/userTCReport/"+id, {timeout: 180000} ).then(
+				    		              function (object) {
+				    		            	  var res = object.data != null && object.data != "" ? angular.fromJson(object.data) : null;
+				    		            	  delay.resolve(res);
+				    		              },
+				    		              function (response) {
+				    		            	  	delay.reject(response.data);
+				    		              }
+				    		            );
+				    		            return delay.promise;
+									  },
+									  getUserTCReportHTML: function  (id) {
+				    		            var delay = $q.defer();
+
+				    		            $http.get("api/userTCReport/"+id+"/html", {timeout: 180000} ).then(
 				    		              function (object) {
 				    		            	  var res = object.data != null && object.data != "" ? angular.fromJson(object.data) : null;
 				    		            	  delay.resolve(res);

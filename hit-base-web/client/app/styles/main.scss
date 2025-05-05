@@ -26,21 +26,29 @@ $icon-font-path: "../fonts/";
 
 /* Space out content a bit */
 body {
-//  padding-top: 0px;
-//  padding-bottom: 20px;
-////  background-color: #fdfdfd;
-//  background: #f5f5f5;
-//  color: black;
+	//  padding-top: 0px;
+	//  padding-bottom: 20px;
+	////  background-color: #fdfdfd;
+	//  background: #f5f5f5;
+	//  color: black;
 
-  font: 76% 1.4em Arial, Geneva, Verdana, Helvetica, sans-serif;
-//  background: #021a4c;
-//  color: #000;
-//     font: 76%/ 1.4em Arial, Geneva, Verdana, Helvetica, sans-serif;
-    background: #021a4c url(../images/bg_body4.jpg) no-repeat 50% -10px;
-    color: #000;
+	font: 76% 1.4em Arial, Geneva, Verdana, Helvetica, sans-serif;
+	//  background: #021a4c;
+	//  color: #000;
+	//     font: 76%/ 1.4em Arial, Geneva, Verdana, Helvetica, sans-serif;
+//	background: #021a4c url(../images/bg_body4.jpg) no-repeat 50% -10px;
+	background: #021a4c  no-repeat 50% -10px;
+	color: #000;
 
+}
 
-}/* Space out content a bit */
+/* Space out content a bit */
+
+.bodyWelcome {
+	font: 76% 1.4em Arial, Geneva, Verdana, Helvetica, sans-serif;
+	background: #021a4c;
+	color: #000;
+}
 
 .iz-home {
    background:white;
@@ -631,6 +639,13 @@ select.form-control:checked {
   max-width: 80px;
 }
 
+.col-fixed-85 {
+  float: left;
+  width: 85px;
+  min-width: 85px;
+  max-width: 85px;
+}
+
 .col-fixed-150 {
   float: left;
   width: 150px;
@@ -761,17 +776,19 @@ select.form-control:checked {
 //  margin-top: 20px;
 }
 
+.profile-validation-report {padding-left: 20px; padding-right: 20px;}
+.profile-validation-report .row4 a, .row3 a {color: #003399; text-decoration: underline;}
+.profile-validation-report .row4 a:hover, .row3 a:hover { color: #000000; text-decoration: underline;}
+.profile-validation-report .headerReport {width: 250px;}
+.profile-validation-report .row1 {font-weight: bold;font-size: 15px;color:#000000;vertical-align: top;background-color: #d9edf7;width: 100px;}
+.profile-validation-report .row2 {background-color:#f0f0f0;width: 100px;}
+.profile-validation-report .row3 {vertical-align: top;}
+.profile-validation-report .row5 {font-weight: bold;background-color: #FFD630;vertical-align: top;}
+.profile-validation-report .row6 {vertical-align: top;background-color: #f0f0f0;width: 100px;}
+.profile-validation-report .forumline { background-color:#FFFFFF;border: 1px #006699 solid;width: 100%;}
+.profile-validation-report .maintitle {font-weight: bold;font-size: 22px;font-family: Georgia, Verdana;text-decoration: none;line-height : 100%;color : #000000;}
+.profile-validation-report .testname {font-size: 20px;font-family: Georgia, Verdana;text-decoration: none;line-height: 100%;color: #000000;}
 
-.row4 a, .row3 a {color: #003399; text-decoration: underline;}
-.row4 a:hover, .row3 a:hover { color: #000000; text-decoration: underline;}
-.headerReport {width: 250px;}
-.row1 {font-weight: bold;font-size: 15px;color:#000000;vertical-align: top;background-color: #d9edf7;width: 100px;}
-.row2 {background-color:#f0f0f0;width: 100px;}
-.row3 {vertical-align: top;}
-.row5 {font-weight: bold;background-color: #FFD630;vertical-align: top;}
-.row6 {vertical-align: top;background-color: #f0f0f0;width: 100px;}
-.forumline { background-color:#FFFFFF;border: 1px #006699 solid;width: 90%;}
-.maintitle {font-weight: bold;font-size: 22px;font-family: Georgia, Verdana;text-decoration: none;line-height : 100%;color : #000000;}
 .title-background{background-color:#d9edf7;}
 .report-section{
   margin-bottom:20px;
@@ -908,6 +925,16 @@ table.forumline > tr > td  {
 //  color: #3c763d;
 }
 
+.failure-informationals{
+  background-color: #5bc0de;
+  border-color: #96c7d6;
+}
+
+.failure-specerrors{
+	background-color: #999;
+    border-color: #9e9e9e;
+}
+
 .failure-dqa{
   background-color: #f298e0;
   border-color: #f2ade5;
@@ -937,6 +964,7 @@ table.forumline > tr > td  {
 .nav-tabs {min-height:32px !important}
 
 #appcontainer{
+	min-height: 500px;
 //  border:1px;
 //  border-color: #000000;
  }
@@ -1086,6 +1114,11 @@ table.cf-profiles{
 
 .navbar .nav li.dropdown.open > .dropdown-toggle, .navbar .nav li.dropdown.active > .dropdown-toggle, .navbar .nav li.dropdown.open.active > .dropdown-toggle {
   background-color: #ffcc00;
+}
+
+.dropdown-menu-domain{
+  right:0;
+  left:auto;
 }
 
 .dropdown-menu {
@@ -2689,7 +2722,111 @@ div.upload-error-table div.fixed-table-container-inner {
   width: 97.90%;
 }
 
-
 ul.dropdown-menu > li.domain-selected, ul.dropdown-menu > li.domain-selected > a {
   background: #ffef8f;
 }
+
+.reportrow:hover {
+  background-color: #3276B2;
+  color: white;
+  filter: brightness(125%);
+  cursor: pointer;
+}
+
+.reportrowselected {
+  background-color: #ffef8f;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+
+.notificationrow:hover {
+  background-color: #3276B2;
+  color: white;
+  filter: brightness(125%);
+  cursor: pointer;
+}
+
+.notificationrowselected{
+  background-color: green;
+  color: white;
+  filter: brightness(125%);
+  cursor: pointer;
+}
+
+.validation-clasification-select {
+  background-color: white;
+  max-width: 300px;
+}
+
+.authorities ul {
+    list-style:none;
+    li {
+      display:inline-block;
+      margin-right: 10px;
+    }
+}
+
+
+//welcome screen
+.welcome {
+	position: absolute;
+	width: 100%;
+	height: 100vh;
+	font-family: Arial, sans-serif;
+	text-align: center;
+	background: #021a4c;
+	display: flex; 
+}
+
+.welcomeTitle{
+	color:#ffffff;
+	display: flex;
+	
+}
+
+.welcomeContainer {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	display: flex;
+}
+
+.welcomeLink {
+	display: inline-block;
+	width: 200px;
+	height: 200px;
+	margin: 20px;
+	background-color: #F3C60D;
+	color: #000000;
+	font-size: 24px;
+	text-align: center;
+	border-radius: 10px;
+	cursor: pointer;
+	padding: 20px;
+	display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.welcomelink:hover {
+	background-color: #ffec9d;
+}
+
+//end welcome screen
+
+.testplanlist:hover{
+	cursor: pointer;
+	background-color: #3276B2;
+	 color: white;
+	 filter: brightness(125%);
+	text-decoration: underline;
+}
+
+.disabledDiv
+{
+  pointer-events: none;     // <---- key point
+  opacity: 0.7;
+}
+

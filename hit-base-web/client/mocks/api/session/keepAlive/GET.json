@@ -1,1 +1,30 @@
-true
+[
+	{
+		"id": 27843,
+		"message": "kjhdskfhakjshfdksjhsfd",
+		"date": 1587497848000,
+		"active": true,
+		"dismissable": true
+	},
+	{
+		"id": 27839,
+		"message": "dsfsdfsdf",
+		"date": 1587497736000,
+		"active": true,
+		"dismissable": true
+	},
+	{
+		"id": 27840,
+		"message": "sdfsdfsdfsdf",
+		"date": 1587497727000,
+		"active": true,
+		"dismissable": true
+	},
+	{
+		"id": 2,
+		"message": "Attention people. Tool will go down very soon!",
+		"date": 1587497717000,
+		"active": true,
+		"dismissable": true
+	}
+]

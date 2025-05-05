@@ -1,0 +1,188 @@
+{
+    "validationType": "hl7v2",
+    "lengthSpecErrorNoValid": {
+        "template": null,
+        "category": null,
+        "classfication": "ALERT"
+    },
+    "lengthSpecErrorXor": {
+        "template": null,
+        "category": null,
+        "classfication": "ALERT"
+    },
+    "xUsage": {
+        "template": null,
+        "category": null,
+        "classfication": "ERROR"
+    },
+    "wUsage": {
+        "template": null,
+        "category": null,
+        "classfication": "ERROR"
+    },
+    "rUsage": {
+        "template": null,
+        "category": null,
+        "classfication": null
+    },
+    "reUsage": {
+        "template": null,
+        "category": null,
+        "classfication": "AFFIRMATIVE"
+    },
+    "oUsage": {
+        "template": null,
+        "category": null,
+        "classfication": "ALERT"
+    },
+    "cardinality": {
+        "template": null,
+        "category": null,
+        "classfication": "ERROR"
+    },
+    "nullCardinality": {
+        "template": null,
+        "category": null,
+        "classfication": "ERROR"
+    },
+    "length": {
+        "template": null,
+        "category": null,
+        "classfication": "ERROR"
+    },
+    "format": {
+        "template": null,
+        "category": null,
+        "classfication": "ERROR"
+    },
+    "extra": {
+        "template": null,
+        "category": null,
+        "classfication": "WARNING"
+    },
+    "unescaped": {
+        "template": null,
+        "category": null,
+        "classfication": "ERROR"
+    },
+    "unexpected": {
+        "template": null,
+        "category": null,
+        "classfication": "ERROR"
+    },
+    "invalid": {
+        "template": null,
+        "category": null,
+        "classfication": "ERROR"
+    },
+    "unresolvedField": {
+        "template": null,
+        "category": null,
+        "classfication": "ERROR"
+    },
+    "coconstraintFailure": {
+        "template": null,
+        "category": null,
+        "classfication": "ERROR"
+    },
+    "coconstraintSuccess": {
+        "template": null,
+        "category": null,
+        "classfication": "AFFIRMATIVE"
+    },
+    "highlevelContent": {
+        "template": null,
+        "category": null,
+        "classfication": "ERROR"
+    },
+    "constraintFailure": {
+        "template": null,
+        "category": null,
+        "classfication": "ERROR"
+    },
+    "constraintSuccess": {
+        "template": null,
+        "category": null,
+        "classfication": "AFFIRMATIVE"
+    },
+    "constraintSpecError": {
+        "template": null,
+        "category": null,
+        "classfication": "AFFIRMATIVE"
+    },
+    "contentFailure": {
+        "template": null,
+        "category": null,
+        "classfication": "ERROR"
+    },
+    "contentSuccess": {
+        "template": null,
+        "category": null,
+        "classfication": "AFFIRMATIVE"
+    },
+    "contentSpecError": {
+        "template": null,
+        "category": null,
+        "classfication": "AFFIRMATIVE"
+    },
+    "predicateSuccess": {
+        "template": null,
+        "category": null,
+        "classfication": "AFFIRMATIVE"
+    },
+    "predicateFailure": {
+        "template": null,
+        "category": null,
+        "classfication": "ERROR"
+    },
+    "predicateSpecError": {
+        "template": null,
+        "category": null,
+        "classfication": "AFFIRMATIVE"
+    },
+    "evs": {
+        "template": null,
+        "category": null,
+        "classfication": "ERROR"
+    },
+    "pvs": {
+        "template": null,
+        "category": null,
+        "classfication": "ERROR"
+    },
+    "codeNotFound": {
+        "template": null,
+        "category": null,
+        "classfication": "ERROR"
+    },
+    "vsNotFound": {
+        "template": null,
+        "category": null,
+        "classfication": "ERROR"
+    },
+    "emptyVs": {
+        "template": null,
+        "category": null,
+        "classfication": "ERROR"
+    },
+    "vsError": {
+        "template": null,
+        "category": null,
+        "classfication": "AFFIRMATIVE"
+    },
+    "bindingLocation": {
+        "template": null,
+        "category": null,
+        "classfication": "AFFIRMATIVE"
+    },
+    "vsNoValidation": {
+        "template": null,
+        "category": null,
+        "classfication": "AFFIRMATIVE"
+    },
+    "codedElement": {
+        "template": null,
+        "category": null,
+        "classfication": "ERROR"
+    }
+}

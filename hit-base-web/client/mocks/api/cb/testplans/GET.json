@@ -1,4 +1,23 @@
 [
+	  {
+        "name": "NEW OLD - DRAFT: Ai VistA IZ Gateway Test Script v0.4",
+        "persistentId": -3012105197946747392,
+        "description": "This test plan is to be used for provider onboarding testing to the Immunization Gateway developed under Contract-No: XXX-2020-XXXXX. IIS systems connecting to the provider are required to execute the following test cases:\n1. Connect via the IZ Gateway using the IZ Gateway WSDL\n2. Receive and respond to Vaccine Update Notifications (HL7 V2.5.1 VXU/Z22) \n2. Receive and respond to Query for Vaccine History  (Evaluated History and Forecast Group Z34/Z32) \n\nProvider systems are required to generate 10 test cases for both VXU and QBP as follows:\n1. These messages must demonstrate conformance to the IZ Gateway Implementation Guide for Multi-Jurisdictional Providers by message validation without errors.\n2. Interoperability testing with the partner IIS will be conducted using those same validated messages.",
+        "type": "TestPlan",
+        "stage": null,
+        "position": 0,
+        "version": "null",
+        "scope": null,
+        "preloaded": false,
+        "supplements": [],
+        "transport": true,
+        "domain": "pcd14",
+        "id": 502,
+        "testPackage": null,
+        "testPlanSummary": null,
+        "testCases": [],
+        "testCaseGroups": []
+    },
 	{
 		"name": "PCD Cycle 14",
 		"persistentId": -7409762844267578309,
@@ -55,5 +74,26 @@
 		"testPlanSummary": null,
 		"testCases": [],
 		"testCaseGroups": []
+	},
+	{
+		"name": "VR BFDR LRF-FIXED",
+		"persistentId": 8095398904650810834,
+		"description": "Sample Test Plan for BFDR",
+		"type": null,
+		"stage": null,
+		"position": 1,
+		"version": "null",
+		"scope": null,
+		"preloaded": false,
+		"supplements": [],
+		"transport": true,
+		"domain": "default",
+		"id": 27934,
+		"testPackage": null,
+		"testPlanSummary": null,
+		"testCases": [],
+		"testCaseGroups": []
 	}
 ]
+
+

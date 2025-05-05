@@ -1,0 +1,30 @@
+[
+    {
+        "id": 1,
+        "message": "jksdhfjkshdflkjhsdfkjh",
+        "date": null,
+        "active": true,
+        "dismissable": false
+    },
+    {
+        "id": 2,
+        "message": "sdfsdf",
+        "date": null,
+        "active": true,
+        "dismissable": false
+    },
+    {
+        "id": 3,
+        "message": "dsfsdfsdf",
+        "date": null,
+        "active": false,
+        "dismissable": false
+    },
+    {
+        "id": 27839,
+        "message": "dsfsdfsdf",
+        "date": null,
+        "active": false,
+        "dismissable": false
+    }
+]

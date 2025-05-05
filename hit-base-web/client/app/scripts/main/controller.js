@@ -1,14 +1,17 @@
 'use strict';
 
 angular.module('main').controller('MainCtrl',
-    function ($scope, $rootScope, i18n, $location, userInfoService, $modal, $filter, base64, $http, Idle, Notification, IdleService, StorageService, TestingSettings, Session, AppInfo, User, $templateCache, $window, $sce, DomainsManager, Transport, $timeout, CBTestPlanListLoader,CBTestPlanLoader,CachingService) {
+    function ($scope, $rootScope, i18n, $location, userInfoService, $modal, $filter, base64, $http, Idle, Notification, IdleService, StorageService, TestingSettings, Session, AppInfo, User, $templateCache, $window, $sce, DomainsManager, Transport, $timeout, CBTestPlanListLoader,CBTestPlanLoader,CachingService,$localForage) {
         //This line fetches the info from the server if the user is currently logged in.
         //If success, the app is updated according to the role.
         $rootScope.loginDialog = null;
         $rootScope.started = false;
+        $scope.notifications = [];
+        $scope.showNotificationPanel = false;
 
         var domainParam = $location.search()['d'] ? decodeURIComponent($location.search()['d']) : null;
 
+        
 
         $scope.language = function () {
             return i18n.language;
@@ -66,8 +69,11 @@ angular.module('main').controller('MainCtrl',
             userInfoService.setCurrentUser(null);
             $scope.username = $scope.password = null;
             $scope.$emit('event:logoutRequest');
-            $location.url('/home');
+           // $location.search({});
+           // $location.url('/cb');
+            $window.location.href = '/gvt/#/home';
             $window.location.reload();
+            
         };
 
         $scope.cancel = function () {
@@ -77,7 +83,6 @@ angular.module('main').controller('MainCtrl',
         $scope.isAuthenticated = function () {
             return userInfoService.isAuthenticated();
         };
-
 
         $scope.isPending = function () {
             return userInfoService.isPending();
@@ -206,16 +211,73 @@ angular.module('main').controller('MainCtrl',
             }
         });
 
+
+        $scope.addToHiddenList = function (id) {
+            var hiddenIds;
+            $localForage.getItem('hiddenNotifications', true).then(function (hiddenIdsResults) {
+                hiddenIds = hiddenIdsResults;
+                if (hiddenIds.indexOf(id) === -1) {
+                    hiddenIds.push(id);
+                }
+
+            }, function (error) {
+                //no cache found
+                hiddenIds = [];
+                hiddenIds[0] = id;
+            }).finally(function () {
+                $localForage.setItem("hiddenNotifications", hiddenIds).then(function (err) {
+                    $scope.updateNotifications($scope.rawNotifications);
+                });
+            });
+
+
+        };
+
+        $scope.updateNotifications = function (result) {
+            //filtering hidden ones
+            var filteredData = angular.copy(result);
+            $localForage.getItem('hiddenNotifications', true).then(function (hiddenIds) {
+                if (hiddenIds !== null) {
+                    filteredData = filteredData.filter(function (noti) {
+                        return (noti.dismissable === false ||  hiddenIds.indexOf(noti.id) === -1); // keep non dismissable and those not on the list of hidden 
+                    });
+                }
+            }, function (error) {
+                //no cache found
+            }).finally(function () {
+
+                if (angular.equals(filteredData, $scope.notifications)) {
+                    //equal, do nothing 
+                } else {
+                    //different, update!
+                    $scope.notifications = angular.copy(filteredData);
+
+                }
+                if ($scope.notifications.length >0){
+                	$scope.showNotificationPanel = true;
+                }else{
+                	$scope.showNotificationPanel = false;
+                }
+            });
+        };
+
         $scope.$on('Keepalive', function () {
-            if ($scope.isAuthenticated()) {
-                IdleService.keepAlive();
-            }
+            IdleService.keepAlive().then(function (result) {
+                $scope.rawNotifications = angular.copy(result);
+                $scope.updateNotifications(result);
+            });
+
+
         });
 
-        $rootScope.$on('Keepalive', function () {
-            IdleService.keepAlive();
-        });
+        // $rootScope.$on('Keepalive', function () {
+        //     IdleService.keepAlive();
+        // });
 
+        IdleService.keepAlive().then(function (result) {
+                $scope.rawNotifications = angular.copy(result);
+                $scope.updateNotifications(result);
+            });
 
         $rootScope.$on('event:execLogout', function () {
             $scope.execLogout();
@@ -685,8 +747,8 @@ angular.module('main').controller('MainCtrl',
 
         $rootScope.showSettings = function () {
             var modalInstance = $modal.open({
-                templateUrl: 'SettingsCtrl.html',
-                size: 'lg',
+                templateUrl: 'views/settings/SettingsCtrl.html',
+                windowClass: 'upload-modal',
                 keyboard: 'false',
                 controller: 'SettingsCtrl'
             });
@@ -758,8 +820,8 @@ angular.module('main').controller('MainCtrl',
                 }
             }
         };
-
-
+/*
+		console.log("get info");
         AppInfo.get().then(function (appInfo) {
                 $rootScope.loadingDomain = true;
                 $rootScope.appInfo = appInfo;
@@ -785,7 +847,7 @@ angular.module('main').controller('MainCtrl',
                 };
                 DomainsManager.getDomains().then(function (domains) {
                     $rootScope.appInfo.domains = domains;
-                    if ($rootScope.appInfo.domains != null) {
+                    if ($rootScope.appInfo.domains != null) {                    
                 		$rootScope.initDomainsByOwner();
                     if ($rootScope.appInfo.domains.length === 1) {
                         domainFound = $rootScope.appInfo.domains[0].domain;
@@ -820,14 +882,13 @@ angular.module('main').controller('MainCtrl',
                             
                             
                             
-                            //CACHE preload thingies.
-                            
-                            CachingService.cacheCBTestPlans("GLOBAL",$rootScope.domain.domain);
-                            CachingService.cacheCFTestPlans("GLOBAL",$rootScope.domain.domain);
-                            if (userInfoService.isAuthenticated() === true) { 
-                            	CachingService.cacheCBTestPlans("USER",$rootScope.domain.domain);
-                                CachingService.cacheCFTestPlans("USER",$rootScope.domain.domain);
-                            }
+                            //CACHE preload thingies.                           
+//                            CachingService.cacheCBTestPlans("GLOBAL",$rootScope.domain.domain);
+//                            CachingService.cacheCFTestPlans("GLOBAL",$rootScope.domain.domain);
+//                            if (userInfoService.isAuthenticated() === true) { 
+//                            	CachingService.cacheCBTestPlans("USER",$rootScope.domain.domain);
+//                                CachingService.cacheCFTestPlans("USER",$rootScope.domain.domain);
+//                            }
                                  
                             
                             $timeout(function () {
@@ -878,7 +939,7 @@ angular.module('main').controller('MainCtrl',
                 $rootScope.appInfo = {};
                 $rootScope.openCriticalErrorDlg("Failed to fetch the server. Please try again");
             });
-
+*/
 
         $rootScope.displayOwnership = function(dom){
             return dom.owner === userInfoService.getUsername() ? "My Tool Scopes": "Others Tool Scopes";
@@ -887,6 +948,8 @@ angular.module('main').controller('MainCtrl',
         $rootScope.orderOwnership = function(dom){
             return dom.owner === userInfoService.getUsername() ? 0: 1;
         };
+
+
 
 
 
