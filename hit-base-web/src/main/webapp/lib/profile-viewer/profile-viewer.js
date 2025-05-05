@@ -194,7 +194,17 @@
       var isNodeUsageRelevant = function (node) {
         if (node.hide == undefined || !node.hide || node.hide === false) {
           if (node.selfPredicates && node.selfPredicates != null && node.selfPredicates.length > 0) {
-            return node.selfPredicates[0].trueUsage === "R" || node.selfPredicates[0].trueUsage === "RE" || node.selfPredicates[0].falseUsage === "R" || node.selfPredicates[0].falseUsage === "RE";
+            var predicateCheck = node.selfPredicates[0].trueUsage === "R" || node.selfPredicates[0].trueUsage === "RE" || node.selfPredicates[0].falseUsage === "R" || node.selfPredicates[0].falseUsage === "RE";
+			if (predicateCheck === true){
+				return true;
+			}else if (node.possiblePredicates && node.possiblePredicates != null && node.possiblePredicates >0){
+				//check for possible predicates
+				for (i = 0; i< node.possiblePredicates.length ; i++){
+					var possiblePredicate = node.possiblePredicates[i].trueUsage === "R" || node.possiblePredicates[i].trueUsage === "RE" || node.possiblePredicates[i].falseUsage === "R" || node.possiblePredicates[i].falseUsage === "RE";
+					if (possiblePredicate === true) return true;
+				}
+				
+			}
           } else {
             return node.usage == null || !node.usage || node.usage === "R" || node.usage === "RE";
           }
@@ -496,6 +506,7 @@
           } else if (element.type === "DATATYPE") {
             processDatatype(element, parent);
           }
+//		  $scope.elementsMap[element.id] = element;
         } catch (e) {
           throw e;
         }
@@ -546,23 +557,42 @@
        * @param datatype
        * @param fieldOrComponent
        */
-      var processDatatype = function (datatype, fieldOrComponent) {
-        processConstraints(datatype, fieldOrComponent);
-        if (!datatype.referencers)
-          datatype.referencers = [];
-        if (datatype.referencers.indexOf(fieldOrComponent) === -1) {
-          datatype.referencers.push(fieldOrComponent);
-        }
-        if ($scope.model.datatypeList.indexOf(datatype) === -1) {
-          $scope.model.datatypeList.push(datatype);
-          if (datatype.children && datatype.children != null && datatype.children.length > 0) {
-            angular.forEach(datatype.children, function (component) {
-              processComponent(component, datatype, fieldOrComponent);
-            });
-            datatype.children = sortByPosition(datatype.children);
-          }
-        }
-      };
+		var processDatatype = function(datatype, fieldOrComponent) {
+//			datatype.nodeParent = fieldOrComponent;
+			processConstraints(datatype, fieldOrComponent);
+			if (!datatype.referencers)
+				datatype.referencers = [];
+			if (datatype.referencers.indexOf(fieldOrComponent) === -1) {
+				datatype.referencers.push(fieldOrComponent);
+			}
+			if ($scope.model.datatypeList.indexOf(datatype) === -1) {
+//				datatype.possiblePredicates = [];
+//				datatype.possiblePredicates = datatype.possiblePredicates.concat(getDatatypeLevelPredicates(fieldOrComponent));						
+//	            datatype.possiblePredicates = datatype.possiblePredicates.concat(getSegmentLevelPredicates(fieldOrComponent));				            
+//	            datatype.possiblePredicates = datatype.possiblePredicates.concat(getMessageLevelPredicates(fieldOrComponent));				           
+//	            datatype.possiblePredicates = datatype.possiblePredicates.concat(getGroupLevelPredicates(fieldOrComponent));
+
+				$scope.model.datatypeList.push(datatype);
+				if (datatype.children && datatype.children != null && datatype.children.length > 0) {
+					angular.forEach(datatype.children, function(component) {
+						processComponent(component, datatype);
+					});
+					datatype.children = sortByPosition(datatype.children);
+				}
+
+			} else {
+//				var dt = findDataTypetById($scope.model.datatypeList,datatype.id);										
+//				dt.possiblePredicates = dt.possiblePredicates.concat(getDatatypeLevelPredicates(dt));						
+//	            dt.possiblePredicates = dt.possiblePredicates.concat(getSegmentLevelPredicates(dt));				            
+//	            dt.possiblePredicates = dt.possiblePredicates.concat(getMessageLevelPredicates(dt));				           
+//	            dt.possiblePredicates = dt.possiblePredicates.concat(getGroupLevelPredicates(dt));
+				
+			}
+
+
+
+			$scope.elementsMap[datatype.id] = datatype;
+		};
 
       /**
        *
@@ -570,6 +600,7 @@
        * @param messageOrGroup
        */
       var processSegRef = function (segRef, messageOrGroup) {
+		segRef.nodeParent = messageOrGroup;
         segRef.position = parseInt(segRef.position);
         if (messageOrGroup && messageOrGroup != null) {
           $scope.parentsMap[segRef.id] = messageOrGroup;
@@ -579,6 +610,7 @@
         segRef.usageRelevent = messageOrGroup != undefined && messageOrGroup != null && messageOrGroup.usageRelevent != undefined ? messageOrGroup.usageRelevent && isNodeUsageRelevant(segRef) : isNodeUsageRelevant(segRef);
         var segment = $scope.model.segments[segRef.ref];
         processSegment(segment, segRef);
+		$scope.elementsMap[segRef.id] = segRef;
       };
 
       /**
@@ -587,6 +619,7 @@
        * @param parent
        */
       var processGroup = function (group, parent) {
+		group.nodeParent = parent;
         processConstraints(group, parent);
         group.position = parseInt(group.position);
         $scope.parentsMap[group.id] = parent;
@@ -598,6 +631,7 @@
           });
           group.children = sortByPosition(group.children);
         }
+		$scope.elementsMap[group.id] = group;
       };
 
 
@@ -607,6 +641,7 @@
        * @param parent
        */
       var processSegment = function (segment, parent) {
+//		segment.nodeParent = parent;
         processConstraints(segment, parent);
         if (!segment.referencers)
           segment.referencers = [];
@@ -623,6 +658,7 @@
             segment.children = sortByPosition(segment.children);
           }
         }
+		$scope.elementsMap[segment.id] = segment;
       };
 
 
@@ -632,6 +668,7 @@
        * @param parent
        */
       var processField = function (field, parent) {
+		field.nodeParent = parent;
         $scope.collectSelfConstraints(field, parent);
         field.position = parseInt(field.position);
         $scope.parentsMap[field.id] = parent;
@@ -655,20 +692,30 @@
         } else {
           processDatatype($scope.model.datatypes[field.datatype], field);
         }
+		$scope.elementsMap[field.id] = field;
       };
 
       /**
        *
        * @param component
-       * @param datatype
        * @param fieldOrComponent
        */
-      var processComponent = function (component, datatype, fieldOrComponent) {
-        processConstraints(component, datatype);
+      var processComponent = function (component, fieldOrComponent) {
+		component.nodeParent = fieldOrComponent;
+        processConstraints(component, fieldOrComponent);
         component.position = parseInt(component.position);
-        $scope.parentsMap[component.id] = datatype;
+        $scope.parentsMap[component.id] = fieldOrComponent;
         processDatatype($scope.model.datatypes[component.datatype], component);
+		$scope.elementsMap[component.id] = component;
       };
+	  
+//	  var processComponent = function (component, datatype, fieldOrComponent) {
+//	        processConstraints(component, datatype);
+//	        component.position = parseInt(component.position);
+//	        $scope.parentsMap[component.id] = datatype;
+//	        processDatatype($scope.model.datatypes[component.datatype], component);
+//	  	$scope.elementsMap[component.id] = component;
+//	      };
 
       /**
        *
@@ -683,6 +730,7 @@
         angular.forEach($scope.model.message.children, function (segmentRefOrGroup) {
           processElement(segmentRefOrGroup);
         });
+		console.log($scope.elementsMap);
         $scope.model.message.children = sortByPosition($scope.model.message.children);
         if ($scope.options.relevance) {
           $scope.onlyRelevantElementsModel = $scope.model;
@@ -690,7 +738,8 @@
           $scope.allElementsModel = $scope.model;
         }
       };
-
+	  
+	  	 	  
 
       /**
        *
@@ -702,6 +751,7 @@
         $rootScope.pvNodesMap = {};
         $scope.onlyRelevantElementsModel = null;
         $scope.allElementsModel = null;
+		$scope.elementsMap = [];
       };
 
 
@@ -762,7 +812,7 @@
 				  angular.forEach($scope.model.datatypeList, function (datatype) {
 					if (child.datatype === datatype.id && child.selfPredicates.length > 0){
 						datatype.possiblePredicates = child.selfPredicates;
-						console.log(datatype.id + " possiblePredicates ",datatype.possiblePredicates );
+//						console.log(datatype.id + " possiblePredicates ",datatype.possiblePredicates );
 					}	
 			      });
 			  
