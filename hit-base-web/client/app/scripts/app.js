@@ -432,6 +432,7 @@ app.run(function (Session, $rootScope, $location, $modal, TestingSettings, AppIn
                                             }
                                             Transport.configs[protocol]['forms'] = transportForm;
                                             Transport.configs[protocol]['error'] = null;
+											Transport.configs[protocol]['data'] = null;
                                             Transport.configs[protocol]['description'] = transportForm.description;
                                             Transport.configs[protocol]['key'] = transportForm.protocol;
                                             Transport.getConfigData($rootScope.domain.domain, protocol).then(function (data) {

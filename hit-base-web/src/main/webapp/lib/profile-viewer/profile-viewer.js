@@ -600,7 +600,7 @@
        * @param messageOrGroup
        */
       var processSegRef = function (segRef, messageOrGroup) {
-		segRef.nodeParent = messageOrGroup;
+//		segRef.nodeParent = messageOrGroup;
         segRef.position = parseInt(segRef.position);
         if (messageOrGroup && messageOrGroup != null) {
           $scope.parentsMap[segRef.id] = messageOrGroup;
@@ -641,7 +641,7 @@
        * @param parent
        */
       var processSegment = function (segment, parent) {
-//		segment.nodeParent = parent;
+		segment.nodeParent = parent;
         processConstraints(segment, parent);
         if (!segment.referencers)
           segment.referencers = [];
@@ -730,7 +730,7 @@
         angular.forEach($scope.model.message.children, function (segmentRefOrGroup) {
           processElement(segmentRefOrGroup);
         });
-		console.log($scope.elementsMap);
+//		console.log($scope.elementsMap);
         $scope.model.message.children = sortByPosition($scope.model.message.children);
         if ($scope.options.relevance) {
           $scope.onlyRelevantElementsModel = $scope.model;
