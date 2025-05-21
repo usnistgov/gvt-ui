@@ -96,7 +96,12 @@
                         <li ng-if="isSegmentVisible(element)"
                             ng-repeat="element in model.segmentList"
                             ng-class="{'active':nodeData != null && nodeData.id === element.id && !confStatementsActive}">
-                            <a
+                            <a	
+                     tooltip-enable="true"
+                     tooltip-html="getSegmentPath(element)"
+                     tooltip-class="segment-tooltip"
+
+                     tooltip-trigger tooltip-animation="false" tooltip-placement="top	"
                                     ng-click="getTabContent(element)">{{::element.name}}</a></li>
 
 
@@ -118,13 +123,31 @@
                                 <!--<div id="profile-tab-content" class="profile-table-container fixed-table-container">-->
 
                                 <!--<div style="margin-top:5px" id="profile-tab-content" class="profile-table-container">-->
+								<accordion ng-if="(nodeData.type === 'MESSAGE' || nodeData.type === 'SEGMENT_REF') && nodeData.selfConformanceStatements.length > 0 " close-others="false">
+								<accordion-group panel-class="panel-info" is-open="status.confStatment " >
+							 	<accordion-heading>
+									<i class="fa" ng-class="{'fa-caret-down': status.confStatment, 'fa-caret-right': !status.confStatment}"></i> Conformance Statements	at 
+{{nodeData.type === 'MESSAGE' ? "message level" : nodeData.name + (nodeData.ref ? " ("+nodeData.ref+")" : "") + " level." }} 							
 
+								</accordion-heading>
+								<table  class="table treetable table-condensed table-bordered table-line-break">   								 
+    							<tbody>
+									<tr ng-repeat="cst in nodeData.selfConformanceStatements">          
+        								<td>
+            								<span>{{::cst.constraintId}} : {{::cst.description}}</span>            	
+        								</td>
+                   
+        							</tr>
+    							</tbody>	
+								</table>
+								</accordion-group>
+								</accordion>
 
                               <div style="margin-bottom: 10px" ng-show="nodeData.type === 'DATATYPE'">
                                 <i># Data types: </i><span class="badge">{{getNumberOfVisibleDatatypes()}}</span>
                               </div>
 
-
+								
 
                                 <table pv-table pv-params="params"
                                        class="table  table-condensed table-bordered table-line-break"
@@ -498,7 +521,7 @@
             <span class="label label-segment label-icon">S</span>
 
             <a class="point"
-               ng-click="showRefSegment(node.ref)"
+               ng-click="showRefSegment(node.id)"
                class="concise-view" ng-if="options.concise"
                tooltip-html="getSegmentRefNodeName(node)" tooltip-append-to-body="true"
                tooltip-class="constraints-tooltip" ng-bind-html="getSegmentRefNodeName(node)"
@@ -667,7 +690,7 @@
 </script>
 
 <script type="text/ng-template" id="DatatypeComponentReadTree.html">
-    <tr pv-node  is-branch="hasRelevantChild(node)" node="node">
+    <tr pv-node is-branch="hasRelevantChild(node)" node="node">
         <td class="col-xs-2 col-fixed-350"
             ng-class="{'name-concise-view concise-view':options.concise, 'expanded-view': !options.concise}">
              <span
@@ -676,7 +699,7 @@
                      tooltip-class="constraints-tooltip"
                      tooltip-trigger tooltip-animation="false" tooltip-placement="left">
                                     <span class="label label-component label-icon">C</span>
-<span>{{::getComponentNodeName2(node)}}</span>
+				 <span>{{::getComponentNodeName2(node)}}</span>
                   </span>
 
 
@@ -1283,14 +1306,16 @@
                     </tr>                    
                 </table>
 	
-<table ng-if="hasContextConfStatement()" class="table treetable table-condensed table-bordered table-line-break">
+<!--<table ng-if="hasContextConfStatement()" class="table treetable table-condensed table-bordered table-line-break">-->
+	<table ng-if="dt.selfConformanceStatements.length >0" class="table treetable table-condensed table-bordered table-line-break">
     <thead>
         <tr class="tbl-header">
             <th class="col-xs-4" ng-style="csWidth">Conformance Statements</th>
         </tr>
     </thead>
     <tbody>
-        <tr ng-repeat="cst in dt.conformanceStatements | filter: isContextConfStatement">           
+       <!-- <tr ng-repeat="cst in dt.selfConformanceStatements | filter: isContextConfStatement">  -->
+		<tr ng-repeat="cst in dt.selfConformanceStatements">          
         	<td>
             	<span>{{::cst.constraintId}} : {{::cst.description}}</span>            	
         	</td>

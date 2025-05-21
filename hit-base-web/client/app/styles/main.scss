@@ -1508,6 +1508,14 @@ li.validation-result-subtab {
   background-color: black;
 }
 
+.tooltip.segment-tooltip .tooltip-inner{
+  color: white;
+  background-color: black;
+  max-width: none;
+  white-space: nowrap;
+  text-align: left;
+}
+
 //.pvt{
 //  width:800px;
 //}
