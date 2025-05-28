@@ -347,6 +347,8 @@ app.factory('interceptor4', function ($q, $rootScope, $location, StorageService,
 
 
 app.run(function (Session, $rootScope, $location, $modal, TestingSettings, AppInfo, $q, $sce, $templateCache, $compile, StorageService, $window, $route, $timeout, $http, User, Idle, Transport, IdleService, userInfoService, base64, Notification, DomainsManager, $filter) {
+	   
+	
 	StorageService.set(StorageService.ACTIVE_SUB_TAB_KEY,null);
     var domainParam = $location.search()['d'] ? decodeURIComponent($location.search()['d']) : null;
 
@@ -468,7 +470,18 @@ app.run(function (Session, $rootScope, $location, $modal, TestingSettings, AppIn
             
 	};
 
-    $rootScope.appLoad(domainParam);
+	userInfoService.loadFromServer().then(function (currentUser) {
+	        if (currentUser !== null && currentUser.accountId != null && currentUser.accountId != undefined) {
+	            initUser(currentUser);
+	        } else {
+	            $rootScope.createGuestIfNotExist();
+	        }
+			$rootScope.appLoad(domainParam);
+	    }, function (error) {
+	        $rootScope.createGuestIfNotExist();
+	    });
+	
+    
 
 
     $rootScope.appInfo = {};
@@ -872,16 +885,16 @@ app.run(function (Session, $rootScope, $location, $modal, TestingSettings, AppIn
     };
 
     //loadAppInfo();
-    userInfoService.loadFromServer().then(function (currentUser) {
-//        console.log("currentUser=" + angular.toJson(currentUser));
-        if (currentUser !== null && currentUser.accountId != null && currentUser.accountId != undefined) {
-            initUser(currentUser);
-        } else {
-            $rootScope.createGuestIfNotExist();
-        }
-    }, function (error) {
-        $rootScope.createGuestIfNotExist();
-    });
+//    userInfoService.loadFromServer().then(function (currentUser) {
+////        console.log("currentUser=" + angular.toJson(currentUser));
+//        if (currentUser !== null && currentUser.accountId != null && currentUser.accountId != undefined) {
+//            initUser(currentUser);
+//        } else {
+//            $rootScope.createGuestIfNotExist();
+//        }
+//    }, function (error) {
+//        $rootScope.createGuestIfNotExist();
+//    });
 
 
     $rootScope.getAppInfo = function () {

@@ -954,7 +954,7 @@ angular.module('cf')
                         $scope.groupScopes = [$scope.allGroupScopes[0]];
                     }
 					var tmp = StorageService.get(StorageService.CF_MANAGE_SELECTED_TESTPLAN_TYPE_KEY);
-					$scope.selectedScope.key = tmp && tmp != null ? tmp : $scope.groupScopes[1].key;
+					$scope.selectedScope.key = tmp && tmp != null ? tmp : $scope.groupScopes[0].key;
 					
 //                    $scope.selectedScope.key = $scope.groupScopes[0].key;
                     $scope.testcase = null;

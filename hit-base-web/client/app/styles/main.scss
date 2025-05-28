@@ -1164,7 +1164,6 @@ table.cf-profiles{
 .nav-tabs > li.active > a, .nav-tabs > li > a:hover, .nav-tabs > li.active > a:hover {
   background-color: #428bca;
   border-color: #bce8f1;
-  //border: 0px;
   color: white;
   cursor: pointer;
 }
@@ -1932,7 +1931,8 @@ ul.base-menu, ul.base-menu > li {
 }
 
 .label-segment {
-  background-color: #0f44f2;
+background-color: #428bca;	
+  //background-color: #0f44f2;
 }
 
 .label-field {
@@ -1947,10 +1947,101 @@ ul.base-menu, ul.base-menu > li {
   background-color: rgba(0, 0, 0, 0.91);
 }
 
-
 .label-datatype {
-  background-color: rgba(30, 24, 242, 0.91);
+	background-color: #964B00;
 }
+
+.nav-tabs > li > a.message{
+	background-color: #7A288A;
+	color:white;
+	opacity: 0.65;
+}
+
+.nav-tabs > li > a.segment{
+	background-color: #428bca;
+	color:white;
+	opacity: 0.65;
+}
+
+.nav-tabs > li > a.group{
+	background-color: #5cb85c;
+	color:white;
+	opacity: 0.65;
+}
+
+.nav-tabs > li > a.datatypes{
+	background-color: #964B00;
+	color:white;
+	opacity: 0.65;
+}
+
+.nav-tabs > li > a.confstatements{
+	background-color: #97a4ad;
+	color:white;
+	opacity: 0.65;
+}
+
+.nav-tabs > li > a.testassertions{
+	background-color: #97a4ad;
+	color:white;
+	opacity: 0.65;
+}
+
+.nav-tabs.profile-tabs > li.active > a.message, .nav-tabs.profile-tabs > li > a.message:hover, .nav-tabs.profile-tabs > li.active > a.message:hover {
+  background-color: rgb(195, 57, 222);
+  font-weight: 1000;
+  opacity: 1;
+  cursor: pointer;
+}
+
+.nav-tabs.profile-tabs > li.active > a.group, .nav-tabs.profile-tabs > li > a.group:hover, .nav-tabs.profile-tabs > li.active > a.group:hover {
+  background-color: rgb(50, 231, 51);
+  font-weight: bold;
+  opacity: 1;
+  cursor: pointer;
+}
+
+.nav-tabs.profile-tabs > li.active > a.segment, .nav-tabs.profile-tabs > li > a.segment:hover, .nav-tabs.profile-tabs > li.active > a.segment:hover {
+  background-color:  #0f44f2;
+  font-weight: 1000;
+  opacity: 1;
+  cursor: pointer;
+}
+
+.nav-tabs.profile-tabs > li.active > a.datatypes, .nav-tabs.profile-tabs > li > a.datatypes:hover, .nav-tabs.profile-tabs > li.active > a.datatypes:hover {
+  background-color: rgb(226, 113, 0);
+  font-weight: 1000;
+  opacity: 1;
+  cursor: pointer;
+}
+
+.nav-tabs.profile-tabs > li.active > a.confstatements, .nav-tabs.profile-tabs > li > a.confstatements:hover, .nav-tabs.profile-tabs > li.active > a.confstatements:hover {
+  background-color: rgb(95, 104, 111);
+  font-weight: 1000;
+  opacity: 1;
+  cursor: pointer;
+}
+
+.nav-tabs.profile-tabs > li.active > a.testassertions, .nav-tabs.profile-tabs > li > a.testassertions:hover, .nav-tabs.profile-tabs > li.active > a.testassertions:hover {
+  background-color: rgb(95, 104, 111);
+  font-weight: 1000;
+  opacity: 1;
+  cursor: pointer;
+}
+
+.conformanceStatementAccordion >.panel-group >.panel-info>.panel-heading {
+	background-color: rgb(95, 104, 111);
+	color:white;
+}
+
+.conformanceStatementAccordion >.panel-group >.panel-info>.panel-collapse>.panel-body {
+	background-color: #97a4ad;	
+	border-top-color: #97a4ad;
+}
+
+.table-striped>tbody>tr:nth-of-type(even){
+	background-color: white;
+} 
 
 .nodata{
   background-color: #f5f5f5;
@@ -2420,6 +2511,17 @@ div.vocab-result-table-container,div.doc-testcase-tree-container,div.vocab-tab-t
   height: 20px;
 }
 
+
+.tbl-header{
+  max-height: 20px;
+  height: 20px;
+}
+
+.tbl-header.conformanceStatementHeader {
+	background-color: #d5d5d5;
+}
+
+
 .table-header{
   color: #3a87ad;
   //  border:1px solid #ddd;
@@ -2454,6 +2556,10 @@ ul.dropdown-menu > li > a:hover,ul.dropdown-menu > li > a:focus {
 ul.nav-tabs > li {
   border-top-left-radius:2px;
   border-top-right-radius:2px;
+}
+
+ul.nav-tabs.profile-tabs > li {
+ margin-top:5px;
 }
 
 .console-dlg {
@@ -2837,4 +2943,7 @@ ul.dropdown-menu > li.domain-selected, ul.dropdown-menu > li.domain-selected > a
   pointer-events: none;     // <---- key point
   opacity: 0.7;
 }
+
+
+
 

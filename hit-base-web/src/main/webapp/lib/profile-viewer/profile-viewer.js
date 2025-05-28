@@ -24,6 +24,7 @@
       $scope.testCase = null;
       $scope.elements = [];
       $scope.confStatementsActive = false;
+	  $scope.testAssertionsActive = false;
       $scope.nodeData = [];
       $scope.loading = false;
       $scope.error = null;
@@ -173,9 +174,9 @@
        * @param id
        */
       $scope.showRefSegment = function (id) {
-        if ($scope.model.segmentList.length > 0 && id)
-          for (var i = 0; i < $scope.model.segmentList.length; i++) {
-            var element = $scope.model.segmentList[i];
+        if ($scope.model.segmentAndGroupList.length > 0 && id)
+          for (var i = 0; i < $scope.model.segmentAndGroupList.length; i++) {
+            var element = $scope.model.segmentAndGroupList[i];
             if (element.id == id) {
               $scope.getTabContent(element);
             }
@@ -188,12 +189,13 @@
        * @returns {boolean}
        */
       $scope.isRelevant = function (node) {
-        return (node === undefined && $scope.options.relevance) ? true : isNodeUsageRelevant(node);
+//		return (node === undefined && $scope.options.relevance) ? true : isNodeUsageRelevant(node);
+        return isNodeUsageRelevant(node);
       };
 
       var isNodeUsageRelevant = function (node) {
 //        if (node.hide == undefined || !node.hide || node.hide === false) {
-		if ($scope.options.relevance){
+//		if ($scope.options.relevance){
           if (node.selfPredicates && node.selfPredicates != null && node.selfPredicates.length > 0) {
             var predicateCheck = node.selfPredicates[0].trueUsage === "R" || node.selfPredicates[0].trueUsage === "RE" || node.selfPredicates[0].falseUsage === "R" || node.selfPredicates[0].falseUsage === "RE";
 			if (predicateCheck === true){
@@ -209,9 +211,9 @@
           } else {
             return node.usage == null || !node.usage || node.usage === "R" || node.usage === "RE";
           }
-        } else {
-          return false;
-        }
+//        } else {
+//          return false;
+//        }
       };
 
 
@@ -220,7 +222,9 @@
        * @param collapse
        */
       $scope.collapseAll = function (collapse) {
+		
         $scope.options.collapse = collapse;
+//		$scope.refreshWithState("collapsed");
         refresh();
       };
 
@@ -481,13 +485,29 @@
         if (contraints.length > 0) {
           for (var i = 0; i < contraints.length; i++) {
             var c = contraints[i];
-            if (c.constraintId === contraint.constraintId) {
+            if (c=== contraint) {
               return true;
             }
           }
         }
         return false;
       };
+	  
+	  
+	  var constraintIsTestAssertion = function (constraint){
+		if (constraint.reference && constraint.reference.source === "testcase"){
+			return true;	
+		}else{
+			return false;
+		}
+	  }
+	  
+	  $scope.constraintIsTestAssertion = function(item) {	      
+			if (item.reference && item.reference.source === "testcase"){
+						return true;	
+			}
+	    };
+	  
 
       /**
        *
@@ -531,7 +551,11 @@
         if (element.conformanceStatements && element.conformanceStatements.length > 0) {
           for (var i = 0; i < element.conformanceStatements.length; i++) {
             if (!constraintExits(element.conformanceStatements[i], $scope.model.confStatementList)) {
-              $scope.model.confStatementList.push(element.conformanceStatements[i]);
+				if (constraintIsTestAssertion(element.conformanceStatements[i])){
+					$scope.model.testAssertionsList.push(element.conformanceStatements[i]);
+				}else{
+					$scope.model.confStatementList.push(element.conformanceStatements[i]);
+				}             
             }
           }
         }
@@ -548,7 +572,11 @@
         if (element.selfConformanceStatements && element.selfConformanceStatements.length > 0) {
           for (var i = 0; i < element.selfConformanceStatements.length; i++) {
             if (!constraintExits(element.selfConformanceStatements[i], $scope.model.confStatementList)) {
-              $scope.model.confStatementList.push(element.selfConformanceStatements[i]);
+				if (constraintIsTestAssertion(element.selfConformanceStatements[i])){
+					$scope.model.testAssertionsList.push(element.selfConformanceStatements[i]);
+				}else{
+					$scope.model.confStatementList.push(element.selfConformanceStatements[i]);
+				}
             }
           }
         }
@@ -713,19 +741,17 @@
 		
 		console.time('completeMessageExecution');
 		$scope.numberOfElement = 0;
-		
-		
 		$scope.allElementsModel = structuredClone($scope.model);
 		$scope.allElementsModel.message = completeMessage($scope.allElementsModel.message);
 		$scope.allElementsModel.message.children = sortByPosition($scope.allElementsModel.message.children);
 		$scope.allElementsModel.datatypeList  = processDataTypeList($scope.allElementsModel);
-		$scope.allElementsModel.confStatementList.sort((a, b) => a.constraintId.localeCompare(b.constraintId));
-		
+		$scope.allElementsModel.confStatementList.sort((a, b) => a.constraintId.localeCompare(b.constraintId));		
 		console.timeEnd('completeMessageExecution');
 		
-		console.time('filter');
+		console.time('filtering only relevant ');
 		$scope.onlyRelevantElementsModel = structuredClone($scope.allElementsModel);//angular.copy($scope.allElementsModel);
 		$scope.onlyRelevantElementsModel.segmentList = [];
+		$scope.onlyRelevantElementsModel.segmentAndGroupList = [];
 		filterMessage($scope.onlyRelevantElementsModel.message);
 		$scope.onlyRelevantElementsModel.datatypeList = filterDataTypeList($scope.onlyRelevantElementsModel.datatypeList);
 		console.timeEnd('filter');	
@@ -757,8 +783,11 @@
   		}
 	  
 	  
-			var completeMessage = function(message) {		
-		    message.selfConformanceStatements = message.conformanceStatements;
+		var completeMessage = function(message) {
+			if (message.conformanceStatements){
+				message.selfConformanceStatements = message.conformanceStatements.filter(item => !constraintIsTestAssertion(item)).toSorted(function(a, b) {return a.constraintId.localeCompare(b.constraintId);});
+						message.testAssertionsList = message.conformanceStatements.filter(item => constraintIsTestAssertion(item)).toSorted(function(a, b) {return a.constraintId.localeCompare(b.constraintId);});	
+			}		   
 			message.children = processMessageTabChildrenConstraints(message,[]);	
 			angular.forEach(message.children, function(segmentRefOrGroup) {
 				processElementCM(segmentRefOrGroup,message);
@@ -789,11 +818,12 @@
 			var seg = $scope.model.segments[segRef.ref];
 			segRef.children = seg.children;
 			segRef.dynamicMaps = seg.dynamicMaps;
-			segRef.children = processSegmentRefChildrenConstraints(segRef, []);			
+			segRef.children = processSegmentRefChildrenConstraints(segRef, []);		
+			$scope.allElementsModel.segmentList.push(segRef);
+			$scope.allElementsModel.segmentAndGroupList.push(segRef);	
 			angular.forEach(segRef.children, function(field) {
 				processFieldCM(field, segRef);
 			});
-			$scope.allElementsModel.segmentList.push(segRef);
 			
 		};
 
@@ -801,9 +831,11 @@
 		var processGroupCM = function(group, parent) {
 			$scope.numberOfElement++;
 			group.children = processGroupChildrenConstraints(group, []);
+			$scope.allElementsModel.segmentAndGroupList.push(group);
 			angular.forEach(group.children, function(segmentRefOrGroup) {
 				processElementCM(segmentRefOrGroup, group);
 			});
+			
 			
 		};
 
@@ -877,16 +909,19 @@
 		
 		  
 		var filterSegRef = function(segRef, messageOrGroup) {					
-			segRef.children = segRef.children.filter(item => item.relevant == true);					
+			segRef.children = segRef.children.filter(item => item.relevant == true);	
+			$scope.onlyRelevantElementsModel.segmentList.push(segRef);		
+			$scope.onlyRelevantElementsModel.segmentAndGroupList.push(segRef);				
 			angular.forEach(segRef.children, function(field) {
 				filterField(field, segRef);
 			});			
-			$scope.onlyRelevantElementsModel.segmentList.push(segRef);		
+				
 		};
 
 
 		var filterGroup = function(group, parent) {
-			group.children = group.children.filter(item => item.relevant == true);					
+			group.children = group.children.filter(item => item.relevant == true);	
+			$scope.onlyRelevantElementsModel.segmentAndGroupList.push(group);					
 			angular.forEach(group.children, function(segmentRefOrGroup) {
 				filterElement(segmentRefOrGroup, group);
 			});
@@ -1029,11 +1064,13 @@
           $scope.model =   $scope.originalModel;
           if ($scope.model != null) {
             $scope.model.datatypeList = [];
-			$scope.model.datatypeListV2 = [];
+			$scope.model.testAssertionsList = [];
             $scope.model.segmentList = [];
+			$scope.model.segmentAndGroupList = [];
             $scope.model.predicateList = [];
             $scope.model.confStatementList = [];
             $scope.model.tmpConfStatementList = [];//.concat($scope.model.confStatementList);
+			$scope.model.tmpTestAssertionsList = [];
             processMessage();
 			if ($scope.options.relevance && $scope.onlyRelevantElementsModel != null) {
 	          $scope.model = $scope.onlyRelevantElementsModel;
@@ -1129,8 +1166,10 @@
 //				if (child.selfPredicates.length > 0){
 	
 					
-				child.selfConformanceStatements = $scope.model.datatypes[child.datatype].conformanceStatements;
-	
+				child.selfConformanceStatements = $scope.model.datatypes[child.datatype].conformanceStatements.filter(item => !constraintIsTestAssertion(item)).toSorted(function(a, b) {return a.constraintId.localeCompare(b.constraintId);});
+				child.testAssertionsList = $scope.model.datatypes[child.datatype].conformanceStatements.filter(item => constraintIsTestAssertion(item)).toSorted(function(a, b) {return a.constraintId.localeCompare(b.constraintId);});
+
+				
 					angular.forEach($scope.allElementsModel.datatypeList, function (datatype) {
 						if (child.datatype === datatype.id){
 							datatype.possiblePredicates = child.selfPredicates;
@@ -1206,7 +1245,8 @@
 //					wantedChildren.push(child);
 //				}
 
-				child.selfConformanceStatements = $scope.model.datatypes[child.datatype].conformanceStatements;
+				child.selfConformanceStatements = $scope.model.datatypes[child.datatype].conformanceStatements.filter(item => !constraintIsTestAssertion(item)).toSorted(function(a, b) {return a.constraintId.localeCompare(b.constraintId);});
+				child.testAssertionsList = $scope.model.datatypes[child.datatype].conformanceStatements.filter(item => constraintIsTestAssertion(item)).toSorted(function(a, b) {return a.constraintId.localeCompare(b.constraintId);});
 
 
 				angular.forEach($scope.allElementsModel.datatypeList, function (datatype) {
@@ -1259,7 +1299,10 @@
 //					wantedChildren.push(child);
 //				}
 
-				child.selfConformanceStatements = $scope.model.datatypes[child.datatype].conformanceStatements;
+				child.selfConformanceStatements = $scope.model.datatypes[child.datatype].conformanceStatements.filter(item => !constraintIsTestAssertion(item)).toSorted(function(a, b) {return a.constraintId.localeCompare(b.constraintId);});
+				child.testAssertionsList = $scope.model.datatypes[child.datatype].conformanceStatements.filter(item => constraintIsTestAssertion(item)).toSorted(function(a, b) {return a.constraintId.localeCompare(b.constraintId);});
+
+				
 				if ($scope.isRelevant(child)){
 					child.relevant = true;					
 				}else{
@@ -1301,9 +1344,9 @@
 //				}
 
 				if (child.type ==="SEGMENT_REF"){
-					child.selfConformanceStatements = $scope.model.segments[child.ref].conformanceStatements;
+					child.selfConformanceStatements = $scope.model.segments[child.ref].conformanceStatements.filter(item => !constraintIsTestAssertion(item)).toSorted(function(a, b) {return a.constraintId.localeCompare(b.constraintId);});
 				}else if (child.type ==="GROUP"){
-						child.selfConformanceStatements = child.conformanceStatements;
+					child.testAssertionsList = child.conformanceStatements.filter(item => constraintIsTestAssertion(item)).toSorted(function(a, b) {return a.constraintId.localeCompare(b.constraintId);});
 				}
 				if ($scope.isRelevant(child)){
 					child.relevant = true;					
@@ -1354,9 +1397,12 @@
 //					wantedChildren.push(child);
 //				}
  				
-					child.selfConformanceStatements = $scope.model.datatypes[child.datatype].conformanceStatements;
-				
-				
+					child.selfConformanceStatements = $scope.model.datatypes[child.datatype].conformanceStatements.filter(item => !constraintIsTestAssertion(item)).toSorted(function(a, b) {return a.constraintId.localeCompare(b.constraintId);});
+					child.testAssertionsList = $scope.model.datatypes[child.datatype].conformanceStatements.filter(item => constraintIsTestAssertion(item)).toSorted(function(a, b) {return a.constraintId.localeCompare(b.constraintId);});
+
+					
+					
+					
 				
 				angular.forEach($scope.allElementsModel.datatypeList, function (datatype) {
 					if (child.datatype === datatype.id){
@@ -1394,7 +1440,7 @@
 				}
 
 			}
-			return confStatements;
+			return confStatements.sort(function(a, b) {return a.constraintId.localeCompare(b.constraintId);});
 		};
 
 
@@ -1411,7 +1457,7 @@
 				}
 
 			}
-			return confStatements;
+			return confStatements.sort(function(a, b) {return a.constraintId.localeCompare(b.constraintId);});
 		};
 
 
@@ -1442,7 +1488,10 @@
 //					wantedChildren.push(child);
 //				}
 
-				child.selfConformanceStatements = child.conformanceStatements;
+				child.selfConformanceStatements = child.conformanceStatements.filter(item => !constraintIsTestAssertion(item)).toSorted(function(a, b) {return a.constraintId.localeCompare(b.constraintId);});
+				child.testAssertionsList = child.conformanceStatements.filter(item => constraintIsTestAssertion(item)).toSorted(function(a, b) {return a.constraintId.localeCompare(b.constraintId);});
+				
+				
 				if ($scope.isRelevant(child)){
 					child.relevant = true;					
 				}else{
@@ -1481,9 +1530,11 @@
 //				}
 
 				if (child.type ==="SEGMENT_REF"){
-					child.selfConformanceStatements = $scope.model.segments[child.ref].conformanceStatements;
+					child.selfConformanceStatements = $scope.model.segments[child.ref].conformanceStatements.filter(item => !constraintIsTestAssertion(item)).toSorted(function(a, b) {return a.constraintId.localeCompare(b.constraintId);});
+					child.testAssertionsList = $scope.model.segments[child.ref].conformanceStatements.filter(item => constraintIsTestAssertion(item)).toSorted(function(a, b) {return a.constraintId.localeCompare(b.constraintId);});
 				}else if (child.type ==="GROUP"){
-					child.selfConformanceStatements = child.conformanceStatements;
+					child.selfConformanceStatements = child.conformanceStatements.filter(item => !constraintIsTestAssertion(item)).toSorted(function(a, b) {return a.constraintId.localeCompare(b.constraintId);});
+					child.testAssertionsList = child.conformanceStatements.filter(item => constraintIsTestAssertion(item)).toSorted(function(a, b) {return a.constraintId.localeCompare(b.constraintId);});
 				}
 				
 				if ($scope.isRelevant(child)){
@@ -1515,7 +1566,9 @@
 //        segORGroup.selfConformanceStatements = segORGroup.selfConformanceStatements.concat(getMessageLevelConfStatements(segORGroup));
         segORGroup.selfPredicates = segORGroup.selfPredicates.concat(getMessageLevelPredicates(segORGroup));
 		
-		segORGroup.selfConformanceStatements = segORGroup.conformanceStatements;
+		
+		segORGroup.selfConformanceStatements = segORGroup.conformanceStatements.filter(item => !constraintIsTestAssertion(item)).toSorted(function(a, b) {return a.constraintId.localeCompare(b.constraintId);});
+		segORGroup.testAssertionsList = segORGroup.conformanceStatements.filter(item => constraintIsTestAssertion(item)).toSorted(function(a, b) {return a.constraintId.localeCompare(b.constraintId);});
       };
 
 
@@ -1540,7 +1593,8 @@
 //				   }
 				}
 	         }
-			 child.selfConformanceStatements  = confStatements;
+			 child.selfConformanceStatements  = confStatements.filter(item => !constraintIsTestAssertion(item)).toSorted(function(a, b) {return a.constraintId.localeCompare(b.constraintId);});
+			 child.testAssertionsList = confStatements.filter(item => constraintIsTestAssertion(item)).toSorted(function(a, b) {return a.constraintId.localeCompare(b.constraintId);});
 			
 		});
 		
@@ -1560,18 +1614,20 @@
           if ($scope.nodeData.type === 'SEGMENT' || $scope.nodeData.type === 'MESSAGE' || $scope.nodeData.type === 'SEGMENT_REF') {
 			if ($scope.nodeData.type === 'SEGMENT_REF') {
 				return $scope.nodeData.children;
-				children = processSegmentTabChildrenConstraints($scope.nodeData, removeCandidates);
+//				children = processSegmentTabChildrenConstraints($scope.nodeData, removeCandidates);
 			} 
 			else if ($scope.nodeData.type === 'SEGMENT') {
-              children = processSegmentTabChildrenConstraints($scope.nodeData, removeCandidates);
+//              children = processSegmentTabChildrenConstraints($scope.nodeData, removeCandidates);
             } else if ($scope.nodeData.type === 'MESSAGE') {
 				return $scope.nodeData.children;
-              children = processMessageTabChildrenConstraints($scope.nodeData, removeCandidates);
+//              children = processMessageTabChildrenConstraints($scope.nodeData, removeCandidates);
             }
           } else if ($scope.nodeData.type === 'DATATYPE') {
 			return $scope.nodeData.children;
-            children = processDataTypeTabChildrenConstraints();
-          }
+//            children = processDataTypeTabChildrenConstraints();
+          }	else if ($scope.nodeData.type === 'GROUP') {
+					return $scope.nodeData.children;
+			}
         } else {
 			return parent.children;
           if (parent.type === 'FIELD') {
@@ -1612,7 +1668,7 @@
           if ($scope.nodeData && $scope.nodeData.type != undefined) {
             if ($scope.nodeData.type === 'SEGMENT' || $scope.nodeData.type === 'SEGMENT_REF') {
               return node.type === 'SEGMENT' || node.type === 'SEGMENT_REF' ? 'SegmentReadTree.html' : node.type === 'FIELD' ? 'SegmentFieldReadTree.html' : node.type === 'DATATYPE' ? 'SegmentDatatypeReadTree.html' : 'SegmentComponentReadTree.html';
-            } else if ($scope.nodeData.type === 'MESSAGE') {
+            } else if ($scope.nodeData.type === 'MESSAGE' || $scope.nodeData.type === 'GROUP') {
               if (node.type === 'SEGMENT_REF') {
                 return 'MessageSegmentRefReadTree.html';
               } else if (node.type === 'GROUP') {
@@ -1639,7 +1695,7 @@
        */
       var refresh = function () {
         $rootScope.pvNodesMap = {};
-//        $scope.params.refreshWithState(!$scope.options.collapse ? 'expanded' : 'collapse');
+        $scope.params.refreshWithState(!$scope.options.collapse ? 'expanded' : 'collapse');
       };
 
       /**
@@ -1672,7 +1728,6 @@
        * @param selectedNode
        */
       $scope.getTabContent = function (selectedNode) {
-		console.time('getTabContent');
 						
         $scope.loadingTabContent = true;
         $timeout(function () {
@@ -1680,13 +1735,12 @@
             $scope.csWidth = 0;
             $scope.predWidth = 0;
             $scope.confStatementsActive = false;
+			$scope.testAssertionsActive = false;
 			$scope.nodeData = selectedNode;
 //            $scope.nodeData = angular.copy(selectedNode); // copy to not remove segment children when viewing segment tab concise 
             //                    $scope.options.collapse = selectedNode.type !== 'MESSAGE';
             $scope.options.collapse = true;
-			console.time('refresh');
             refresh();
-			console.timeEnd('refresh');
             $scope.predWidth = null;
             $scope.tableWidth = null;
             $scope.csWidth = null;
@@ -1695,7 +1749,6 @@
           }
           $scope.loadingTabContent = false;
         });
-		console.timeEnd('getTabContent');
       };
 
       /**
@@ -1749,10 +1802,8 @@
        *
        * @param value
        */
-      $scope.loadContent = function () {
-		console.time('loadContent');
-						
-        if (!$scope.confStatementsActive && $scope.nodeData != null) {
+      $scope.loadContent = function () {						
+        if (!$scope.confStatementsActive && $scope.testAssertionsActive && $scope.nodeData != null) {
           if ($scope.nodeData.name === 'FULL') {
             $scope.getTabContent($scope.model.message);
           } else if ($scope.nodeData.name === 'Datatypes') {
@@ -1763,8 +1814,9 @@
           }
         } else if ($scope.confStatementsActive) {
           $scope.showConfStatements();
-        }
-		console.timeEnd('loadContent');
+        }else if ($scope.testAssertionsActive){
+			$scope.showTestAssertions();
+		}
       };
 
       /**
@@ -1774,9 +1826,21 @@
         $scope.loadingTabContent = true;
         $timeout(function () {
           $scope.confStatementsActive = true;
+		  $scope.testAssertionsActive = false;
           $scope.loadingTabContent = false;
         });
       };
+	  
+	  
+	  $scope.showTestAssertions = function () {
+	        $scope.loadingTabContent = true;
+	        $timeout(function () {
+	          $scope.testAssertionsActive = true;
+			  $scope.confStatementsActive = false;
+	          $scope.loadingTabContent = false;
+	        });
+	      };
+	  
 
       /**
        *
@@ -1784,6 +1848,7 @@
        * @returns {string}
        */
       $scope.getPredicatesAsMultipleLinesString = function (node) {
+		if (!node) return;
         var predicates = node.selfPredicates;
         var html = "";
         if (predicates && predicates != null && predicates.length > 0) {
@@ -2683,19 +2748,29 @@
     $scope.compileElement = function (node, parentId, parentNode) {
       //var tpl = params.getTemplate(node);
 
-      var templatePromise = $http.get(params.getTemplate(node), { cache: $templateCache }).then(function (result) {
-        return result.data;
-      });
-
-      return templatePromise.then(function (template) {
-        var template_scope = $scope.$parent.$new();
-        angular.extend(template_scope, {
-          node: node,
-          parentNode: parentNode
-        });
-        template_scope._ttParentId = parentId;
-        return $compile(template)(template_scope).get(0);
-      })
+	  
+	  var template = $templateCache.get(params.getTemplate(node));
+	  var template_scope = $scope.$parent.$new();
+	          angular.extend(template_scope, {
+	            node: node,
+	            parentNode: parentNode
+	          });
+	          template_scope._ttParentId = parentId;
+	  return $compile(template)(template_scope).get(0);
+	  
+//      var templatePromise = $http.get(params.getTemplate(node), { cache: $templateCache }).then(function (result) {
+//        return result.data;
+//      });
+//
+//      return templatePromise.then(function (template) {
+//        var template_scope = $scope.$parent.$new();
+//        angular.extend(template_scope, {
+//          node: node,
+//          parentNode: parentNode
+//        });
+//        template_scope._ttParentId = parentId;
+//        return $compile(template)(template_scope).get(0);
+//      })
 
     };
 
@@ -2713,25 +2788,54 @@
       }
 
       var data = params.getNodes(parentNode);
-      var elementPromises = [];
-      angular.forEach(data, function (node) {
-        elementPromises.push($scope.compileElement(node, parentId, parentNode));
-      });
-
-      $q.all(elementPromises).then(function (newElements) {
-        var parentTtNode = parentId != null ? table.treetable("node", parentId) : null;
-
-        $element.treetable('loadBranch', parentTtNode, newElements);
-
-        if (shouldExpand) {
-          angular.forEach(newElements, function (el) {
-            $scope.addChildren($(el), shouldExpand);
-          });
-        }
-        if (parentElement && parentElement.scope()) {
-          parentElement.scope().loading = false;
-        }
-      });
+	  if (data.length > 0){
+		
+		var elementPromises = [];
+		var elements = [];
+		var elements2 = [];
+	      angular.forEach(data, function (node) {
+//	        elementPromises.push();
+			var ele = $scope.compileElement(node, parentId, parentNode);
+			elements.push({"node":node, "element":ele});
+			elements2.push(ele);
+	      });
+		  var parentTtNode = parentId != null ? table.treetable("node", parentId) : null;
+		  
+		  			$element.treetable('loadBranch', parentTtNode, elements2);				
+		  	        
+						angular.forEach(elements, function (el) {
+						if (shouldExpand && ((parentNode === null &&  el.node.type !=="SEGMENT_REF") || el.node.type === "GROUP"  )) {
+				            $scope.addChildren($(el.element), shouldExpand);
+							}
+				          });         		  	        
+		  	        if (parentElement && parentElement.scope()) {
+		  	          parentElement.scope().loading = false;
+		  	        }
+		  
+		  
+	
+//		  console.log("start promises "+ elementPromises.length);
+//	      $q.all(elementPromises).then(function (newElements) {
+//				console.log("done all promises "+ elementPromises.length);
+//		        var parentTtNode = parentId != null ? table.treetable("node", parentId) : null;
+//		
+//		        $element.treetable('loadBranch', parentTtNode, newElements);
+//		
+//		        if (shouldExpand) {
+//					console.log(newElements);
+//		          angular.forEach(newElements, function (el) {
+//					console.log("add children ",$(el));
+//		            $scope.addChildren($(el), shouldExpand);
+//		          });
+//		        }
+//		        if (parentElement && parentElement.scope()) {
+//		          parentElement.scope().loading = false;
+//		        }
+//		     });
+	  }
+      
+	  
+	  
     };
  
 
@@ -2757,16 +2861,14 @@
     /**
      * Rebuilds the entire table.
      */
-    $scope.refresh = function () {
-		console.log("refresh...");
+    $scope.refresh = function () {		
       if (table && table.data('treetable')) {
         var rootNodes = table.data('treetable').nodes;
         while (rootNodes.length > 0) {
           table.treetable('removeNode', rootNodes[0].id);
         }
         $scope.addChildren(null, $scope.shouldExpand());
-        $scope.toggleAllView();
-		console.log("end refresh...");
+		$scope.toggleAllView();
       }
     };
 
