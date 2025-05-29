@@ -754,7 +754,7 @@
 		$scope.onlyRelevantElementsModel.segmentAndGroupList = [];
 		filterMessage($scope.onlyRelevantElementsModel.message);
 		$scope.onlyRelevantElementsModel.datatypeList = filterDataTypeList($scope.onlyRelevantElementsModel.datatypeList);
-		console.timeEnd('filter');	
+		console.timeEnd('filtering only relevant');	
 			
       };
 	  
