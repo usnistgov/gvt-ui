@@ -55,6 +55,7 @@ angular.module('commonServices').factory('StorageService',
 			TEST_STEP_EXECUTION_STATUSES_KEY: 'testStepExecutionStatuses',
 			TEST_CASE_EXECUTION_STATUSES_KEY: 'testCaseExecutionStatuses',
 			TEST_CASE_VALIDATION_RESULTS_KEY: 'testCaseValidationResults',
+			USEHTTP: 'usehttp',
 
 
 			remove: function(key) {
