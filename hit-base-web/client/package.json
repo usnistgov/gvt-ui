@@ -47,7 +47,8 @@
 		"karma-script-launcher": "~0.1.0",
 		"load-grunt-tasks": "~0.2.0",
 		"requirejs": "~2.1.9",
-		"time-grunt": "~0.2.1"
+		"time-grunt": "~0.2.1",
+		"terser": "^5.16.1"
 	},
 	"engines": {
 		"node": ">=6.0.0"

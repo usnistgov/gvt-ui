@@ -1,0 +1,61 @@
+<tr pv-node  is-branch="hasRelevantChild(node)" node="node">
+        <td class="col-xs-2 col-fixed-350"
+            ng-class="{'name-concise-view concise-view':options.concise, 'expanded-view': !options.concise}">
+
+
+                <a class="point"
+						ng-click="showRefSegment(node.id)"
+                        tooltip-enable="options.concise"
+                        tooltip-html="getGroupNodeName(node)" tooltip-append-to-body="true"
+                        tooltip-class="constraints-tooltip"
+                        tooltip-trigger tooltip-animation="false" tooltip-placement="left">
+                                    <span class="label label-success label-icon">G</span>
+<span>{{::getGroupNodeName(node)}}</span>
+                  </a>
+
+
+        </td>
+        <td class="col-xs-1 col-fixed-80">
+            <span ng-bind="::node.usage"></span>
+            <span ng-repeat="p in node.selfPredicates">
+					({{::p.trueUsage}}/{{::p.falseUsage}})
+				</span>
+        </td>
+        <td class="col-xs-1 col-fixed-80">
+            [{{::node.min}}, {{::node.max}}]
+        </td>
+
+
+        <td class="col-xs-1 col-fixed-100 nodata">
+        </td>
+        <td class="col-xs-1 col-fixed-80 nodata">
+        </td>
+        <td class="col-xs-1 col-fixed-150 nodata">
+        </td>
+
+
+        <td class="col-xs-2 col-predicate" ng-style="predWidth">
+            <span class="predicate-concise-view concise-view" ng-if="options.concise"
+                  tooltip-html="getPredicatesAsMultipleLinesString(node)" tooltip-append-to-body="true"
+                  tooltip-class="constraints-tooltip" ng-bind-html="getPredicatesAsOneLineString(node)" tooltip-trigger
+                  tooltip-animation="false" tooltip-placement="left"></span>
+            <span ng-repeat="predicate in  node.selfPredicates" ng-if="!options.concise">
+                <span class="expanded-view">
+                    {{::predicate.description}}
+                </span>
+            </span>
+        </td>
+        <td class="col-xs-4 col-cs" ng-style="csWidth">
+            <span class="cs-concise-view concise-view" ng-if="options.concise"
+                  tooltip-html="getConfStatementsAsMultipleLinesString(node)" tooltip-append-to-body="true"
+                  tooltip-html="getConfStatementsAsMultipleLinesString(node)" tooltip-append-to-body="true"
+                  tooltip-class="constraints-tooltip" ng-bind-html="getConfStatementsAsOneLineString(node)"
+                  tooltip-trigger tooltip-animation="false" tooltip-placement="left"></span>
+            <span ng-repeat="confStatement in node.selfConformanceStatements" ng-if="!options.concise">
+                <span class="expanded-view">
+                   {{::confStatement.constraintId}} : {{::confStatement.description}}
+                </span>
+            </span>
+        </td>
+
+    </tr>

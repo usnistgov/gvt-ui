@@ -140,11 +140,11 @@
 
 </style>
 
-<div ng-class="{'notifications': showNotificationPanel, 'notificationsOff': !showNotificationPanel}" class="" ng-cloak="" ng-if="showNotificationPanel">
-	<div ng-repeat="not in notifications" class="row ns-box ns-bar ns-effect-slidetop ns-type-notice ns-show" style="display: flex" ng-show="not.visible !== false">
-		<div class="col-sm-1 ns-box-inner" style="flex: 1;max-width: 30px"><i class="fa fa-bullhorn" aria-hidden="true"></i></div>
+<div ng-controller="TopNotificationBannerCtrl" ng-show="showNotificationPanel" class="notifications">
+  <div ng-repeat="not in notifications" class="row ns-box ns-bar ns-effect-slidetop ns-type-notice ns-show" style="display: flex" ng-if="not.visible !== false">
+    <div class="col-sm-1 ns-box-inner" style="flex: 1;max-width: 30px"><i class="fa fa-bullhorn" aria-hidden="true"></i></div>
 		<div class="col-sm-11" style="flex: 1;align-self: center">
 			<p ng-bind-html="not.message"></p><span ng-show="not.dismissable" ng-click="addToHiddenList(not.id);" class="ns-close"></span>
 		</div>
-	</div>
+  </div>
 </div>

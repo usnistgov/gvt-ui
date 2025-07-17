@@ -1,0 +1,23 @@
+ <tr pv-node  is-branch="hasRelevantChild(node)" node="node">
+        <td class="col-xs-2 col-fixed-350"
+            ng-class="{'name-concise-view concise-view':options.concise, 'expanded-view': !options.concise}">
+            <span>{{::node.event}}^{{::node.structID}}:{{::node.description}}</span>
+        </td>
+        <td class="col-xs-1 col-fixed-80 nodata">
+        </td>
+        <td class="col-xs-1 col-fixed-80 nodata">
+        </td>
+
+        <td class="col-xs-1 col-fixed-100 nodata">
+        </td>
+        <td class="col-xs-1 col-fixed-80 nodata">
+        </td>
+
+        <td class="col-xs-1 col-fixed-150 nodata">
+        </td>
+
+        <td class="col-xs-2  nodata" ng-style="predWidth">
+        </td>
+        <td class="col-xs-4  nodata" ng-style="csWidth">
+        </td>
+    </tr>

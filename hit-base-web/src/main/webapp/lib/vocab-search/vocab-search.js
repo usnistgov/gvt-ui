@@ -11,7 +11,7 @@
         scope: {
           type: '@'
         },
-        templateUrl: 'VocabSearch.html',
+        templateUrl: 'lib/vocab-search/templates/VocabSearch.html',
         replace: false,
         controller: 'VocabSearchCtrl'
       };
@@ -177,7 +177,7 @@
       $scope.openCopyrightDlg = function () {
         $modalStack.dismissAll('close');
         var modalInstance = $modal.open({
-          templateUrl: 'ValueSetCopyrightCtrl.html',
+          templateUrl: 'lib/vocab-search/templates/ValueSetCopyrightCtrl.html',
           windowClass: 'valueset-modal',
           animation: false,
           keyboard: true,

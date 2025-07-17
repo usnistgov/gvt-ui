@@ -12,7 +12,7 @@
         scope: {
           type: '@'
         },
-        templateUrl: 'ProfileViewer.html',
+        templateUrl: 'lib/profile-viewer/templates/ProfileViewer.html',
         replace: false,
         controller: 'ProfileViewerCtrl'
       };
@@ -237,7 +237,7 @@
         $modalStack.dismissAll('close');
         var t = VocabularyService.findValueSetDefinition(tableId);
         $modal.open({
-          templateUrl: 'TableFoundCtrl.html',
+          templateUrl: 'lib/vocab-search/templates/TableFoundCtrl.html',
           controller: 'ProfileViewerValueSetDetailsCtrl',
           windowClass: 'valueset-modal',
           animation: false,
@@ -305,7 +305,7 @@
           flattenChildren(dt.children, dt.id,"COMPONENT");
 		  dt.children = $scope.allChildren;
 	      $modal.open({
-	        templateUrl: 'DataTypeDetailsModal.html',
+	        templateUrl: 'lib/profile-viewer/templates/DataTypeDetailsModal.html',
 	        controller: 'ProfileViewerDataTypeDetailsCtrl',
 	        windowClass: 'valueset-modal',
 	        animation: false,
@@ -767,16 +767,20 @@
 	  
 	  	var processDataTypeList = function(model) {			
 			
-  			angular.forEach(model.datatypeList, function(dataType) {
-				dataType.selfConformanceStatements  = dataType.conformanceStatements;
-				angular.forEach(dataType.children, function(component) {					
-					component.selfConformanceStatements  = model.datatypes[component.datatype].conformanceStatements;
-					angular.forEach(component.children, function(subcomponent) {
-						subcomponent.selfConformanceStatements  = model.datatypes[subcomponent.datatype].conformanceStatements;
-		  				subcomponent.type = "SUBCOMPONENT"; 						
-		  			});
-	  			});
-  			});
+			for (var dataType of model.datatypeList) {
+			  dataType.selfConformanceStatements = dataType.conformanceStatements;
+
+			  for (var component of dataType.children) {
+			    component.selfConformanceStatements = model.datatypes[component.datatype].conformanceStatements;
+				component.selfPredicates = getDatatypeLevelPredicates(component);
+
+			    for (var subcomponent of component.children) {
+			      subcomponent.selfConformanceStatements = model.datatypes[subcomponent.datatype].conformanceStatements;
+			      subcomponent.selfPredicates = getDatatypeLevelPredicates(subcomponent);
+			      subcomponent.type = "SUBCOMPONENT";
+			    }
+			  }
+			}
 			return model.datatypeList.toSorted(function(a, b) {
 	            return a.name.localeCompare(b.name);
 	          });
@@ -1343,11 +1347,20 @@
 //					wantedChildren.push(child);
 //				}
 
+//				if (child.type ==="SEGMENT_REF"){
+//					child.selfConformanceStatements = $scope.model.segments[child.ref].conformanceStatements.filter(item => !constraintIsTestAssertion(item)).toSorted(function(a, b) {return a.constraintId.localeCompare(b.constraintId);});
+//				}else if (child.type ==="GROUP"){
+//					child.testAssertionsList = child.conformanceStatements.filter(item => constraintIsTestAssertion(item)).toSorted(function(a, b) {return a.constraintId.localeCompare(b.constraintId);});
+//				}
+				
 				if (child.type ==="SEGMENT_REF"){
 					child.selfConformanceStatements = $scope.model.segments[child.ref].conformanceStatements.filter(item => !constraintIsTestAssertion(item)).toSorted(function(a, b) {return a.constraintId.localeCompare(b.constraintId);});
+					child.testAssertionsList = $scope.model.segments[child.ref].conformanceStatements.filter(item => constraintIsTestAssertion(item)).toSorted(function(a, b) {return a.constraintId.localeCompare(b.constraintId);});
 				}else if (child.type ==="GROUP"){
+					child.selfConformanceStatements = child.conformanceStatements.filter(item => !constraintIsTestAssertion(item)).toSorted(function(a, b) {return a.constraintId.localeCompare(b.constraintId);});
 					child.testAssertionsList = child.conformanceStatements.filter(item => constraintIsTestAssertion(item)).toSorted(function(a, b) {return a.constraintId.localeCompare(b.constraintId);});
 				}
+				
 				if ($scope.isRelevant(child)){
 					child.relevant = true;					
 				}else{
@@ -1667,21 +1680,21 @@
         getTemplate: function (node) {
           if ($scope.nodeData && $scope.nodeData.type != undefined) {
             if ($scope.nodeData.type === 'SEGMENT' || $scope.nodeData.type === 'SEGMENT_REF') {
-              return node.type === 'SEGMENT' || node.type === 'SEGMENT_REF' ? 'SegmentReadTree.html' : node.type === 'FIELD' ? 'SegmentFieldReadTree.html' : node.type === 'DATATYPE' ? 'SegmentDatatypeReadTree.html' : 'SegmentComponentReadTree.html';
+              return node.type === 'SEGMENT' || node.type === 'SEGMENT_REF' ? 'lib/profile-viewer/templates/SegmentReadTree.html' : node.type === 'FIELD' ? 'lib/profile-viewer/templates/SegmentFieldReadTree.html' : node.type === 'DATATYPE' ? 'lib/profile-viewer/templates/SegmentDatatypeReadTree.html' : 'lib/profile-viewer/templates/SegmentComponentReadTree.html';
             } else if ($scope.nodeData.type === 'MESSAGE' || $scope.nodeData.type === 'GROUP') {
               if (node.type === 'SEGMENT_REF') {
-                return 'MessageSegmentRefReadTree.html';
+                return 'lib/profile-viewer/templates/MessageSegmentRefReadTree.html';
               } else if (node.type === 'GROUP') {
-                return 'MessageGroupReadTree.html';
+                return 'lib/profile-viewer/templates/MessageGroupReadTree.html';
               } else if (node.type === 'FIELD') {
-                return 'MessageFieldViewTree.html';
+                return 'lib/profile-viewer/templates/MessageFieldViewTree.html';
               } else if (node.type === 'COMPONENT' || node.type === 'SUBCOMPONENT') {
-                return 'MessageComponentViewTree.html';
+                return 'lib/profile-viewer/templates/MessageComponentViewTree.html';
               } else if (node.type === 'DATATYPE') {
-                return 'MessageDatatypeViewTree.html';
+                return 'lib/profile-viewer/templates/MessageDatatypeViewTree.html';
               }
             } else if ($scope.nodeData.type === 'DATATYPE') {
-              return node.type === 'DATATYPE' ? 'DatatypeReadTree.html' : node.type === 'COMPONENT' ? 'DatatypeComponentReadTree.html' : 'DatatypeSubComponentReadTree.html';
+              return node.type === 'DATATYPE' ? 'lib/profile-viewer/templates/DatatypeReadTree.html' : node.type === 'COMPONENT' ? 'lib/profile-viewer/templates/DatatypeComponentReadTree.html' : 'lib/profile-viewer/templates/DatatypeSubComponentReadTree.html';
             }
           }
         },
@@ -1803,7 +1816,7 @@
        * @param value
        */
       $scope.loadContent = function () {						
-        if (!$scope.confStatementsActive && $scope.testAssertionsActive && $scope.nodeData != null) {
+        if (!$scope.confStatementsActive && !$scope.testAssertionsActive && $scope.nodeData != null) {
           if ($scope.nodeData.name === 'FULL') {
             $scope.getTabContent($scope.model.message);
           } else if ($scope.nodeData.name === 'Datatypes') {
@@ -2744,99 +2757,166 @@
 
     var params = $scope.pvParams;
     var table = $element;
+	
+	
+	$scope.compileElement = function (node, parentId, parentNode) {
+	    var deferred = $q.defer();
+	    var template_scope = $scope.$parent.$new();
 
-    $scope.compileElement = function (node, parentId, parentNode) {
-      //var tpl = params.getTemplate(node);
+	    angular.extend(template_scope, {
+	        node: node,
+	        parentNode: parentNode
+	    });
+	    template_scope._ttParentId = parentId;
 
-	  
-	  var template = $templateCache.get(params.getTemplate(node));
-	  var template_scope = $scope.$parent.$new();
-	          angular.extend(template_scope, {
-	            node: node,
-	            parentNode: parentNode
-	          });
-	          template_scope._ttParentId = parentId;
-	  return $compile(template)(template_scope).get(0);
-	  
-//      var templatePromise = $http.get(params.getTemplate(node), { cache: $templateCache }).then(function (result) {
-//        return result.data;
-//      });
+		
+	    var template = $templateCache.get(params.getTemplate(node));
+	    if (!template) {
+	        $http.get(params.getTemplate(node)).then(function(response) {
+	            template = response.data;
+	            $templateCache.put(params.getTemplate(node), template);
+	            var compiledElement = $compile(template)(template_scope).get(0);
+	            deferred.resolve(compiledElement);
+	        }, function(error) {
+	            deferred.reject(error);
+	        });
+	    } else {
+	        var compiledElement = $compile(template)(template_scope).get(0);
+	        deferred.resolve(compiledElement);
+	    }
+
+	    return deferred.promise;
+	};
+	
+	
+//    $scope.compileElement = function (node, parentId, parentNode) {
+//      //var tpl = params.getTemplate(node);
+//	   var template_scope = $scope.$parent.$new();
+//	  
+//		var template = $templateCache.get(params.getTemplate(node));
+//		if (!template) {
+//			
+//			angular.extend(template_scope, {
+//				node: node,
+//				parentNode: parentNode
+//			});
+//			template_scope._ttParentId = parentId;
+//			var templatePromise = $http.get(params.getTemplate(node)).then(function(response) {
+//				return response.data;				
+//			});
+//			
+//			templatePromise.then(function(template){
+//				$templateCache.put(params.getTemplate(node), template);
+//								console.log("compile",node.name);
+//								return $compile(template)(template_scope).get(0);
+//			})
 //
-//      return templatePromise.then(function (template) {
-//        var template_scope = $scope.$parent.$new();
-//        angular.extend(template_scope, {
-//          node: node,
-//          parentNode: parentNode
-//        });
-//        template_scope._ttParentId = parentId;
-//        return $compile(template)(template_scope).get(0);
-//      })
+//		} else {
+//			angular.extend(template_scope, {
+//				node: node,
+//				parentNode: parentNode
+//			});
+//			template_scope._ttParentId = parentId;
+//			return $compile(template)(template_scope).get(0);
+//		}
+//		
+//	  
+////      var templatePromise = $http.get(params.getTemplate(node), { cache: $templateCache }).then(function (result) {
+////        return result.data;
+////      });
+////
+////      return templatePromise.then(function (template) {
+////        var template_scope = $scope.$parent.$new();
+////        angular.extend(template_scope, {
+////          node: node,
+////          parentNode: parentNode
+////        });
+////        template_scope._ttParentId = parentId;
+////        return $compile(template)(template_scope).get(0);
+////      })
+//
+//    };
 
-    };
 
     /**
      * Expands the given node.
      * @param parentElement the parent node element, or null for the root
      * @param shouldExpand whether all descendants of `parentElement` should also be expanded
      */
-    $scope.addChildren = function (parentElement, shouldExpand) {
-      var parentNode = parentElement && parentElement.scope() ? parentElement.scope().node : null;
-      var parentId = parentElement ? parentElement.data('ttId') : null;
+	  $scope.addChildren = function(parentElement, shouldExpand) {
+		  var parentNode = parentElement && parentElement.scope() ? parentElement.scope().node : null;
+		  var parentId = parentElement ? parentElement.data('ttId') : null;
 
-      if (parentElement) {
-        parentElement.scope().loading = true;
-      }
+		  if (parentElement) {
+			  parentElement.scope().loading = true;
+		  }
 
-      var data = params.getNodes(parentNode);
-	  if (data.length > 0){
-		
-		var elementPromises = [];
-		var elements = [];
-		var elements2 = [];
-	      angular.forEach(data, function (node) {
-//	        elementPromises.push();
-			var ele = $scope.compileElement(node, parentId, parentNode);
-			elements.push({"node":node, "element":ele});
-			elements2.push(ele);
-	      });
-		  var parentTtNode = parentId != null ? table.treetable("node", parentId) : null;
-		  
-		  			$element.treetable('loadBranch', parentTtNode, elements2);				
-		  	        
-						angular.forEach(elements, function (el) {
-						if (shouldExpand && ((parentNode === null &&  el.node.type !=="SEGMENT_REF") || el.node.type === "GROUP"  )) {
-				            $scope.addChildren($(el.element), shouldExpand);
-							}
-				          });         		  	        
-		  	        if (parentElement && parentElement.scope()) {
-		  	          parentElement.scope().loading = false;
-		  	        }
-		  
-		  
-	
-//		  console.log("start promises "+ elementPromises.length);
-//	      $q.all(elementPromises).then(function (newElements) {
-//				console.log("done all promises "+ elementPromises.length);
-//		        var parentTtNode = parentId != null ? table.treetable("node", parentId) : null;
-//		
-//		        $element.treetable('loadBranch', parentTtNode, newElements);
-//		
-//		        if (shouldExpand) {
-//					console.log(newElements);
-//		          angular.forEach(newElements, function (el) {
-//					console.log("add children ",$(el));
-//		            $scope.addChildren($(el), shouldExpand);
-//		          });
-//		        }
-//		        if (parentElement && parentElement.scope()) {
-//		          parentElement.scope().loading = false;
-//		        }
-//		     });
-	  }
-      
-	  
-	  
-    };
+		  var data = params.getNodes(parentNode);
+		  if (data.length > 0) {
+
+			  var elements = [];
+			  var elements2 = [];
+
+			  function compileNodesInSeries(nodes, parentId, parentNode) {
+				  var index = 0;
+				  function next() {
+					  if (index >= nodes.length) {
+						  // All nodes processed
+						  return $q.when();
+					  }
+					  var node = nodes[index++];
+					  return $scope.compileElement(node, parentId, parentNode).then(function(ele) {
+						  elements.push({ "node": node, "element": ele });
+						  elements2.push(ele);
+						  // process next node
+						  return next();
+					  });
+				  }
+				  return next();
+			  }
+
+			  compileNodesInSeries(data, parentId, parentNode).then(function() {
+				  var parentTtNode = parentId != null ? table.treetable("node", parentId) : null;
+				  $element.treetable('loadBranch', parentTtNode, elements2);
+
+				  angular.forEach(elements, function(el) {
+					  if (shouldExpand && ((parentNode === null && el.node.type !== "SEGMENT_REF") || el.node.type === "GROUP")) {
+						  $scope.addChildren($(el.element), shouldExpand);
+					  }
+				  });
+				  if (parentElement && parentElement.scope()) {
+					  parentElement.scope().loading = false;
+				  }
+			  });
+
+
+
+
+
+
+			  //		  console.log("start promises "+ elementPromises.length);
+			  //	      $q.all(elementPromises).then(function (newElements) {
+			  //				console.log("done all promises "+ elementPromises.length);
+			  //		        var parentTtNode = parentId != null ? table.treetable("node", parentId) : null;
+			  //		
+			  //		        $element.treetable('loadBranch', parentTtNode, newElements);
+			  //		
+			  //		        if (shouldExpand) {
+			  //					console.log(newElements);
+			  //		          angular.forEach(newElements, function (el) {
+			  //					console.log("add children ",$(el));
+			  //		            $scope.addChildren($(el), shouldExpand);
+			  //		          });
+			  //		        }
+			  //		        if (parentElement && parentElement.scope()) {
+			  //		          parentElement.scope().loading = false;
+			  //		        }
+			  //		     });
+		  }
+
+
+
+	  };
  
 
     /**
@@ -3111,7 +3191,7 @@
 	  $scope.showValueSetDefinition = function (tableId) {
 	          var t = VocabularyService.findValueSetDefinition(tableId);
 	          $modal.open({
-	            templateUrl: 'TableFoundCtrl.html',
+	            templateUrl: 'lib/vocab-search/templates/TableFoundCtrl.html',
 	            controller: 'ProfileViewerValueSetDetailsCtrl',
 	            windowClass: 'valueset-modal',
 	            animation: false,

@@ -20,7 +20,7 @@
         <div>
           <h5>Application Information</h5>
           <ul>
-            <li>Date: {{appInfo.date |  date: 'MM/dd/yyyy'}} </li>
+            <li>Date: {{appInfo.date |  date: 'MM/dd/yyyy' : 'UTC'}} </li>
             <li>Application Version: {{appInfo.version}}</li>
             <li ng-if="domain.rsbVersion != null && domain.rsbVersion != ''">Resource Bundle Version:{{domain.rsbVersion}}</li>
             <li ng-if="domain.igVersion != null && domain.igVersion != ''">Ig Version:{{domain.igVersion}}</li>
@@ -52,7 +52,7 @@
       </td>
 
       <td class="box" ng-if="appInfo.options.DIVISION_LINK !== 'NA' && appInfo.options.DIVISION_LOGO !== 'NA' ">
-        <a ng-href="{{appInfo.options.DIVISION_LINK != null && appInfo.options.DIVISION_LINK != '' ? appInfo.options.DIVISION_LINK : 'http://www.itl.nist.gov'}}" target="_blank"><img class="footerImage" ng-src="{{appInfo.options.DIVISION_LOGO != null && appInfo.options.DIVISION_LOGO != '' ? appInfo.options.DIVISION_LOGO : 'images/itl-logo.jpg'}}" alt="{{appInfo.options.DIVISION_NAME != null && appInfo.options.DIVISION_NAME != '' ?  appInfo.options.DIVISION_NAME: 'ITL'}} Logo" title="{{appInfo.options.DIVISION_NAME != null && appInfo.options.DIVISION_NAME != ''  ?  appInfo.options.DIVISION_NAME: 'ITL'}} Logo" /></a>
+        <a ng-href="{{appInfo.options.DIVISION_LINK != null && appInfo.options.DIVISION_LINK != '' ? appInfo.options.DIVISION_LINK : 'https://www.nist.gov/itl'}}" target="_blank"><img class="footerImage" ng-src="{{appInfo.options.DIVISION_LOGO != null && appInfo.options.DIVISION_LOGO != '' ? appInfo.options.DIVISION_LOGO : 'images/itl_logo_new.png'}}" alt="{{appInfo.options.DIVISION_NAME != null && appInfo.options.DIVISION_NAME != '' ?  appInfo.options.DIVISION_NAME: 'Information Technology Laboratory'}}" title="{{appInfo.options.DIVISION_NAME != null && appInfo.options.DIVISION_NAME != ''  ?  appInfo.options.DIVISION_NAME: 'Information Technology Laboratory'}}" /></a>
       </td>
 
     </tr>

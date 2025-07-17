@@ -19,7 +19,7 @@
           cursor: '=',
           format: '='
         },
-        templateUrl: 'ValidationResult.html',
+        templateUrl: 'lib/validation-result/templates/ValidationResult.html',
         replace: false,
         controller: 'ValidationResultCtrl'
       };
@@ -31,7 +31,7 @@
     function () {
       return {
         restrict: 'A',
-        templateUrl: 'ValidationResultTable.html',
+        templateUrl: 'lib/validation-result/templates/ValidationResultTable.html',
         replace: false
       };
     }
@@ -106,7 +106,7 @@
 
       $scope.showDetails = function (element) {
         var modalInstance = $modal.open({
-          templateUrl: 'ValidationResultDetailsCtrl.html',
+          templateUrl: 'lib/validation-result/templates/ValidationResultDetailsCtrl.html',
           controller: 'ValidationResultDetailsCtrl',
           resolve: {
             selectedElement: function () {

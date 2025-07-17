@@ -3,6 +3,8 @@
 angular.module('cf')
     .controller('CFEnvCtrl', ['$scope', '$window', '$rootScope', 'CF', 'StorageService', '$timeout', 'TestCaseService', 'TestStepService', '$routeParams', '$location', 'userInfoService', '$modalStack', '$modal', function ($scope, $window, $rootScope, CB, StorageService, $timeout, TestCaseService, TestStepService, $routeParams, $location, userInfoService, $modalStack, $modal) {
 
+//		console.log("start CFEnvCtrl");
+		
         $scope.testCase = null;
         $scope.token = $routeParams.x;
         $scope.nav = $routeParams.nav;
@@ -11,7 +13,7 @@ angular.module('cf')
             $rootScope.setSubActive(tab);
             if (tab === '/cf_execution') {
                 $scope.$broadcast('event:cf:initExecution');
-            } else if (tab === '/cf_management') {
+            } else if (tab === '/cf_management') {				
                 $scope.$broadcast('event:cf:initManagement');
             }
         };
@@ -32,7 +34,7 @@ angular.module('cf')
             } else {
                 $timeout(function () {
                     $scope.setSubActive("/cf_management");
-                    $scope.$broadcast('cf:uploadToken', $scope.token);
+//                    $scope.$broadcast('cf:uploadToken', $scope.token);
                 });
             }
         } else {
@@ -387,6 +389,11 @@ angular.module('cf')
         $scope.resized = false;
         $scope.selectedItem = null;
         $scope.activeTab = 0;
+		
+		
+		$scope.options={
+			useHttp:StorageService.get(StorageService.USEHTTP) !== undefined && StorageService.get(StorageService.USEHTTP) !== null ? StorageService.get(StorageService.USEHTTP): true
+		};
 
         $scope.tError = null;
         $scope.tLoading = false;
@@ -520,7 +527,7 @@ angular.module('cf')
                     var id = $scope.cf.testCase.testContext.id;
                     var content = $scope.cf.message.content;
                     var label = $scope.cf.testCase.label;
-                    var validated = ServiceDelegator.getMessageValidator($scope.testCase.testContext.format).validate(id, content, null, "Free", $scope.cf.testCase.testContext.dqa === true ? $scope.dqaCodes : [], "1223");
+                    var validated = ServiceDelegator.getMessageValidator($scope.testCase.testContext.format).validate(id, content, null, "Free", $scope.cf.testCase.testContext.dqa === true ? $scope.dqaCodes : [], "1223", $scope.useHttp());
                     validated.then(function (mvResult) {
                         $scope.vLoading = false;
                         $scope.loadValidationResult(mvResult);
@@ -752,8 +759,58 @@ angular.module('cf')
                 }
             });
         };
+		
+		$scope.hasExternalValueSet = function(){
+			 var ctx = $scope.cf;
+			  if (!ctx || !ctx.testCase || !ctx.testCase.testContext) {
+			    return false;
+			  }
+			  var vocab = ctx.testCase.testContext.vocabularyLibrary;
+              if (!vocab || !vocab.json ) {
+                return false;
+              }
+			  
+			  if (vocab.json.hasExternal){
+				return true;
+			  }
+			  
+              //old version
+			  if (vocab.json.externalValueSetDefinitions && vocab.json.externalValueSetDefinitions.length > 0) {
+			    return true;
+			  }
 
+              //new version
+              if (vocab.json.valueSetDefinitions && vocab.json.valueSetDefinitions.length > 0){
+                for (var i = 0; i < vocab.json.valueSetDefinitions.length; i++) {
+                    var valueSetDefinition = vocab.json.valueSetDefinitions[i];
+                    for (var j = 0; j < valueSetDefinition.valueSetDefinitions.length; j++) {
+                        var valueSet = valueSetDefinition.valueSetDefinitions[j];
+                        if (valueSet.external) {
+                          return true;
+                        }
+                    }
+                }
+              }
 
+              return false;
+
+			};
+
+			$scope.useHttp = function(){
+				if ($scope.hasExternalValueSet() && $scope.options.useHttp ){
+					return true;
+				}else{
+					return false;
+				}
+			}
+			
+			$scope.onUseHttpChange = function(){
+				StorageService.set(StorageService.USEHTTP,$scope.options.useHttp);
+			}
+			
+			
+		
+			
     }]);
 
 
@@ -946,7 +1003,7 @@ angular.module('cf')
         });
 
         $scope.initManagement = function () {
-            $timeout(function () {
+//            $timeout(function () {
                 if ($rootScope.isCfManagementSupported() && userInfoService.isAuthenticated() && $rootScope.hasWriteAccess()) {
                     if (userInfoService.isAdmin() || userInfoService.isSupervisor()) {
                         $scope.groupScopes = $scope.allGroupScopes;
@@ -1001,7 +1058,7 @@ angular.module('cf')
                         }
                     }
                 }
-            }, 0);
+//            }, 0);
         };
 
         /**
@@ -2794,13 +2851,15 @@ angular.module('cf').controller('UploadTokenCheckCtrl', ['$scope', '$http', 'CF'
     if ($scope.token !== undefined && $scope.auth !== undefined) {
 
         //check if logged in
-        if (!userInfoService.isAuthenticated()) {
+//        if (!userInfoService.isAuthenticated()) {
+			//always relogin with auth even if we were logged in with another account.
             $scope.$emit('event:loginRequestWithAuth', $scope.auth, '/addprofiles?x=' + $scope.token + '&d=' + $scope.domain,true);
-        } else {
-			$rootScope.appLoad();
-			$rootScope.setDomain($scope.domain);
-            $location.url('/addprofiles?x=' + $scope.token + '&d=' + $scope.domain);         
-        }
+//        } else {
+			
+//			$rootScope.appLoad();
+//			$rootScope.setDomain($scope.domain);
+//            $location.url('/addprofiles?x=' + $scope.token + '&d=' + $scope.domain);         
+//        }
     }
 
 

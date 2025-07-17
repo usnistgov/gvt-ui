@@ -96,6 +96,11 @@
 
             </span>
                             <span class="row pull-right">
+                            
+                            <span title="Enable or disable external value set validation checks" ng-show="hasExternalValueSet()" >                          
+                            	<input class="point" ng-change= "onUseHttpChange()"ng-model="options.useHttp" id="useHttpCheckbox"
+								 type="checkbox"><label  class="point" for="useHttpCheckbox">External Value Set Validation</label>
+							</span>
                                 <!--<button title="Validate" type="button" class="btn btn-xs btn-info" ng-show="cf.testCase.testContext.dqa === true"-->
                                         <!--ng-click="showDQAOptions()">-->
                                     <!--<i class="fa fa-cog"></i>-->
