@@ -1849,18 +1849,43 @@ angular.module('cb')
       });
     };
 
-	$scope.hasExternalValueSet = function(){
-		  var ctx = $scope.cb;
-		  if (!ctx || !ctx.testStep || !ctx.testStep.testContext) {
-			  return false;
-		  }
-		  var vocab = ctx.testStep.testContext.vocabularyLibrary;
-		  if (!vocab || !vocab.json || !vocab.json.externalValueSetDefinitions) {
-			  return false;
-		  }
-		  return Array.isArray(vocab.json.externalValueSetDefinitions)
-			  && vocab.json.externalValueSetDefinitions.length > 0;
-	  };
+
+	  
+	  $scope.hasExternalValueSet = function(){
+	  			 var ctx = $scope.cb;
+				 if (!ctx || !ctx.testStep || !ctx.testStep.testContext) {
+				 			  return false;
+				 		  }
+		 		  var vocab = ctx.testStep.testContext.vocabularyLibrary;
+	                if (!vocab || !vocab.json ) {
+	                  return false;
+	                }
+	  			  
+	  			  if (vocab.json.hasExternal){
+	  				return true;
+	  			  }
+	  			  
+	                //old version
+	  			  if (vocab.json.externalValueSetDefinitions && vocab.json.externalValueSetDefinitions.length > 0) {
+	  			    return true;
+	  			  }
+
+	                //new version
+	                if (vocab.json.valueSetDefinitions && vocab.json.valueSetDefinitions.length > 0){
+	                  for (var i = 0; i < vocab.json.valueSetDefinitions.length; i++) {
+	                      var valueSetDefinition = vocab.json.valueSetDefinitions[i];
+	                      for (var j = 0; j < valueSetDefinition.valueSetDefinitions.length; j++) {
+	                          var valueSet = valueSetDefinition.valueSetDefinitions[j];
+	                          if (valueSet.external) {
+	                            return true;
+	                          }
+	                      }
+	                  }
+	                }
+
+	                return false;
+
+	  			};
 
 	  $scope.useHttp = function() {
 		  if ($scope.hasExternalValueSet() && $scope.options.useHttp) {
