@@ -1,0 +1,32 @@
+<tr pv-node  is-branch="hasRelevantChild(node)" node="node">
+        <td class="col-xs-2 col-fixed-350"
+            ng-class="{'name-concise-view concise-view':options.concise, 'expanded-view': !options.concise}">
+              <span
+                      tooltip-enable="options.concise"
+                      tooltip-html="getSegmentReadName(node)" tooltip-append-to-body="true"
+                      tooltip-class="constraints-tooltip"
+                      tooltip-trigger tooltip-animation="false" tooltip-placement="left">
+                                     <span class="label label-segment label-icon">S</span>
+<span>{{::getSegmentReadName(node)}}</span>
+                  </span>
+
+
+        </td>
+        <td class="col-xs-1 col-fixed-80 nodata">
+        </td>
+        <td class="col-xs-1 col-fixed-80 nodata">
+        </td>
+        <td class="col-xs-1 col-fixed-100 nodata">
+        </td>
+        <td class="col-xs-1 col-fixed-80 nodata">
+        </td>
+
+        <td class="col-xs-1 col-fixed-100 nodata">
+        </td>
+        <td class="col-xs-1 col-fixed-150 nodata">
+        </td>
+        <td class="col-xs-2 col-predicate  nodata" ng-style="predWidth">
+        </td>
+        <td class="col-xs-4 col-cs" ng-style="csWidth" class="nodata">
+        </td>
+    </tr>

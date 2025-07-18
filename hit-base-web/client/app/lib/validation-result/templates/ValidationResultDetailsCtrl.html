@@ -1,0 +1,29 @@
+<div class="modal-header modal-wide">
+          <span style="font-weight: bold; font-size: 20px">
+            <span class="modal-title" ng-bind="selectedElement.path"></span>
+          </span>
+    <span class="pull-right">
+             <button class="btn btn-primary" ng-click="ok()">Close</button>
+        </span>
+  </div>
+  <div class="modal-body">
+    <div class="row">
+      <div ng-if="selectedElement.stackTrace && selectedElement.stackTrace != null">
+        <h4>StackTrace</h4>
+        <pre>
+               {{selectedElement.stackTrace | json}}
+            </pre>
+        <br/>
+      </div>
+      <div ng-if="selectedElement.metaData && selectedElement.metaData != null">
+        <h4>MetaData</h4>
+        <pre>
+               {{selectedElement.metaData | json}}
+            </pre>
+      </div>
+    </div>
+  </div>
+  </div>
+  <div class="modal-footer">
+
+  </div>

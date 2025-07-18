@@ -107,13 +107,33 @@ angular.module('cb')
       "Invalid message Sent. Please see console for more details."
     ];
 
-    var parseRequest = function (incoming) {
-      return incoming;
-    };
+	var parseRequest = function (incoming, protocol) {
+				if (protocol === "soap"){			
+				      if (incoming != null && incoming != '') {
+				        var x2js = new X2JS();
+				        var json = x2js.xml_str2json(incoming);
+				        if (json.Envelope.Body.submitSingleMessage && json.Envelope.Body.submitSingleMessage.hl7Message) {
+				          var hl7Message = SOAPEscaper.decodeXml(json.Envelope.Body.submitSingleMessage.hl7Message.toString());
+				          return hl7Message;
+				        }
+				      }		 			
+				}
+				return incoming;		  
+		    };
 
-    var parseResponse = function (outbound) {
-      return outbound;
-    };
+		    var parseResponse = function (outbound, protocol) {
+				if (protocol === "soap"){			
+				      if (outbound != null && outbound != '') {
+				        var x2js = new X2JS();
+				        var json = x2js.xml_str2json(outbound);
+				        if (json.Envelope.Body.submitSingleMessageResponse && json.Envelope.Body.submitSingleMessageResponse.return) {
+				          var hl7Message = SOAPEscaper.decodeXml(json.Envelope.Body.submitSingleMessageResponse.return.toString());
+				          return hl7Message;
+				        }
+				      }		 			
+				}
+		      return outbound;
+		    };
 
 
     $scope.setTestStepExecutionTab = function (value) {
@@ -560,7 +580,7 @@ angular.module('cb')
             if (received != null && received != "") {
               try {
                 $scope.completeStep($scope.testStep);
-                var rspMessage = parseResponse(received);
+                var rspMessage = parseResponse(received,$scope.protocol);
                 $scope.logger.log(received);
                 var nextStep = $scope.findNextStep($scope.testStep.position);
                 if (nextStep != null && nextStep.testingType === 'SUT_RESPONDER') {
@@ -729,7 +749,7 @@ angular.module('cb')
                     $scope.logger.log("Inbound message received <-------------------------------------- ");
                     if (incoming != null && incoming != '') {
                       try {
-                        var receivedMessage = parseRequest(incoming);
+                        var receivedMessage = parseRequest(incoming,$scope.protocol);
                         $scope.log(receivedMessage);
                         $scope.testExecutionService.setTestStepExecutionMessage($scope.testStep, receivedMessage);
                         $scope.$broadcast('cb:loadEditorContent', receivedMessage);
@@ -743,7 +763,7 @@ angular.module('cb')
                     $scope.logger.log("Outbound message sent --------------------------------------> ");
                     if (outbound != null && outbound != '') {
                       try {
-                        var sentMessage = parseResponse(outbound);
+                        var sentMessage = parseResponse(outbound,$scope.protocol);
                         $scope.log(sentMessage);
                         var nextStep = $scope.findNextStep($scope.testStep.position);
                         if (nextStep != null && nextStep.testingType === 'TA_RESPONDER') {
@@ -1169,7 +1189,11 @@ angular.module('cb')
 				$scope.selectTP();
 			  }
               
-            } 
+            }else{
+  				$scope.selectedTP.id = "";
+  				$scope.testCases = null;   
+  				$scope.selectedTestCase = null;   
+  			}
              $scope.loadingTPs = false;
           }, function (error) {
             $scope.loadingTP = false;
@@ -1459,6 +1483,10 @@ angular.module('cb')
     $scope.domain = null;
     $scope.protocol = null;
     $scope.hasNonPrintable = false;
+	$scope.options={
+		useHttp: StorageService.get(StorageService.USEHTTP) !== undefined && StorageService.get(StorageService.USEHTTP) !== null ? StorageService.get(StorageService.USEHTTP): true
+	};
+	
 
     $scope.showDQAOptions = function () {
       var modalInstance = $modal.open({
@@ -1581,7 +1609,7 @@ angular.module('cb')
             $scope.vLoading = true;
             $scope.vError = null;
             TestExecutionService.deleteTestStepValidationReport($scope.testStep);
-            var validator = ServiceDelegator.getMessageValidator($scope.testStep.testContext.format).validate($scope.testStep.testContext.id, $scope.cb.message.content, $scope.testStep.nav, "Based", [], "1223");
+            var validator = ServiceDelegator.getMessageValidator($scope.testStep.testContext.format).validate($scope.testStep.testContext.id, $scope.cb.message.content, $scope.testStep.nav, "Based", [], "1223", $scope.useHttp());
             validator.then(function (mvResult) {
               $scope.vLoading = false;
               $scope.setTestStepValidationReport(mvResult);
@@ -1821,6 +1849,56 @@ angular.module('cb')
       });
     };
 
+
+	  
+	  $scope.hasExternalValueSet = function(){
+	  			 var ctx = $scope.cb;
+				 if (!ctx || !ctx.testStep || !ctx.testStep.testContext) {
+				 			  return false;
+				 		  }
+		 		  var vocab = ctx.testStep.testContext.vocabularyLibrary;
+	                if (!vocab || !vocab.json ) {
+	                  return false;
+	                }
+	  			  
+	  			  if (vocab.json.hasExternal){
+	  				return true;
+	  			  }
+	  			  
+	                //old version
+	  			  if (vocab.json.externalValueSetDefinitions && vocab.json.externalValueSetDefinitions.length > 0) {
+	  			    return true;
+	  			  }
+
+	                //new version
+	                if (vocab.json.valueSetDefinitions && vocab.json.valueSetDefinitions.length > 0){
+	                  for (var i = 0; i < vocab.json.valueSetDefinitions.length; i++) {
+	                      var valueSetDefinition = vocab.json.valueSetDefinitions[i];
+	                      for (var j = 0; j < valueSetDefinition.valueSetDefinitions.length; j++) {
+	                          var valueSet = valueSetDefinition.valueSetDefinitions[j];
+	                          if (valueSet.external) {
+	                            return true;
+	                          }
+	                      }
+	                  }
+	                }
+
+	                return false;
+
+	  			};
+
+	  $scope.useHttp = function() {
+		  if ($scope.hasExternalValueSet() && $scope.options.useHttp) {
+			  return true;
+		  } else {
+			  return false;
+		  }
+	  }
+
+	  $scope.onUseHttpChange = function() {
+		  StorageService.set(StorageService.USEHTTP, $scope.options.useHttp);
+	  }
+	
 
   }]);
 

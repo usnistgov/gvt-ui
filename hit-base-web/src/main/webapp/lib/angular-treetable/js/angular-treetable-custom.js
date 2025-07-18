@@ -133,11 +133,13 @@
              * Rebuilds the entire table.
              */
             $scope.refresh = function() {
-                var rootNodes = table.data('treetable').nodes;
-                while (rootNodes.length > 0) {
-                    table.treetable('removeNode', rootNodes[0].id);
-                }
-                $scope.addChildren(null, $scope.shouldExpand());
+				if (table.data('treetable')) {
+					var rootNodes = table.data('treetable').nodes;
+					while (rootNodes.length > 0) {
+						table.treetable('removeNode', rootNodes[0].id);
+					}
+					$scope.addChildren(null, $scope.shouldExpand());
+				}                
             };
 
             $scope.refreshWithState = function(state) {

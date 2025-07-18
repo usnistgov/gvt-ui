@@ -1,0 +1,14 @@
+  <div class="modal-header">
+                <span style="font-weight: bold; font-size: 20px">
+                    Copyright
+                </span>
+                <span class="pull-right">
+                   <button class="btn btn-xs btn-primary" ng-click="close()"><i class="fa fa-times"></i>Close</button>
+                </span>
+    </div>
+    <div class="modal-body profile-info-body">
+        <div class="profile-info">
+            <div ng-show="domain.valueSetCopyright != null" ng-bind-html="toHTML(domain.valueSetCopyright)"></div>
+            <div ng-show="domain.valueSetCopyright == null">No Copyright found.</div>
+        </div>
+    </div>

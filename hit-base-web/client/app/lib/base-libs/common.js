@@ -247,7 +247,7 @@ angular.module('format').factory('MessageValidatorClass', function ($http, $q, $
         this.format = format;
     };
 
-    MessageValidatorClass.prototype.validate = function (testContextId, content, nav, contextType, dqaCodes, facilityId) {
+    MessageValidatorClass.prototype.validate = function (testContextId, content, nav, contextType, dqaCodes, facilityId,useHttp) {
         var delay = $q.defer();
         if (this.format && this.format != null) {
             $http.post('api/' + this.format + '/testcontext/' + testContextId + '/validateMessage', angular.fromJson({
@@ -255,7 +255,8 @@ angular.module('format').factory('MessageValidatorClass', function ($http, $q, $
                 "contextType": contextType,
                 "dqaCodes": dqaCodes,
                 "facilityId": facilityId,
-                "nav": nav
+                "nav": nav,
+				"useHttp": useHttp
             })).then(
                 function (object) {
                     try {
@@ -1158,7 +1159,10 @@ angular.module('format').factory('User', function ($q, $http, StorageService) {
         var user = this;
         $http.post('api/accounts/guest/createIfNotExist').then(
             function (response) {
-                var data = angular.fromJson(response.data);
+				var data;
+				if (response && response.data){
+					data = angular.fromJson(response.data);
+				}               
                 delay.resolve(data);
             },
             function (response) {
@@ -1713,6 +1717,27 @@ angular.module('format').factory('IdleService', function ($http, $q) {
     };
 
     return IdleService;
+});
+
+angular.module('format').factory('TopNotificationBannerService', function ($rootScope) {
+    var TopNotificationBannerService = function () { };
+	this.notificationsList = [];
+	
+	TopNotificationBannerService.setNotifications = function (notifications) {
+	         this.notificationsList = notifications;
+			 $rootScope.$broadcast('$notificationsChanged');
+	    };
+	
+    TopNotificationBannerService.getNotifications = function () {
+        return this.notificationsList;
+    };
+	
+	TopNotificationBannerService.hasNotifications = function (){
+		return this.notificationsList.length >0;
+	}
+	
+
+    return TopNotificationBannerService;
 });
 
 
