@@ -1,0 +1,76 @@
+<div class="modal-header">
+  <div class="modal-title-wrapper">
+    <h2 class="modal-title">
+      <i class="fa fa-scissors mr-3 text-primary"></i>Select Slice
+    </h2>
+    <div class="modal-subtitle text-muted mb-3">Click a slice to select it</div>
+  </div>
+</div>
+
+<div class="modal-body p-4">
+  <div class="list-group list-group-flush">
+    
+    <!-- Base Slice -->
+    <div ng-if="node && !node.sliceParent" 
+        class="slice-option p-3 mb-3 rounded border" 
+        style="cursor: pointer; transition: all 0.2s;"
+        ng-mouseover="this.style.backgroundColor='#f8f9fa'"
+        ng-mouseleave="this.style.backgroundColor=''"
+        ng-click="select(node)">
+    <div class="slice-title h5 mb-2">
+      <strong>{{node.ref || node.datatype}}</strong>
+      <span class="badge badge-secondary ml-2">Base</span>
+      <span class="badge badge-info ml-2" ng-if="node.showing">
+        <i class="fa fa-check"></i> Current
+      </span>
+    </div>
+    </div>
+    <div ng-if="node.sliceParent" 
+         class="slice-option p-3 mb-3 rounded border" 
+         style="cursor: pointer; transition: all 0.2s;"
+         ng-mouseover="this.style.backgroundColor='#f8f9fa'"
+         ng-mouseleave="this.style.backgroundColor=''"
+         ng-click="select(node.sliceParent)">
+      <div class="slice-title h5 mb-2">
+        <strong>{{node.sliceParent.ref || node.sliceParent.datatype}}</strong>
+        <span class="badge badge-secondary ml-2">Base</span>
+      </div>
+    </div>
+    
+    <!-- Slice Options -->
+    <div ng-repeat="option in options track by $index" 
+         class="slice-option p-3 mb-3 rounded border"
+         style="cursor: pointer; transition: all 0.2s;"
+         ng-mouseover="!option.showing && (this.style.backgroundColor='#f8f9fa')"
+         ng-mouseleave="!option.showing && (this.style.backgroundColor='')"
+         ng-class="{
+           'border-primary': option.showing, 
+           'border-success': option.isDefaultSlice,
+           'bg-light': option.showing
+         }"
+         ng-click="!option.showing && select(option)">
+      
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <div class="slice-title h5 mb-0">
+          <i class="fa fa-layer-group text-primary mr-2"></i>
+          <span ng-if="node.type === 'SEGMENT_REF' || node.type === 'FIELD'">
+            {{option.slice.ref || option.slice.name}}
+          </span>
+          <span class="badge badge-info ml-2" ng-if="option.showing">
+            <i class="fa fa-check"></i> Current
+          </span>
+        </div>    
+      </div>
+      
+      <div class="slice-meta text-muted pl-4">
+        <div ng-if="option.slice.description" class="mb-1">
+          <i class="fa fa-info-circle mr-1" title="Assertion"></i> {{option.slice.description}}
+        </div>
+        <div ng-if="option.slice.occurrence">
+          <i class="fa fa-hashtag mr-1" title="Occurrence"></i> Occurrence: {{option.slice.occurrence}}
+        </div>
+      </div>
+    </div>
+    
+  </div>
+</div>

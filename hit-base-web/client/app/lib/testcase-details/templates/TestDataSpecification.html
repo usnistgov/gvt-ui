@@ -1,0 +1,23 @@
+<div class="panel panel-info">
+    <div class="panel-body">
+      <div class="pull-right">
+        <button title="Download Test Data Specification" type="button"
+                class="btn btn-sm btn-primary"
+                ng-show="testDataSpecification.pdfPath && testDataSpecification.pdfPath !== null"
+                ng-click="download()">
+          <i class="fa fa-download"></i>&nbsp;Download PDF
+        </button>
+      </div>
+
+      <br/>
+      <br/>
+
+      <div class="panel panel-info">
+        <div class="panel-body">
+          <div class="testcase-content">
+            <div id="{{target}}-testDataSpecification"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

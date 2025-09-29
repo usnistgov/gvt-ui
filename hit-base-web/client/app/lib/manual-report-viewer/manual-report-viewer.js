@@ -12,7 +12,7 @@
                 scope: {
                     type: '@'
                 },
-                templateUrl: 'ManualReportViewer.html',
+                templateUrl: 'lib/manual-report-viewer/ManualReportViewer.html',
                 replace: false,
                 controller: 'ManualReportViewerCtrl'
             };

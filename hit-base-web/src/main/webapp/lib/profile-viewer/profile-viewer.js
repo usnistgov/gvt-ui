@@ -551,11 +551,11 @@
         if (element.conformanceStatements && element.conformanceStatements.length > 0) {
           for (var i = 0; i < element.conformanceStatements.length; i++) {
             if (!constraintExits(element.conformanceStatements[i], $scope.model.confStatementList)) {
-				if (constraintIsTestAssertion(element.conformanceStatements[i])){
-					$scope.model.testAssertionsList.push(element.conformanceStatements[i]);
-				}else{
-					$scope.model.confStatementList.push(element.conformanceStatements[i]);
-				}             
+              if (constraintIsTestAssertion(element.conformanceStatements[i])){
+                $scope.model.testAssertionsList.push(element.conformanceStatements[i]);
+              }else{
+                $scope.model.confStatementList.push(element.conformanceStatements[i]);
+              }             
             }
           }
         }
@@ -572,11 +572,11 @@
         if (element.selfConformanceStatements && element.selfConformanceStatements.length > 0) {
           for (var i = 0; i < element.selfConformanceStatements.length; i++) {
             if (!constraintExits(element.selfConformanceStatements[i], $scope.model.confStatementList)) {
-				if (constraintIsTestAssertion(element.selfConformanceStatements[i])){
-					$scope.model.testAssertionsList.push(element.selfConformanceStatements[i]);
-				}else{
-					$scope.model.confStatementList.push(element.selfConformanceStatements[i]);
-				}
+              if (constraintIsTestAssertion(element.selfConformanceStatements[i])){
+                $scope.model.testAssertionsList.push(element.selfConformanceStatements[i]);
+              }else{
+                $scope.model.confStatementList.push(element.selfConformanceStatements[i]);
+              }
             }
           }
         }
@@ -742,9 +742,12 @@
 		console.time('completeMessageExecution');
 		$scope.numberOfElement = 0;
 		$scope.allElementsModel = structuredClone($scope.model);
+		$scope.allElementsModel.slicingList = parseSlicingContexts($scope.allElementsModel);
+//		processSlicings();
 		$scope.allElementsModel.message = completeMessage($scope.allElementsModel.message);
 		$scope.allElementsModel.message.children = sortByPosition($scope.allElementsModel.message.children);
 		$scope.allElementsModel.datatypeList  = processDataTypeList($scope.allElementsModel);
+		
 		$scope.allElementsModel.confStatementList.sort((a, b) => a.constraintId.localeCompare(b.constraintId));		
 		console.timeEnd('completeMessageExecution');
 		
@@ -756,12 +759,126 @@
 		$scope.onlyRelevantElementsModel.datatypeList = filterDataTypeList($scope.onlyRelevantElementsModel.datatypeList);
 		console.timeEnd('filtering only relevant');	
 			
+    $scope.onlyRelevantElementsModelOriginal = structuredClone($scope.onlyRelevantElementsModel);
+    $scope.allElementsModelOriginal = structuredClone($scope.allElementsModel);
+
       };
 	  
 	  
 	
 	  
-	  
+	  function parseSlicingContexts(data) {
+	  	      // Create maps to hold the context by id
+	  	      const groupContextMap = new Map();
+	  	      const segmentContextMap = new Map();
+
+	  	      // Handle groupContexts from segmentSlicing
+	  	      if (
+	  	          data.profileSlicing &&
+	  	          data.profileSlicing.segmentSlicing &&
+	  	          Array.isArray(data.profileSlicing.segmentSlicing.messages)
+	  	      ) {
+	  	          for (const message of data.profileSlicing.segmentSlicing.messages) {
+	  	              if (Array.isArray(message.groupContexts)) {
+	  	                  for (const groupContext of message.groupContexts) {
+	  	                      groupContextMap.set(groupContext.id, groupContext);
+	  	                  }
+	  	              }
+	  	          }
+	  	      }
+
+	  	      // Handle segmentContexts from segmentSlicing (messages)
+	  	      if (
+	  	          data.profileSlicing &&
+	  	          data.profileSlicing.fieldSlicing &&
+	  	          Array.isArray(data.profileSlicing.fieldSlicing.segmentContexts)
+	  	      ) {
+	  	          for (const segmentContext of data.profileSlicing.fieldSlicing.segmentContexts) {
+	  	              segmentContextMap.set(segmentContext.id, segmentContext);
+	  	          }
+	  	      }
+			  
+			  
+//			  //adding slicing elements now;
+//			  //MESSAGE
+//	           var nodeData = $scope.allElementsModel.message;
+//	           var nodeDataSlicingList = (groupContextMap.get(nodeData.id) || {}).assertionSlicing ? (groupContextMap.get(nodeData.id) || {}).assertionSlicing.concat((groupContextMap.get(nodeData.id) || {}).occurrenceSlicing) : [];
+//	           if (nodeDataSlicingList && nodeDataSlicingList.length > 0) {
+//	             angular.forEach(nodeData.children, function (child) {
+//	               nodeDataSlicingList.forEach(function (slicing) {
+//	                 if (slicing.position === child.position) {
+//	                   child.slicingElements = slicing.slices.map(slice => {
+//	                     var item = structuredClone($scope.model.segments[slice.ref]);
+//	                     item.ref = item.id;
+//	                     item.id = child.id + item.id;
+//	  					 item.min = child.min;
+//	  					 item.max = child.max;
+//	  					 item.usage = child.usage;
+//	                     item.type = "SEGMENT_REF";
+//	  					 item.slice = slice;
+//	                     item.isSlice = true;
+//	                     item.sliceParent = child;
+//	                     item.position = child.position;
+//						 
+////	                     processSegRefCM(item);
+//	                     return item;
+//	                   });
+//	                 if (child.slicingElements.length > 0){
+//	                 child.hasSlice =true;
+//	                 }
+//	                 }
+//	               });
+//	             });
+//	           }
+					   
+					   
+					   
+	  	      // Return an object with all maps
+	  	      return {
+	  	          groupContextMap,
+	  	          segmentContextMap
+	  	      };
+			  
+			  
+	  	  }
+
+
+//        function processSlicings() {
+//          //occurence and assertion slicing in one list 
+//          //MESSAGE
+//          var nodeData = $scope.allElementsModel.message;
+//          var nodeDataSlicingList = ($scope.allElementsModel.slicingList.groupContextMap.get(nodeData.id) || {}).assertionSlicing ? ($scope.allElementsModel.slicingList.groupContextMap.get(nodeData.id) || {}).assertionSlicing.concat(($scope.allElementsModel.slicingList.groupContextMap.get(nodeData.id) || {}).occurrenceSlicing) : [];
+//          if (nodeDataSlicingList && nodeDataSlicingList.length > 0) {
+//            angular.forEach(nodeData.children, function (child) {
+//              nodeDataSlicingList.forEach(function (slicing) {
+//                if (slicing.position === child.position) {
+//                  child.slicingElements = slicing.slices.map(slice => {
+//                    var item = structuredClone($scope.model.segments[slice.ref]);
+//                    item.ref = item.id;
+//                    item.id = child.id + item.id;
+//					item.min = child.min;
+//					item.max = child.max;
+//					item.usage = child.usage;
+//                    item.type = "SEGMENT_REF";
+//					item.slice = slice;
+//                    item.isSlice = true;
+//                    item.sliceParent = child;
+//                    item.position = child.position;
+//					
+//                    processSegRefCM(item);
+//                    return item;
+//                  });
+//                if (child.slicingElements.length > 0){
+//                child.isDefaultSlice =true;
+//                }
+//                }
+//              });
+//            });
+//          }
+//          //GROUPS
+//
+//
+//        }
 	  
 	  
 	  
@@ -772,11 +889,13 @@
 
 			  for (var component of dataType.children) {
 			    component.selfConformanceStatements = model.datatypes[component.datatype].conformanceStatements;
-				component.selfPredicates = getDatatypeLevelPredicates(component);
+				  component.selfPredicates = getDatatypeLevelPredicates(component);
+          component.selfValueSetBindings = getDatatypeLevelValueSetBindings(component);
 
 			    for (var subcomponent of component.children) {
 			      subcomponent.selfConformanceStatements = model.datatypes[subcomponent.datatype].conformanceStatements;
 			      subcomponent.selfPredicates = getDatatypeLevelPredicates(subcomponent);
+            subcomponent.selfValueSetBindings = getDatatypeLevelValueSetBindings(subcomponent);
 			      subcomponent.type = "SUBCOMPONENT";
 			    }
 			  }
@@ -792,9 +911,47 @@
 				message.selfConformanceStatements = message.conformanceStatements.filter(item => !constraintIsTestAssertion(item)).toSorted(function(a, b) {return a.constraintId.localeCompare(b.constraintId);});
 						message.testAssertionsList = message.conformanceStatements.filter(item => constraintIsTestAssertion(item)).toSorted(function(a, b) {return a.constraintId.localeCompare(b.constraintId);});	
 			}		   
+			
+			//adding slicing elements now;
+						  //MESSAGE
+	           			   
+			var nodeDataSlicingList = ($scope.allElementsModel.slicingList.groupContextMap.get(message.id) || {}).assertionSlicing ? ($scope.allElementsModel.slicingList.groupContextMap.get(message.id) || {}).assertionSlicing.concat(($scope.allElementsModel.slicingList.groupContextMap.get(message.id) || {}).occurrenceSlicing) : [];
+			if (nodeDataSlicingList && nodeDataSlicingList.length > 0) {
+				angular.forEach(message.children, function(child) {
+					nodeDataSlicingList.forEach(function(slicing) {
+						if (slicing.position == child.position) {
+							child.slicingElements = slicing.slices.map(slice => {
+								var item = structuredClone($scope.model.segments[slice.ref]);
+								item.ref = item.id;
+								item.id = child.id + item.id;
+								item.min = child.min;
+								item.max = child.max;
+								item.usage = child.usage;
+								item.type = "SEGMENT_REF";
+								item.slice = slice;
+								item.isSlice = true;
+								item.sliceParent = child;
+								item.position = child.position;
+								return item;
+							});
+							if (child.slicingElements.length > 0) {
+								child.isDefaultSlice = true;
+                child.showing = true;
+							}
+						}
+					});
+				});
+			}
+			
 			message.children = processMessageTabChildrenConstraints(message,[]);	
 			angular.forEach(message.children, function(segmentRefOrGroup) {
 				processElementCM(segmentRefOrGroup,message);
+				if (segmentRefOrGroup.slicingElements && segmentRefOrGroup.slicingElements.length >0){
+					angular.forEach(segmentRefOrGroup.slicingElements, function(sliceElement) {
+						$scope.parentsMap[sliceElement.id] = message;
+						processElementCM(sliceElement,message);
+					});
+				}
 			});
 			return message; 
 		}
@@ -819,14 +976,131 @@
 		  
 		var processSegRefCM = function(segRef, messageOrGroup) {
 			$scope.numberOfElement++;
-			var seg = $scope.model.segments[segRef.ref];
+			var seg = $scope.model.segments[segRef.ref];			
 			segRef.children = seg.children;
+						
+			
+			var nodeGroupMessageSlicingList = ($scope.allElementsModel.slicingList.groupContextMap.get(messageOrGroup.id) || {}).assertionSlicing ? ($scope.allElementsModel.slicingList.groupContextMap.get(messageOrGroup.id) || {}).assertionSlicing.concat(($scope.allElementsModel.slicingList.groupContextMap.get(messageOrGroup.id) || {}).occurrenceSlicing) : [];
+			if (nodeGroupMessageSlicingList && nodeGroupMessageSlicingList.length > 0) {
+	             
+               nodeGroupMessageSlicingList.forEach(function (slicing) {
+                 if (segRef.slicingElements &&  segRef.slicingElements.length ===0 && slicing.position == segRef.position) {
+                   segRef.slicingElements = slicing.slices.map(slice => {
+                     var item = structuredClone($scope.model.segments[slice.ref]);
+                     item.ref = item.id;
+                     item.id = segRef.id + item.id;
+  					 item.min = segRef.min;
+  					 item.max = segRef.max;
+  					 item.usage = segRef.usage;
+                     item.type = "SEGMENT_REF";
+  					 item.slice = slice;
+                     item.isSlice = true;
+                     item.sliceParent = segRef;
+                     item.position = segRef.position;
+					 
+                     return item;
+                   });
+                 if (segRef.slicingElements.length > 0){
+                 segRef.isDefaultSlice =true;
+                 segRef.showing=true;
+                 }
+                 }
+               });
+	             
+	         }
+			
+						
+			//SLICING
+			const segmentContextMap = $scope.allElementsModel.slicingList.segmentContextMap;
+			const segContext = segmentContextMap.get(segRef.ref) || {};
+			const nodeDataSlicingList = segContext.assertionSlicing
+			  ? segContext.assertionSlicing.concat(segContext.occurrenceSlicing)
+			  : [];
+
+			if (nodeDataSlicingList && nodeDataSlicingList.length > 0) {
+			  const children = segRef.children;
+
+			  for (let i = 0; i < children.length; i++) {
+			    const child = children[i];
+
+			    for (let j = 0; j < nodeDataSlicingList.length; j++) {
+			      const slicing = nodeDataSlicingList[j];
+
+			      if (slicing.position == child.position) {
+			        child.slicingElements = slicing.slices.map(slice => {
+			          const item = structuredClone($scope.model.datatypes[slice.ref]);
+			          item.datatype = slice.ref;
+			          item.id = child.id + item.id;
+			          item.min = child.min;
+			          item.max = child.max;
+			          item.usage = child.usage;
+                item.path = child.path;
+                item.name = child.name;
+			          item.type = "FIELD";
+			          item.slice = slice;
+			          item.isSlice = true;
+                child.isDefaultSlice = true;
+			          item.sliceParent = child;
+			          item.position = child.position;
+			          return item;
+			        });
+
+			        if (child.slicingElements.length > 0) {
+			          child.isDefaultSlice = true;
+                child.showing=true;
+			        }
+			      }
+			    }
+			  }
+			}
+			
+			
+			
 			segRef.dynamicMaps = seg.dynamicMaps;
 			segRef.children = processSegmentRefChildrenConstraints(segRef, []);		
-			$scope.allElementsModel.segmentList.push(segRef);
-			$scope.allElementsModel.segmentAndGroupList.push(segRef);	
+     		// adding to lists 
+			//presence check because of slicing
+			 if (!$scope.allElementsModel.segmentList.some(function(item) { return item.ref === segRef.ref; })) {				
+				var index = $scope.allElementsModel.segmentList.findIndex(function(item) { return item === segRef.sliceParent; });
+				if (index === -1) {
+					$scope.allElementsModel.segmentList.push(segRef);
+				} else {
+					$scope.allElementsModel.segmentList.splice(index + 1, 0, segRef);
+				}
+			}
+			if (!$scope.allElementsModel.segmentAndGroupList.some(function(item) { return item.ref === segRef.ref; })) {
+	     		var index = $scope.allElementsModel.segmentAndGroupList.findIndex(function(item) { return item === segRef.sliceParent; });
+				if (index === -1) {
+					$scope.allElementsModel.segmentAndGroupList.push(segRef);
+				} else {
+					$scope.allElementsModel.segmentAndGroupList.splice(index + 1, 0, segRef);
+				}
+			}
+			
+			
+			
 			angular.forEach(segRef.children, function(field) {
 				processFieldCM(field, segRef);
+				//USED TO BE BE segRef.hasSlice
+				if (field.slicingElements && field.slicingElements.length>0){
+					angular.forEach(field.slicingElements, function(sliceElement) {
+						$scope.parentsMap[sliceElement.id] = segRef;
+						processFieldCM(sliceElement,segRef);
+						
+						//add slice field dataype to list if it does not exists 
+						//presence check to avoid duplicates
+						 if (!$scope.allElementsModel.datatypeList.some(function(item) { return item.id === sliceElement.datatype; })) {
+							var datatype = $scope.model.datatypes[sliceElement.datatype];
+				              if (datatype != null && datatype != undefined) {
+//				                field.children.push(datatype);
+				                processDatatype(datatype, field);
+								$scope.allElementsModel.datatypeList.push(datatype);
+				              }														
+							  
+						}						
+						
+					});
+				}
 			});
 			
 		};
@@ -834,10 +1108,50 @@
 
 		var processGroupCM = function(group, parent) {
 			$scope.numberOfElement++;
+			
+			//slicing
+      var nodeDataSlicingList = ($scope.allElementsModel.slicingList.groupContextMap.get(group.id) || {}).assertionSlicing ? ($scope.allElementsModel.slicingList.groupContextMap.get(group.id) || {}).assertionSlicing.concat(($scope.allElementsModel.slicingList.groupContextMap.get(group.id) || {}).occurrenceSlicing) : [];
+      if (nodeDataSlicingList && nodeDataSlicingList.length > 0) {
+        angular.forEach(group.children, function (child) {
+          nodeDataSlicingList.forEach(function (slicing) {
+            if (slicing.position == child.position) {
+              child.slicingElements = slicing.slices.map(slice => {
+                var item = structuredClone($scope.model.segments[slice.ref]);
+                item.ref = item.id;
+                item.id = child.id + item.id;
+                item.min = child.min;
+                item.max = child.max;
+                item.usage = child.usage;
+                item.type = "SEGMENT_REF";
+                item.slice = slice;
+                item.isSlice = true;
+                child.isDefaultSlice = true;
+                item.sliceParent = child;
+                item.position = child.position;
+                return item;
+              });
+              if (child.slicingElements.length > 0) {
+                //already set
+                child.isDefaultSlice = true;
+                child.showing=true;
+              }
+            }
+          });
+        });
+      }
+						   
+						   
+			
 			group.children = processGroupChildrenConstraints(group, []);
 			$scope.allElementsModel.segmentAndGroupList.push(group);
 			angular.forEach(group.children, function(segmentRefOrGroup) {
 				processElementCM(segmentRefOrGroup, group);
+				if (segmentRefOrGroup.slicingElements && segmentRefOrGroup.slicingElements.length > 0){
+					angular.forEach(segmentRefOrGroup.slicingElements, function(sliceElement) {
+						$scope.parentsMap[sliceElement.id] = group;
+						processElementCM(sliceElement,group);
+					});
+				}
 			});
 			
 			
@@ -902,6 +1216,11 @@
 					filterGroup(element, parent);
 				} else if (element.type === "SEGMENT_REF") {
 					filterSegRef(element, parent);
+					if (element.slicingElements && element.slicingElements.length >0){
+						angular.forEach(element.slicingElements, function(segSlice) {
+							filterSegRef(segSlice, parent);
+						});	
+					}
 				}else{
 				}
 			} catch (e) {
@@ -914,10 +1233,35 @@
 		  
 		var filterSegRef = function(segRef, messageOrGroup) {					
 			segRef.children = segRef.children.filter(item => item.relevant == true);	
-			$scope.onlyRelevantElementsModel.segmentList.push(segRef);		
-			$scope.onlyRelevantElementsModel.segmentAndGroupList.push(segRef);				
+//			$scope.onlyRelevantElementsModel.segmentList.push(segRef);		
+//			$scope.onlyRelevantElementsModel.segmentAndGroupList.push(segRef);			
+			
+			if (!$scope.onlyRelevantElementsModel.segmentList.some(function(item) { return item.ref === segRef.ref; })) {				
+				var index = $scope.onlyRelevantElementsModel.segmentList.findIndex(function(item) { return item === segRef.sliceParent; });
+				if (index === -1) {
+					$scope.onlyRelevantElementsModel.segmentList.push(segRef);
+				} else {
+					$scope.onlyRelevantElementsModel.segmentList.splice(index + 1, 0, segRef);
+				}
+			}
+			if (!$scope.onlyRelevantElementsModel.segmentAndGroupList.some(function(item) { return item.ref === segRef.ref; })) {
+	     		var index = $scope.onlyRelevantElementsModel.segmentAndGroupList.findIndex(function(item) { return item === segRef.sliceParent; });
+				if (index === -1) {
+					$scope.onlyRelevantElementsModel.segmentAndGroupList.push(segRef);
+				} else {
+					$scope.onlyRelevantElementsModel.segmentAndGroupList.splice(index + 1, 0, segRef);
+				}
+			}
+			
+			
+				
 			angular.forEach(segRef.children, function(field) {
 				filterField(field, segRef);
+				if (field.slicingElements && field.slicingElements.length >0){
+					angular.forEach(field.slicingElements, function(fieldSlice) {
+						filterSegRef(fieldSlice, segRef);
+					});	
+				}
 			});			
 				
 		};
@@ -1018,69 +1362,36 @@
       });
 
 
-	  
-	  //to remove 	  
-	  $scope.findDatatypePotentialPredicates= function(node){
-		if (node.type === "MESSAGE" || node.type === "GROUP"){
-			angular.forEach(node.children, function (child) {
-				child.nodeParent = node;
-				$scope.findDatatypePotentialPredicates(child);
-			});
-		}else if (node.type == "SEGMENT_REF"){
-			var children =  getNodeChildren(node);
-			angular.forEach(children, function (child) {
-				child.nodeParent = node;
-				$scope.findDatatypePotentialPredicates(child);
-			});
-		}else if (node.type == "FIELD" || node.type == "COMPONENT"){
-//			var children = node.children;
-			var children =  getNodeChildren(node);
-			angular.forEach(children, function (child) {
-			  child.nodeParent = node;
-			  child.selfPredicates = [];
-			  child.selfPredicates = child.selfPredicates.concat(getDatatypeLevelPredicates(child));
-			  child.selfPredicates = child.selfPredicates.concat(getSegmentLevelPredicates(child));
-			  child.selfPredicates = child.selfPredicates.concat(getMessageLevelPredicates(child));
-			  child.selfPredicates = child.selfPredicates.concat(getGroupLevelPredicates(child));
-			  
-				  angular.forEach($scope.model.datatypeList, function (datatype) {
-					if (child.datatype === datatype.id && child.selfPredicates.length > 0){
-						datatype.possiblePredicates = child.selfPredicates;
-					}	
-			      });
-			  
-			  		
-	      });
-		}
-		
-	  }
+	
 	  
       /**
        *
        */
       $scope.executeRelevance = function () {
         if ($scope.options.relevance && $scope.onlyRelevantElementsModel != null) {
-          $scope.model = $scope.onlyRelevantElementsModel;
+        //  $scope.model = $scope.onlyRelevantElementsModel;
+          $scope.model = $scope.onlyRelevantElementsModelOriginal;
         } else if (!$scope.options.relevance && $scope.allElementsModel != null) {
-          $scope.model = $scope.allElementsModel;
+        //  $scope.model = $scope.allElementsModel;
+          $scope.model = $scope.allElementsModelOriginal;
         } else {
           initAll();
-          $scope.model =   $scope.originalModel;
+          $scope.model = $scope.originalModel;
           if ($scope.model != null) {
             $scope.model.datatypeList = [];
-			$scope.model.testAssertionsList = [];
+            $scope.model.testAssertionsList = [];
             $scope.model.segmentList = [];
-			$scope.model.segmentAndGroupList = [];
+            $scope.model.segmentAndGroupList = [];
             $scope.model.predicateList = [];
             $scope.model.confStatementList = [];
             $scope.model.tmpConfStatementList = [];//.concat($scope.model.confStatementList);
-			$scope.model.tmpTestAssertionsList = [];
+            $scope.model.tmpTestAssertionsList = [];
             processMessage();
-			if ($scope.options.relevance && $scope.onlyRelevantElementsModel != null) {
-	          $scope.model = $scope.onlyRelevantElementsModel;
-	        } else if (!$scope.options.relevance && $scope.allElementsModel != null) {
-	          $scope.model = $scope.allElementsModel;
-	        }
+            if ($scope.options.relevance && $scope.onlyRelevantElementsModel != null) {
+              $scope.model = $scope.onlyRelevantElementsModel;
+            } else if (!$scope.options.relevance && $scope.allElementsModel != null) {
+              $scope.model = $scope.allElementsModel;
+            }
           }
         }
       };
@@ -1119,6 +1430,12 @@
           });
         }
         return all;
+      }
+
+      function concatUniqueByKey(key, ...arrays) {
+        const map = new Map();
+        arrays.flat().forEach(item => map.set(item[key], item));
+        return [...map.values()];
       }
 
       /**
@@ -1325,33 +1642,24 @@
 		var processGroupChildrenConstraints = function(parent, removeCandidates) {
 			var children =  structuredClone(getNodeChildren(parent));//angular.copy(getNodeChildren(parent));
 			var wantedChildren = [];
+			// console.log("group", parent.id, $scope.allElementsModel.slicingList.groupContextMap.get(parent.id));
+			// var nodeDataSlicingList = ($scope.allElementsModel.slicingList.groupContextMap.get(parent.id) || {}).assertionSlicing ? ($scope.allElementsModel.slicingList.groupContextMap.get(parent.id) || {}).assertionSlicing.concat(($scope.allElementsModel.slicingList.groupContextMap.get(parent.id) || {}).occurrenceSlicing) : [];
+			
+			var slicingChildren = [];
+			
 			angular.forEach(children, function(child) {
+	
 				child.nodeParent = parent;
 				child.selfValueSetBindings = []; //--
 				child.selfSingleCodeBindings = [];
 				child.selfConformanceStatements = []; //
 				child.selfPredicates = [];
-				child.selfValueSetBindings = child.selfValueSetBindings.concat(getGroupLevelValueSetBindings(child));
-				child.selfSingleCodeBindings = child.selfSingleCodeBindings.concat(getGroupLevelSingleCodeBindings(child));
-//				child.selfConformanceStatements = child.selfConformanceStatements.concat(getGroupLevelConfStatements(child));
-				child.selfPredicates = child.selfPredicates.concat(getGroupLevelPredicates(child));
-				child.selfValueSetBindings = child.selfValueSetBindings.concat(getMessageLevelValueSetBindings(child));
-				child.selfSingleCodeBindings = child.selfSingleCodeBindings.concat(getMessageLevelSingleCodeBindings(child));
-//				child.selfConformanceStatements = child.selfConformanceStatements.concat(getMessageLevelConfStatements(child));
-				child.selfPredicates = child.selfPredicates.concat(getMessageLevelPredicates(child));
-//				child.selfConformanceStatements = child.selfConformanceStatements.concat(getSegmentConfStatements(child));
-				
-//				if (!$scope.visible(child)) {
-//					removeCandidates.push(child);
-//				} else {
-//					wantedChildren.push(child);
-//				}
-
-//				if (child.type ==="SEGMENT_REF"){
-//					child.selfConformanceStatements = $scope.model.segments[child.ref].conformanceStatements.filter(item => !constraintIsTestAssertion(item)).toSorted(function(a, b) {return a.constraintId.localeCompare(b.constraintId);});
-//				}else if (child.type ==="GROUP"){
-//					child.testAssertionsList = child.conformanceStatements.filter(item => constraintIsTestAssertion(item)).toSorted(function(a, b) {return a.constraintId.localeCompare(b.constraintId);});
-//				}
+				child.selfValueSetBindings = concatUniqueByKey("id",child.selfValueSetBindings,getGroupLevelValueSetBindings(child));//child.selfValueSetBindings.concat(getGroupLevelValueSetBindings(child));
+				child.selfSingleCodeBindings = concatUniqueByKey("id",child.selfSingleCodeBindings,getGroupLevelSingleCodeBindings(child));//child.selfSingleCodeBindings.concat(getGroupLevelSingleCodeBindings(child));
+				child.selfPredicates = concatUniqueByKey("id",child.selfPredicates,getGroupLevelPredicates(child));//child.selfPredicates.concat(getGroupLevelPredicates(child));
+				child.selfValueSetBindings = concatUniqueByKey("id",child.selfValueSetBindings,getMessageLevelValueSetBindings(child));//child.selfValueSetBindings.concat(getMessageLevelValueSetBindings(child));
+				child.selfSingleCodeBindings = concatUniqueByKey("id",child.selfSingleCodeBindings,getMessageLevelSingleCodeBindings(child));//child.selfSingleCodeBindings.concat(getMessageLevelSingleCodeBindings(child));
+				child.selfPredicates = concatUniqueByKey("id",child.selfPredicates,getMessageLevelPredicates(child));//child.selfPredicates.concat(getMessageLevelPredicates(child));
 				
 				if (child.type ==="SEGMENT_REF"){
 					child.selfConformanceStatements = $scope.model.segments[child.ref].conformanceStatements.filter(item => !constraintIsTestAssertion(item)).toSorted(function(a, b) {return a.constraintId.localeCompare(b.constraintId);});
@@ -1366,8 +1674,45 @@
 				}else{
 					child.relevant = false;
 				}
+				if (child.slicingElements && child.slicingElements.length > 0){
+					slicingChildren.push.apply(slicingChildren, child.slicingElements);
+				}
+									
 
 			});
+			
+			//process slicing segments
+			angular.forEach(slicingChildren, function(child) {				
+				child.nodeParent = parent;
+				child.selfValueSetBindings = []; //--
+				child.selfSingleCodeBindings = [];
+				child.selfConformanceStatements = []; //
+				child.selfPredicates = [];
+				child.selfValueSetBindings = child.selfValueSetBindings.concat(getGroupLevelValueSetBindings(child));
+				child.selfSingleCodeBindings = child.selfSingleCodeBindings.concat(getGroupLevelSingleCodeBindings(child));
+				child.selfPredicates = child.selfPredicates.concat(getGroupLevelPredicates(child));
+				child.selfValueSetBindings = child.selfValueSetBindings.concat(getMessageLevelValueSetBindings(child));
+				child.selfSingleCodeBindings = child.selfSingleCodeBindings.concat(getMessageLevelSingleCodeBindings(child));
+				child.selfPredicates = child.selfPredicates.concat(getMessageLevelPredicates(child));
+				
+				if (child.type ==="SEGMENT_REF"){
+					child.selfConformanceStatements = $scope.model.segments[child.ref].conformanceStatements.filter(item => !constraintIsTestAssertion(item)).toSorted(function(a, b) {return a.constraintId.localeCompare(b.constraintId);});
+					child.testAssertionsList = $scope.model.segments[child.ref].conformanceStatements.filter(item => constraintIsTestAssertion(item)).toSorted(function(a, b) {return a.constraintId.localeCompare(b.constraintId);});					
+					
+					slicingChildren.push.apply(slicingChildren, child.slicingElements);				}else if (child.type ==="GROUP"){
+					child.selfConformanceStatements = child.conformanceStatements.filter(item => !constraintIsTestAssertion(item)).toSorted(function(a, b) {return a.constraintId.localeCompare(b.constraintId);});
+					child.testAssertionsList = child.conformanceStatements.filter(item => constraintIsTestAssertion(item)).toSorted(function(a, b) {return a.constraintId.localeCompare(b.constraintId);});
+				}
+				
+				if ($scope.isRelevant(child)){
+					child.relevant = true;					
+				}else{
+					child.relevant = false;
+				}							
+			});
+			
+			
+			
 			return children;
 		};
 
@@ -1381,13 +1726,17 @@
 			var children =  structuredClone(getNodeChildren(parent));// angular.copy(getNodeChildren(parent));
 			var wantedChildren = [];
 			angular.forEach(children, function(child) {
+				
+				
+				
+				
 				child.nodeParent = parent;
 				child.selfValueSetBindings = []; //--
 				child.selfSingleCodeBindings = [];
 				child.selfConformanceStatements = []; //
 				child.selfPredicates = [];
-				child.selfValueSetBindings = child.selfValueSetBindings.concat(getDatatypeLevelValueSetBindings(child));
-				child.selfSingleCodeBindings = child.selfSingleCodeBindings.concat(getDatatypeLevelSingleCodeBindings(child));
+//				child.selfValueSetBindings = child.selfValueSetBindings.concat(getDatatypeLevelValueSetBindings(child));
+//				child.selfSingleCodeBindings = child.selfSingleCodeBindings.concat(getDatatypeLevelSingleCodeBindings(child));
 //				child.selfConformanceStatements = child.selfConformanceStatements.concat(getDatatypeLevelConfStatements(child));
 //				child.selfConformanceStatements = child.selfConformanceStatements.concat(getDatatypeConfStatements(child));
 //
@@ -1412,11 +1761,7 @@
  				
 					child.selfConformanceStatements = $scope.model.datatypes[child.datatype].conformanceStatements.filter(item => !constraintIsTestAssertion(item)).toSorted(function(a, b) {return a.constraintId.localeCompare(b.constraintId);});
 					child.testAssertionsList = $scope.model.datatypes[child.datatype].conformanceStatements.filter(item => constraintIsTestAssertion(item)).toSorted(function(a, b) {return a.constraintId.localeCompare(b.constraintId);});
-
-					
-					
-					
-				
+																		
 				angular.forEach($scope.allElementsModel.datatypeList, function (datatype) {
 					if (child.datatype === datatype.id){
 						datatype.possiblePredicates = child.selfPredicates;
@@ -1514,6 +1859,8 @@
 			return children;
 		};
 
+
+
 		/**
 		 *
 		 * @param nodeData
@@ -1523,19 +1870,53 @@
 		var processMessageTabChildrenConstraints = function(nodeData, removeCandidates) {
 			var children = structuredClone(nodeData.children);
 			var wantedChildren = [];
+			console.log("message", nodeData.id, $scope.allElementsModel.slicingList.groupContextMap.get(nodeData.id));
+     	    //occurence and assertion slicing in one list 
+			// var nodeDataSlicingList = ($scope.allElementsModel.slicingList.groupContextMap.get(nodeData.id) || {}).assertionSlicing ? ($scope.allElementsModel.slicingList.groupContextMap.get(nodeData.id) || {}).assertionSlicing.concat(($scope.allElementsModel.slicingList.groupContextMap.get(nodeData.id) || {}).occurrenceSlicing) : [];
+
 			angular.forEach(children, function(child) {
+				// var element;
+				$scope.parentsMap[child.id]=nodeData;
+				if (child.slicingElements && child.slicingElements.length > 0) {
+					for (var element of child.slicingElements) {
+						element.selfValueSetBindings = []; //--
+										element.selfSingleCodeBindings = [];
+										element.selfConformanceStatements = []; //
+										element.selfPredicates = [];
+										element.selfValueSetBindings = element.selfValueSetBindings.concat(getGroupLevelValueSetBindings(element));
+										element.selfSingleCodeBindings = element.selfSingleCodeBindings.concat(getGroupLevelSingleCodeBindings(element));
+										element.selfPredicates = element.selfPredicates.concat(getGroupLevelPredicates(element));
+										element.selfValueSetBindings = element.selfValueSetBindings.concat(getMessageLevelValueSetBindings(element));
+										element.selfSingleCodeBindings = element.selfSingleCodeBindings.concat(getMessageLevelSingleCodeBindings(element));
+										element.selfPredicates = element.selfPredicates.concat(getMessageLevelPredicates(element));
+										if (element.type ==="SEGMENT_REF"){
+											element.selfConformanceStatements = $scope.model.segments[element.ref].conformanceStatements.filter(item => !constraintIsTestAssertion(item)).toSorted(function(a, b) {return a.constraintId.localeCompare(b.constraintId);});
+											element.testAssertionsList = $scope.model.segments[element.ref].conformanceStatements.filter(item => constraintIsTestAssertion(item)).toSorted(function(a, b) {return a.constraintId.localeCompare(b.constraintId);});
+										}else if (element.type ==="GROUP"){
+											element.selfConformanceStatements = element.conformanceStatements.filter(item => !constraintIsTestAssertion(item)).toSorted(function(a, b) {return a.constraintId.localeCompare(b.constraintId);});
+											element.testAssertionsList = element.conformanceStatements.filter(item => constraintIsTestAssertion(item)).toSorted(function(a, b) {return a.constraintId.localeCompare(b.constraintId);});
+										}
+                    if ($scope.isRelevant(element)){
+                      element.relevant = true;					
+                    }else{
+                      element.relevant = false;
+                    }
+					}
+				}
+
+
 				child.selfValueSetBindings = []; //--
 				child.selfSingleCodeBindings = [];
 				child.selfConformanceStatements = []; //
 				child.selfPredicates = [];
-				child.selfValueSetBindings = child.selfValueSetBindings.concat(getGroupLevelValueSetBindings(child));
-				child.selfSingleCodeBindings = child.selfSingleCodeBindings.concat(getGroupLevelSingleCodeBindings(child));
+				child.selfValueSetBindings = concatUniqueByKey("id",child.selfValueSetBindings,getGroupLevelValueSetBindings(child));//child.selfValueSetBindings.concat(getGroupLevelValueSetBindings(child));
+				child.selfSingleCodeBindings = concatUniqueByKey("id",child.selfSingleCodeBindings,getGroupLevelSingleCodeBindings(child));//child.selfSingleCodeBindings.concat(getGroupLevelSingleCodeBindings(child));
 //				child.selfConformanceStatements = child.selfConformanceStatements.concat(getGroupLevelConfStatements(child));
-				child.selfPredicates = child.selfPredicates.concat(getGroupLevelPredicates(child));
-				child.selfValueSetBindings = child.selfValueSetBindings.concat(getMessageLevelValueSetBindings(child));
-				child.selfSingleCodeBindings = child.selfSingleCodeBindings.concat(getMessageLevelSingleCodeBindings(child));
+				child.selfPredicates = concatUniqueByKey("id",child.selfPredicates,getGroupLevelPredicates(child));//child.selfPredicates.concat(getGroupLevelPredicates(child));
+				child.selfValueSetBindings = concatUniqueByKey("id",child.selfValueSetBindings,getMessageLevelValueSetBindings(child));//child.selfValueSetBindings.concat(getMessageLevelValueSetBindings(child));
+				child.selfSingleCodeBindings = concatUniqueByKey("id",child.selfSingleCodeBindings,getMessageLevelSingleCodeBindings(child));//child.selfSingleCodeBindings.concat(getMessageLevelSingleCodeBindings(child));
 //				child.selfConformanceStatements = child.selfConformanceStatements.concat(getMessageLevelConfStatements(child));
-				child.selfPredicates = child.selfPredicates.concat(getMessageLevelPredicates(child));
+				child.selfPredicates = concatUniqueByKey("id",child.selfPredicates,getMessageLevelPredicates(child));//child.selfPredicates.concat(getMessageLevelPredicates(child));
 //				if (!$scope.visible(child)) {
 //					removeCandidates.push(child);
 //				} else {
@@ -1555,6 +1936,7 @@
 				}else{
 					child.relevant = false;
 				}
+								
 			});
 			return children;
 		};
@@ -1580,8 +1962,8 @@
         segORGroup.selfPredicates = segORGroup.selfPredicates.concat(getMessageLevelPredicates(segORGroup));
 		
 		
-		segORGroup.selfConformanceStatements = segORGroup.conformanceStatements.filter(item => !constraintIsTestAssertion(item)).toSorted(function(a, b) {return a.constraintId.localeCompare(b.constraintId);});
-		segORGroup.testAssertionsList = segORGroup.conformanceStatements.filter(item => constraintIsTestAssertion(item)).toSorted(function(a, b) {return a.constraintId.localeCompare(b.constraintId);});
+        segORGroup.selfConformanceStatements = segORGroup.conformanceStatements.filter(item => !constraintIsTestAssertion(item)).toSorted(function(a, b) {return a.constraintId.localeCompare(b.constraintId);});
+        segORGroup.testAssertionaist = segORGroup.conformanceStatements.filter(item => constraintIsTestAssertion(item)).toSorted(function(a, b) {return a.constraintId.localeCompare(b.constraintId);});
       };
 
 
@@ -1623,39 +2005,112 @@
       $scope.getNodes = function (parent) {
         var removeCandidates = [];
         var children = [];
-        if (!parent || parent == null) {			
+        if (!parent || parent == null) {
+
           if ($scope.nodeData.type === 'SEGMENT' || $scope.nodeData.type === 'MESSAGE' || $scope.nodeData.type === 'SEGMENT_REF') {
-			if ($scope.nodeData.type === 'SEGMENT_REF') {
-				return $scope.nodeData.children;
-//				children = processSegmentTabChildrenConstraints($scope.nodeData, removeCandidates);
-			} 
-			else if ($scope.nodeData.type === 'SEGMENT') {
-//              children = processSegmentTabChildrenConstraints($scope.nodeData, removeCandidates);
+            if ($scope.nodeData.type === 'SEGMENT_REF') {
+
+
+              //look for children with slicing elements
+              var children = $scope.nodeData.children;
+              angular.forEach(children, function (child) {
+                if (child.slicingElements && child.slicingElements.length > 0) {
+                  // Find the slice that's currently showing
+                  const showingSlice = child.slicingElements.find(slice => slice.showing === true);
+                  // If a slice is showing, replace the child with it in the $scope.nodeData.children array
+                  if (showingSlice) {
+                    const idx = $scope.nodeData.children.indexOf(child);
+                    if (idx > -1) {
+                      $scope.nodeData.children.splice(idx, 1, showingSlice);
+                    }
+                  } else if (!child.isDefaultSlice) {
+                    //none of the slicing are showing, and it's not the defautl, display the parent (default)
+                    const idx = $scope.nodeData.children.indexOf(child);
+                    if (idx > -1) {
+                      $scope.nodeData.children.splice(idx, 1, child.sliceParent);
+                    }
+                  }
+                }
+              });
+              return $scope.nodeData.children;
+              //				children = processSegmentTabChildrenConstraints($scope.nodeData, removeCandidates);
+            }
+            else if ($scope.nodeData.type === 'SEGMENT') {
+              //              children = processSegmentTabChildrenConstraints($scope.nodeData, removeCandidates);
             } else if ($scope.nodeData.type === 'MESSAGE') {
-				return $scope.nodeData.children;
-//              children = processMessageTabChildrenConstraints($scope.nodeData, removeCandidates);
+              //look for children with slicing elements
+              var children = $scope.nodeData.children;
+              angular.forEach(children, function (child) {
+                if (child.slicingElements && child.slicingElements.length > 0) {
+                  // Find the slice that's currently showing
+                  const showingSlice = child.slicingElements.find(slice => slice.showing === true);
+                  // If a slice is showing, replace the child with it in the $scope.nodeData.children array
+                  if (showingSlice) {
+                    const idx = $scope.nodeData.children.indexOf(child);
+                    if (idx > -1) {
+                      $scope.nodeData.children.splice(idx, 1, showingSlice);
+                    }
+                  } else if (!child.isDefaultSlice) {
+                    //none of the slicing are showing, and it's not the defautl, display the parent (default)
+                    const idx = $scope.nodeData.children.indexOf(child);
+                    if (idx > -1) {
+                      $scope.nodeData.children.splice(idx, 1, child.sliceParent);
+                    }
+                  }
+                }
+              });
+              return $scope.nodeData.children;
+              //              children = processMessageTabChildrenConstraints($scope.nodeData, removeCandidates);
             }
           } else if ($scope.nodeData.type === 'DATATYPE') {
-			return $scope.nodeData.children;
-//            children = processDataTypeTabChildrenConstraints();
-          }	else if ($scope.nodeData.type === 'GROUP') {
-					return $scope.nodeData.children;
-			}
-        } else {
-			return parent.children;
-          if (parent.type === 'FIELD') {
-            children = processFieldChildrenConstraints(parent, removeCandidates);
-          } else if (parent.type === 'COMPONENT') {
-            children = processComponentChildrenConstraints(parent, removeCandidates);
-          } else if (parent.type === 'DATATYPE') {
-            children = processDatatypeChildrenConstraints(parent, removeCandidates);
-          } else if (parent.type === 'GROUP') {
-            children = processGroupChildrenConstraints(parent, removeCandidates);
-          } else if (parent.type === 'SEGMENT_REF') {
-            children = processSegmentRefChildrenConstraints(parent, removeCandidates);
+            return $scope.nodeData.children;
+            //            children = processDataTypeTabChildrenConstraints();
+          } else if ($scope.nodeData.type === 'GROUP') {
+
+
+            return $scope.nodeData.children;
           }
+        } else {
+          // // Check if this node has slicing elements with a showing slice
+          // if (parent.slicingElements && parent.slicingElements.length > 0) {
+          //   // Find the slice that's currently showing
+          //   const showingSlice = parent.slicingElements.find(slice => slice.showing === true);
+          //   // If a slice is showing, return it instead of the parent
+          //   if (showingSlice) {
+          //     parent = showingSlice;
+          //     return [showingSlice];
+          //   }
+          // }
+
+          // Otherwise return the node's children as normal
+
+
+          //look for children with slicing elements
+//          var children = parent.children;
+          angular.forEach(parent.children, function (child) {
+            if (child.slicingElements && child.slicingElements.length > 0) {
+              // Find the slice that's currently showing
+              const showingSlice = child.slicingElements.find(slice => slice.showing === true);
+              // If a slice is showing, replace the child with it in the $scope.nodeData.children array
+              if (showingSlice) {
+                const idx = parent.children.indexOf(child);
+                if (idx > -1) {
+                  parent.children.splice(idx, 1, showingSlice);
+                }
+              } else if (!child.isDefaultSlice) {
+                //none of the slicing are showing, and it's not the defautl, display the parent (default)
+                const idx = parent.children.indexOf(child);
+                if (idx > -1) {
+                  parent.children.splice(idx, 1, child.sliceParent);
+                }
+              }
+            }
+          });
+          return parent.children || [];
+
+          // return parent.children || [];
         }
-        return children;//removeNotVisibles(removeCandidates, children);
+        return children;
       };
 
       $scope.params = new PvTreetableParams({
@@ -1706,9 +2161,13 @@
       /**
        *
        */
-      var refresh = function () {
+      var refresh = function (keepState) {
         $rootScope.pvNodesMap = {};
-        $scope.params.refreshWithState(!$scope.options.collapse ? 'expanded' : 'collapse');
+        if (keepState) {
+          $scope.params.refreshWithState('keep');
+        } else {
+          $scope.params.refreshWithState(!$scope.options.collapse ? 'expanded' : 'collapse');
+        }
       };
 
       /**
@@ -2230,7 +2689,12 @@
         if (element.type === 'COMPONENT') {
           return getSegment(element.nodeParent);
         } else if (element.type === 'FIELD') { // find the segment
-          return $scope.parentsMap[element.id];
+			if ($scope.parentsMap[element.id]){
+				return $scope.parentsMap[element.id];
+			}else{
+				return element.nodeParent;		
+			}
+           
         }
         return null;
       };
@@ -2331,7 +2795,13 @@
        * @returns {Array}
        */
       var getDatatypeLevelPredicates = function (element) {
-        var datatype = $scope.parentsMap[element.id];
+        var datatype;
+        if ($scope.parentsMap[element.id]) {
+          datatype = $scope.parentsMap[element.id];
+        } else if (element.nodeParent) {
+          datatype = element.nodeParent;
+        }
+		       
         var predicates = [];
         if (datatype && datatype != null && datatype.predicates.length > 0) {
           var targetPath = getDatatypeChildTargetPath(element);
@@ -2348,7 +2818,12 @@
        * @returns {Array}
        */
       var getDatatypeLevelConfStatements = function (element) {
-        var datatype = $scope.parentsMap[element.id];
+        var datatype;
+        if ($scope.parentsMap[element.id]) {
+          datatype = $scope.parentsMap[element.id];
+        } else if (element.nodeParent) {
+          datatype = element.nodeParent;
+        }
         var confStatements = [];
         if (datatype && datatype != null && datatype.conformanceStatements.length > 0) {
           var targetPath = getDatatypeChildTargetPath(element);
@@ -2365,7 +2840,12 @@
        * @returns {Array}
        */
       var getDatatypeLevelValueSetBindings = function (element) {
-        var datatype = $scope.parentsMap[element.id];
+        var datatype;
+        if ($scope.parentsMap[element.id]) {
+          datatype = $scope.parentsMap[element.id];
+        } else if (element.nodeParent) {
+          datatype = element.nodeParent;
+        }
         var valueSetBindings = [];
         if (datatype && datatype.valuesetbindings != null && datatype.valuesetbindings.length > 0) {
           var targetPath = getDatatypeChildTargetPath(element);
@@ -2382,7 +2862,13 @@
        * @returns {Array}
        */
       var getDatatypeLevelSingleCodeBindings = function (element) {
-        var datatype = $scope.parentsMap[element.id];
+        var datatype;
+        if ($scope.parentsMap[element.id]) {
+          datatype = $scope.parentsMap[element.id];
+        } else if (element.nodeParent) {
+          datatype = element.nodeParent;
+        }
+        var singleCodeBindings = [];
         var singleCodeBindings = [];
         if (datatype && datatype.singlecodebindings != null && datatype.singlecodebindings.length > 0) {
           var targetPath = getDatatypeChildTargetPath(element);
@@ -2469,6 +2955,54 @@
         return $scope.predWidth;
       };
 
+	  
+	  $scope.getSlicingOptions 	  = function (node) {		
+		return [node].concat(node.slicingElements || []);	
+	  };
+
+    
+    /**
+     *
+     * @param str
+     * @param num
+     * @returns {string}
+     */
+    $scope.trim = function (str, num) {
+      if (str.length <= num) {
+        return str;
+      }
+      return str.slice(0, num) + "...";
+    };
+
+	  
+    $scope.onSliceChange = function(selectedSlice, node) {
+      // Update showing flags
+      node.slicingElements.forEach(s => s.showing = false);
+      //if not default slice, copy the slicing elements
+      if (!selectedSlice.isDefaultSlice){
+        selectedSlice.slicingElements = node.slicingElements;
+      }
+      
+      selectedSlice.showing = true;
+      selectedSlice.isExpanded = node.isExpanded;
+	  
+	  
+      // Create a new node with the selected slice's data
+      // const newNode = angular.copy(selectedSlice);
+      // newNode.id = node.id;  // Keep the original ID
+      // newNode.isExpanded = node.isExpanded;
+      // newNode.slicingElements = angular.copy(node.slicingElements);
+      
+      // Replace the node in nodeData
+      // if ($scope.nodeData && $scope.nodeData.id === node.id) {
+      //   // If this is the currently displayed node, update it directly
+      //   angular.extend($scope.nodeData, newNode);
+      // }
+      
+      refresh(true);
+      // $scope.getTabContent($scope.nodeData);
+    };
+    
 
       /**
        *
@@ -2848,8 +3382,10 @@
 		  var parentId = parentElement ? parentElement.data('ttId') : null;
 
 		  if (parentElement) {
-			  parentElement.scope().loading = true;
+			  parentElement.scope().loading = true;        
 		  }
+
+	      
 
 		  var data = params.getNodes(parentNode);
 		  if (data.length > 0) {
@@ -2880,6 +3416,14 @@
 				  $element.treetable('loadBranch', parentTtNode, elements2);
 
 				  angular.forEach(elements, function(el) {
+					
+						if ($scope.options.initialState === "keep"){
+							//restore state
+			              if ( el.node.isExpanded){
+			                $scope.addChildren($(el.element), shouldExpand);
+			              }
+						}
+					
 					  if (shouldExpand && ((parentNode === null && el.node.type !== "SEGMENT_REF") || el.node.type === "GROUP")) {
 						  $scope.addChildren($(el.element), shouldExpand);
 					  }
@@ -2890,7 +3434,10 @@
 			  });
 
 
-
+//save state
+if (parentNode) {
+  parentNode.isExpanded = true;
+}
 
 
 

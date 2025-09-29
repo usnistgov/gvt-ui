@@ -139,7 +139,7 @@ angular.module('transport').controller('TaInitiatorConfigCtrl', function ($scope
             $scope.saved = true;
             Notification.success({
                 message: "Configuration Information Saved !",
-                templateUrl: "NotificationSuccessTemplate.html",
+                templateUrl: "views/templates/NotificationSuccessTemplate.html",
                 scope: $rootScope,
                 delay: 5000
             });
@@ -211,7 +211,7 @@ angular.module('transport').controller('SutInitiatorConfigCtrl', function ($scop
                 $scope.saving = false;
                 Notification.success({
                     message: "Configuration Information Saved !",
-                    templateUrl: "NotificationSuccessTemplate.html",
+                    templateUrl: "views/templates/NotificationSuccessTemplate.html",
                     scope: $rootScope,
                     delay: 5000
                 });

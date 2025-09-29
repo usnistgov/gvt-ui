@@ -90,7 +90,7 @@
                      tooltip-class="segment-tooltip"
 
                      tooltip-trigger tooltip-animation="false" tooltip-placement="top	"
-                                    ng-click="getTabContent(element)">{{::element.name}}</a></li>
+                                    ng-click="getTabContent(element)">{{::element.name}}  <i ng-if="element.isSlice" class="fa fa-scissors"></i></a></li>
 
 
                         <li 
@@ -181,7 +181,7 @@
                                        ng-if="nodeData.type === 'SEGMENT_REF' ? isSegmentVisible(nodeData) : true">
                                     <thead>
                                     <tr class="tbl-header"
-                                        ng-if="nodeData.type !== 'DATATYPE'">
+                                        ng-if="nodeData.type === 'MESSAGE'">
                                         <th class="col-xs-2 col-fixed-350">Name 
 
                                         <button  title="Expand" class="btn btn-xs btn-info" ng-click="collapseAll(false)">
@@ -195,12 +195,32 @@
 										</th>
                                         <th class="col-xs-1 col-fixed-80">Usage</th>
                                         <th class="col-xs-1 col-fixed-85">Cardinality</th>
-                                        <th class="col-xs-1 col-fixed-100">Length</th>
+                                        <th class="col-xs-1 col-fixed-80">Length</th>
+                                        <th class="col-xs-1 col-fixed-125">Segment</th>
                                         <th class="col-xs-1 col-fixed-80">Data type</th>
                                         <th class="col-xs-1 col-fixed-150">ValueSet</th>
                                         <th class="col-xs-2" ng-style="predWidth">Predicate</th>
                                         <th class="col-xs-4" ng-style="csWidth">Conformance Statements</th>
                                     </tr>
+                                    <tr class="tbl-header"
+                                    ng-if="nodeData.type === 'SEGMENT_REF'">
+                                    <th class="col-xs-2 col-fixed-350">Name 
+
+                                    <button  title="Expand" class="btn btn-xs btn-info" ng-click="collapseAll(false)">
+                                        <i class="point fa fa-expand"></i>
+                                    </button>
+                                    <button title="Collapse" class="btn btn-xs btn-info" ng-click="collapseAll(true)" style="">
+                                        <i class="point fa fa-compress"></i>
+                                    </button>
+                                    </th>
+                                    <th class="col-xs-1 col-fixed-80">Usage</th>
+                                    <th class="col-xs-1 col-fixed-85">Cardinality</th>
+                                    <th class="col-xs-1 col-fixed-100">Length</th>
+                                    <th class="col-xs-1 col-fixed-100">Data type</th>
+                                    <th class="col-xs-1 col-fixed-150">ValueSet</th>
+                                    <th class="col-xs-2" ng-style="predWidth">Predicate</th>
+                                    <th class="col-xs-4" ng-style="csWidth">Conformance Statements</th>
+                                </tr>
 
                                     <tr class="tbl-header"
                                         ng-if="nodeData.type === 'DATATYPE'">

@@ -1,0 +1,22 @@
+<div class="modal-header">
+	<span style="font-weight: bold; font-size: 20px"> Message Content </span> <span
+		class="pull-right">
+		<button class="btn btn-xs btn-primary" ng-click="close()" type="button"
+			title="Close Dialog" class="point">
+			<i class="fa fa-times"></i> Close
+		</button>
+	</span>
+</div>
+
+
+<div class="modal-body">
+	<div class="pull-right" style="margin-bottom: 20px">
+		<button title="View Message" type="button" class="btn btn-sm btn-info"
+			ng-click="toggleHexadecimal()">
+			<i class="fa fa-eye"></i> <span ng-show="showHex">Show Original</span> <span
+				ng-show="!showHex">Show Non-Printable Characters</span>
+		</button>
+	</div>
+	<textarea class="form-control" id="message" ng-bind="message" rows="15"
+		name="message" wrap="off" style="overflow: auto;" disabled></textarea>
+</div>s

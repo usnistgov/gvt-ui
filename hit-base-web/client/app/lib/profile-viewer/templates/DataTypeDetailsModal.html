@@ -65,7 +65,11 @@
 				<span ng-if="child.type === 'SUBCOMPONENT'"class="label label-sub-component label-icon">S</span>
 				{{ child.name }}
 			</td>
-			<td>{{ child.usage }}</td>
+			<td>{{ child.usage }}
+                <span ng-repeat="p in child.selfPredicates">
+					({{::p.trueUsage}}/{{::p.falseUsage}})
+				</span>
+            </td>
 			<td ng-if = "!hasChild(child)" class="col-xs-1 col-fixed-100">            				
                 <span ng-if="child.minLength || child.maxLength">[{{::child.minLength}},{{::child.maxLength}}]</span>
 				<span ng-if="!child.minLength && !child.maxLength">[ ]</span>            
@@ -74,7 +78,8 @@
        		</td>
 
 
-            <td>{{ child.datatype }}</td>
+            <td>{{ child.datatype }}                
+            </td>
  			<td>
 			<div ng-if="(child.table != undefined  && child.table !== null)">
 				<a ng-repeat="valueSet in getValueSet(child)" class="point valueset"

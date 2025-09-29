@@ -14,6 +14,7 @@ angular.module('logs', ['common']);
 angular.module('transport', []);
 angular.module('reports', ['common','treeGrid']);
 angular.module('cache', []);
+angular.module('api', []);
 
 var app = angular.module('hit-app', [
     'ngRoute',
@@ -69,7 +70,9 @@ var app = angular.module('hit-app', [
     'angular-cache',
     'cache',
     'ngFileSaver',
-    'LocalForageModule'
+    'LocalForageModule',
+    'ngclipboard',
+    'api'
 ]);
 
 var httpHeaders,
@@ -878,7 +881,7 @@ app.run(function (Session, $rootScope, $location, $modal, TestingSettings, AppIn
             } else if (type === 'success') {
                 Notification.success({
                     message: message,
-                    templateUrl: "NotificationSuccessTemplate.html",
+                    templateUrl: "views/templates/NotificationSuccessTemplate.html",
                     scope: $rootScope,
                     delay: 5000
                 });

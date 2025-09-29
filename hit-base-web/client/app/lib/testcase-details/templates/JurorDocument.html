@@ -1,0 +1,26 @@
+<div class="panel panel-info">
+    <div class="panel-body">
+      <div class="pull-right">
+        <!--<button title="Download Juror Document" type="button" class="btn btn-sm btn-primary"-->
+        <!--ng-click="downloadJurorDoc('jurordoc',testCase.name)">-->
+        <!--<i class="fa fa-download"></i> PDF-->
+        <!--</button>-->
+        <button title="Download Juror Document" type="button" class="btn btn-sm btn-primary"
+                ng-show="jurorDocument.pdfPath && jurorDocument.pdfPath !== null"
+                ng-click="download()">
+          <i class="fa fa-download"></i>&nbsp;Download PDF
+        </button>
+      </div>
+
+      <br/>
+      <br/>
+
+      <div class="panel panel-info">
+        <div class="panel-body">
+          <div class="testcase-content">
+            <div id="{{target}}-jurorDocument"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

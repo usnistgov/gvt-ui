@@ -1,16 +1,4 @@
-<style id="antiClickjack">
-body {
-	display: none !important;
-}
-</style>
-<script type="text/javascript">
-	if (self === top) {
-		var antiClickjack = document.getElementById("antiClickjack");
-		antiClickjack.parentNode.removeChild(antiClickjack);
-	} else {
-		top.location = self.location;
-	}
-</script>
+
 <div>
 	<span style="font-weight: bold; font-size: 18px">Customize
 		Validation Detections</span>
@@ -40,7 +28,7 @@ body {
 				ng-disabled="!isAdmin()"
 				class="validation-clasification-select form-control input-sm "
 				name="r-usage"
-				ng-model="domainClassifications.rUsage.classfication">
+				ng-model="domainClassifications.rUsage.classification">
 					<option value="ERROR">Error</option>
 					<option value="WARNING">Warning</option>
 					<option value="ALERT">Alert</option>
@@ -55,7 +43,7 @@ body {
 				ng-disabled="!isAdmin()" 
 				class="validation-clasification-select form-control input-sm "
 				name="x-usage"
-				ng-model="domainClassifications.xUsage.classfication">
+				ng-model="domainClassifications.xUsage.classification">
 					<option value="ERROR">Error</option>
 					<option value="WARNING">Warning</option>
 					<option value="ALERT">Alert</option>
@@ -70,7 +58,7 @@ body {
 				ng-disabled="!isAdmin()"
 				class="validation-clasification-select form-control input-sm "
 				name="w-usage"
-				ng-model="domainClassifications.wUsage.classfication">
+				ng-model="domainClassifications.wUsage.classification">
 					<option value="ERROR">Error</option>
 					<option value="WARNING">Warning</option>
 					<option value="ALERT">Alert</option>
@@ -84,7 +72,7 @@ body {
 			<td><select			
 				class="validation-clasification-select form-control input-sm "
 				name="re-usage" ng-disabled="!isAdmin() && !isDomainOwner()"
-				ng-model="domainClassifications.reUsage.classfication">
+				ng-model="domainClassifications.reUsage.classification">
 					<option value="ERROR">Error</option>
 					<option value="WARNING">Warning</option>
 					<option value="ALERT">Alert</option>
@@ -97,7 +85,7 @@ body {
 			<td>Raised when an element with O usage is populated </td>
 			<td><select
 				class="validation-clasification-select form-control input-sm "
-				name="o-usage" ng-disabled="!isAdmin() && !isDomainOwner()" ng-model="domainClassifications.oUsage.classfication">
+				name="o-usage" ng-disabled="!isAdmin() && !isDomainOwner()" ng-model="domainClassifications.oUsage.classification">
 					<option value="ERROR">Error</option>
 					<option value="WARNING">Warning</option>
 					<option value="ALERT">Alert</option>
@@ -114,7 +102,7 @@ body {
 				ng-disabled="!isAdmin()"
 				class="validation-clasification-select form-control input-sm "
 				name="caridnality-usage"
-				ng-model="domainClassifications.cardinality.classfication">
+				ng-model="domainClassifications.cardinality.classification">
 					<option value="ERROR">Error</option>
 					<option value="WARNING">Warning</option>
 					<option value="ALERT">Alert</option>
@@ -130,7 +118,7 @@ body {
 				ng-disabled="!isAdmin()"
 				class="validation-clasification-select form-control input-sm "
 				name="o-usage"
-				ng-model="domainClassifications.nullCardinality.classfication">
+				ng-model="domainClassifications.nullCardinality.classification">
 					<option value="ERROR">Error</option>
 					<option value="WARNING">Warning</option>
 					<option value="ALERT">Alert</option>
@@ -145,7 +133,7 @@ body {
 				ng-disabled="!isAdmin()"
 				class="form-control input-sm validation-clasification-select"
 				name="length-spec-error-no-valid"
-				ng-model="domainClassifications.lengthSpecErrorNoValid.classfication">
+				ng-model="domainClassifications.lengthSpecErrorNoValid.classification">
 					<option value="ERROR">Error</option>
 					<option value="WARNING">Warning</option>
 					<option value="ALERT">Alert</option>
@@ -161,7 +149,7 @@ body {
 				ng-disabled="!isAdmin()"
 				class="validation-clasification-select form-control input-sm "
 				name="length-spec-error-xor"
-				ng-model="domainClassifications.lengthSpecErrorXor.classfication">
+				ng-model="domainClassifications.lengthSpecErrorXor.classification">
 					<option value="ERROR">Error</option>
 					<option value="WARNING">Warning</option>
 					<option value="ALERT">Alert</option>
@@ -175,7 +163,7 @@ body {
 			<td>The length detection is issued when the length of a primitive element is not in the specified length range.          </td>
 			<td><select
 				class="validation-clasification-select form-control input-sm "
-				name="length" ng-disabled="!isAdmin() && !isDomainOwner()" ng-model="domainClassifications.length.classfication">
+				name="length" ng-disabled="!isAdmin() && !isDomainOwner()" ng-model="domainClassifications.length.classification">
 					<option value="ERROR">Error</option>
 					<option value="WARNING">Warning</option>
 					<option value="ALERT">Alert</option>
@@ -188,7 +176,7 @@ body {
 			<td>The format detection is issued when the value of a primitive element is not valid according to the format defined or derived from the data type.</td>
 			<td><select
 				class="validation-clasification-select form-control input-sm "
-				name="format" ng-disabled="!isAdmin() && !isDomainOwner()" ng-model="domainClassifications.format.classfication">
+				name="format" ng-disabled="!isAdmin() && !isDomainOwner()" ng-model="domainClassifications.format.classification">
 					<option value="ERROR">Error</option>
 					<option value="WARNING">Warning</option>
 					<option value="ALERT">Alert</option>
@@ -201,7 +189,7 @@ body {
 			<td>This detection is issued when a complex element has extra children </td>
 			<td><select
 				class="validation-clasification-select form-control input-sm "
-				name="extra" ng-disabled="!isAdmin() && !isDomainOwner()" ng-model="domainClassifications.extra.classfication">
+				name="extra" ng-disabled="!isAdmin() && !isDomainOwner()" ng-model="domainClassifications.extra.classification">
 					<option value="ERROR">Error</option>
 					<option value="WARNING">Warning</option>
 					<option value="ALERT">Alert</option>
@@ -217,7 +205,7 @@ body {
 				ng-disabled="!isAdmin()"
 				class="validation-clasification-select form-control input-sm "
 				name="unescaped"
-				ng-model="domainClassifications.unescaped.classfication">
+				ng-model="domainClassifications.unescaped.classification">
 					<option value="ERROR">Error</option>
 					<option value="WARNING">Warning</option>
 					<option value="ALERT">Alert</option>
@@ -232,7 +220,7 @@ body {
 				ng-disabled="!isAdmin()"
 				class="validation-clasification-select form-control input-sm "
 				name="unexpected"
-				ng-model="domainClassifications.unexpected.classfication">
+				ng-model="domainClassifications.unexpected.classification">
 					<option value="ERROR">Error</option>
 					<option value="WARNING">Warning</option>
 					<option value="ALERT">Alert</option>
@@ -246,7 +234,7 @@ body {
 			<td><select		
 				ng-disabled="!isAdmin()"
 				class="validation-clasification-select form-control input-sm "
-				name="invalid" ng-model="domainClassifications.invalid.classfication">
+				name="invalid" ng-model="domainClassifications.invalid.classification">
 					<option value="ERROR">Error</option>
 					<option value="WARNING">Warning</option>
 					<option value="ALERT">Alert</option>
@@ -261,7 +249,7 @@ body {
 				ng-disabled="!isAdmin()"
 				class="validation-clasification-select form-control input-sm "
 				name="unresolved-field"
-				ng-model="domainClassifications.unresolvedField.classfication">
+				ng-model="domainClassifications.unresolvedField.classification">
 					<option value="ERROR">Error</option>
 					<option value="WARNING">Warning</option>
 					<option value="ALERT">Alert</option>
@@ -279,7 +267,7 @@ body {
 				ng-disabled="!isAdmin()"
 				class="validation-clasification-select form-control input-sm "
 				name="coconstraint-failure"
-				ng-model="domainClassifications.coconstraintFailure.classfication">
+				ng-model="domainClassifications.coconstraintFailure.classification">
 					<option value="ERROR">Error</option>
 					<option value="WARNING">Warning</option>
 					<option value="ALERT">Alert</option>
@@ -294,7 +282,7 @@ body {
 				ng-disabled="!isAdmin()"
 				class="validation-clasification-select form-control input-sm "
 				name="coconstraint-success"
-				ng-model="domainClassifications.coconstraintSuccess.classfication">
+				ng-model="domainClassifications.coconstraintSuccess.classification">
 					<option value="ERROR">Error</option>
 					<option value="WARNING">Warning</option>
 					<option value="ALERT">Alert</option>
@@ -309,7 +297,7 @@ body {
 				ng-disabled="!isAdmin()"
 				class="validation-clasification-select form-control input-sm "
 				name="highlevel-content"
-				ng-model="domainClassifications.highlevelContent.classfication">
+				ng-model="domainClassifications.highlevelContent.classification">
 					<option value="ERROR">Error</option>
 					<option value="WARNING">Warning</option>
 					<option value="ALERT">Alert</option>
@@ -324,7 +312,7 @@ body {
 				ng-disabled="!isAdmin()"
 				class="validation-clasification-select form-control input-sm "
 				name="constraint-failure"
-				ng-model="domainClassifications.constraintFailure.classfication">
+				ng-model="domainClassifications.constraintFailure.classification">
 					<option value="ERROR">Error</option>
 					<option value="WARNING">Warning</option>
 					<option value="ALERT">Alert</option>
@@ -339,7 +327,7 @@ body {
 				ng-disabled="!isAdmin()"
 				class="validation-clasification-select form-control input-sm "
 				name="extra"
-				ng-model="domainClassifications.constraintSuccess.classfication">
+				ng-model="domainClassifications.constraintSuccess.classification">
 					<option value="ERROR">Error</option>
 					<option value="WARNING">Warning</option>
 					<option value="ALERT">Alert</option>
@@ -354,7 +342,7 @@ body {
 				ng-disabled="!isAdmin()"
 				class="validation-clasification-select form-control input-sm "
 				name="extra"
-				ng-model="domainClassifications.constraintSpecError.classfication">
+				ng-model="domainClassifications.constraintSpecError.classification">
 					<option value="ERROR">Error</option>
 					<option value="WARNING">Warning</option>
 					<option value="ALERT">Alert</option>
@@ -370,7 +358,7 @@ body {
 				ng-disabled="!isAdmin()"
 				class="validation-clasification-select form-control input-sm "
 				name="extra"
-				ng-model="domainClassifications.contentFailure.classfication">
+				ng-model="domainClassifications.contentFailure.classification">
 					<option value="ERROR">Error</option>
 					<option value="WARNING">Warning</option>
 					<option value="ALERT">Alert</option>
@@ -385,7 +373,7 @@ body {
 				ng-disabled="!isAdmin()"
 				class="validation-clasification-select form-control input-sm "
 				name="extra"
-				ng-model="domainClassifications.contentSuccess.classfication">
+				ng-model="domainClassifications.contentSuccess.classification">
 					<option value="ERROR">Error</option>
 					<option value="WARNING">Warning</option>
 					<option value="ALERT">Alert</option>
@@ -400,7 +388,7 @@ body {
 				ng-disabled="!isAdmin()"
 				class="validation-clasification-select form-control input-sm "
 				name="extra"
-				ng-model="domainClassifications.contentSpecError.classfication">
+				ng-model="domainClassifications.contentSpecError.classification">
 					<option value="ERROR">Error</option>
 					<option value="WARNING">Warning</option>
 					<option value="ALERT">Alert</option>
@@ -416,7 +404,7 @@ body {
 				ng-disabled="!isAdmin()"
 				class="validation-clasification-select form-control input-sm "
 				name="predicate-success"
-				ng-model="domainClassifications.predicateSuccess.classfication">
+				ng-model="domainClassifications.predicateSuccess.classification">
 					<option value="ERROR">Error</option>
 					<option value="WARNING">Warning</option>
 					<option value="ALERT">Alert</option>
@@ -431,7 +419,7 @@ body {
 				ng-disabled="!isAdmin()"
 				class="validation-clasification-select form-control input-sm "
 				name="predicate-failure"
-				ng-model="domainClassifications.predicateFailure.classfication">
+				ng-model="domainClassifications.predicateFailure.classification">
 					<option value="ERROR">Error</option>
 					<option value="WARNING">Warning</option>
 					<option value="ALERT">Alert</option>
@@ -446,7 +434,7 @@ body {
 				ng-disabled="!isAdmin()"
 				class="validation-clasification-select form-control input-sm "
 				name="extra"
-				ng-model="domainClassifications.predicateSpecError.classfication">
+				ng-model="domainClassifications.predicateSpecError.classification">
 					<option value="ERROR">Error</option>
 					<option value="WARNING">Warning</option>
 					<option value="ALERT">Alert</option>
@@ -461,7 +449,7 @@ body {
 			<td><select
 				ng-disabled="!isAdmin()"
 				class="validation-clasification-select form-control input-sm "
-				name="extra" ng-model="domainClassifications.evs.classfication">
+				name="extra" ng-model="domainClassifications.evs.classification">
 					<option value="ERROR">Error</option>
 					<option value="WARNING">Warning</option>
 					<option value="ALERT">Alert</option>
@@ -474,7 +462,7 @@ body {
 			<td>This detection is raised when the code is in the value set but the usage is P (permitted)</td>
 			<td><select
 				class="validation-clasification-select form-control input-sm "
-				name="extra" ng-disabled="!isAdmin() && !isDomainOwner()" ng-model="domainClassifications.pvs.classfication">
+				name="extra" ng-disabled="!isAdmin() && !isDomainOwner()" ng-model="domainClassifications.pvs.classification">
 					<option value="ERROR">Error</option>
 					<option value="WARNING">Warning</option>
 					<option value="ALERT">Alert</option>
@@ -482,29 +470,89 @@ body {
 					<option value="AFFIRMATIVE">Affirmative</option>
 			</select></td>
 		</tr>
-		<tr>
+		<!-- deprecated -->
+		<!-- <tr>
 			<td>code-not-found</td>
 			<td>This detection is raised when the code cannot be found in the value set</td>
 			<td><select
 				ng-disabled="!isAdmin()"
 				class="validation-clasification-select form-control input-sm "
 				name="extra"
-				ng-model="domainClassifications.codeNotFound.classfication">
+				ng-model="domainClassifications.codeNotFound.classification">
 					<option value="ERROR">Error</option>
 					<option value="WARNING">Warning</option>
 					<option value="ALERT">Alert</option>
 					<option value="INFORMATIONAL">Informational</option>
 					<option value="AFFIRMATIVE">Affirmative</option>
 			</select></td>
-		</tr>
-		<tr>
+		</tr> -->
+		<!-- deprecated -->
+		<!-- <tr>
 			<td>vs-not-found</td>
 			<td>This detection is raised when the value set cannot be found in the library</td>
 			<td><select
 				ng-disabled="!isAdmin()"
 				class="validation-clasification-select form-control input-sm "
 				name="vs-not-found"
-				ng-model="domainClassifications.vsNotFound.classfication">
+				ng-model="domainClassifications.vsNotFound.classification">
+					<option value="ERROR">Error</option>
+					<option value="WARNING">Warning</option>
+					<option value="ALERT">Alert</option>
+					<option value="INFORMATIONAL">Informational</option>
+					<option value="AFFIRMATIVE">Affirmative</option>
+					<option value="SPEC_ERROR">Spec Error</option>
+			</select></td>
+		</tr> -->
+
+		<tr>
+			<td>code-not-found-simple</td>
+			<td>This detection is raised when a code in the message cannot be found in the value set - applies to primitive elements</td>
+			<td><select
+				class="validation-clasification-select form-control input-sm "
+				name="code-not-found-simple"
+				ng-model="domainClassifications.codeNotFoundSimple.classification">
+					<option value="ERROR">Error</option>
+					<option value="WARNING">Warning</option>
+					<option value="ALERT">Alert</option>
+					<option value="INFORMATIONAL">Informational</option>
+					<option value="AFFIRMATIVE">Affirmative</option>
+			</select></td>
+		</tr>
+		<tr>
+			<td>code-not-found-coded-element</td>
+			<td>This detection is raised when a code in the message cannot be found in the value set - applies to coded elements</td>
+			<td><select
+				class="validation-clasification-select form-control input-sm "
+				name="code-not-found-coded-element"
+				ng-model="domainClassifications.codeNotFoundCodedElement.classification">
+					<option value="ERROR">Error</option>
+					<option value="WARNING">Warning</option>
+					<option value="ALERT">Alert</option>
+					<option value="INFORMATIONAL">Informational</option>
+					<option value="AFFIRMATIVE">Affirmative</option>
+			</select></td>
+		</tr>
+		<tr>
+			<td>code-not-found-cs</td>
+			<td>This detection is raised when a code in the message matches a code in the value set but not the code system - applies to coded elements</td>
+			<td><select				
+				class="validation-clasification-select form-control input-sm "
+				name="code-not-found-cs"
+				ng-model="domainClassifications.codeNotFoundCS.classification">
+					<option value="ERROR">Error</option>
+					<option value="WARNING">Warning</option>
+					<option value="ALERT">Alert</option>
+					<option value="INFORMATIONAL">Informational</option>
+					<option value="AFFIRMATIVE">Affirmative</option>
+			</select></td>
+		</tr>	
+		<tr>
+			<td>vs-not-found-binding</td>
+			<td>This detection is raised when a value set referenced in an element's value set binding is not found in the value set library</td>
+			<td><select
+				class="validation-clasification-select form-control input-sm "
+				name="vs-not-found-binding"
+				ng-model="domainClassifications.vsNotFoundBinding.classification">
 					<option value="ERROR">Error</option>
 					<option value="WARNING">Warning</option>
 					<option value="ALERT">Alert</option>
@@ -513,12 +561,14 @@ body {
 					<option value="SPEC_ERROR">Spec Error</option>
 			</select></td>
 		</tr>
+
+
 		<tr>
 			<td>empty-vs</td>
 			<td>This detection is raised when the value set is empty</td>
 			<td><select
 				class="validation-clasification-select form-control input-sm "
-				name="empty-vs" ng-disabled="!isAdmin() && !isDomainOwner()" ng-model="domainClassifications.emptyVs.classfication">
+				name="empty-vs" ng-disabled="!isAdmin() && !isDomainOwner()" ng-model="domainClassifications.emptyVs.classification">
 					<option value="ERROR">Error</option>
 					<option value="WARNING">Warning</option>
 					<option value="ALERT">Alert</option>
@@ -526,13 +576,14 @@ body {
 					<option value="AFFIRMATIVE">Affirmative</option>
 			</select></td>
 		</tr>
-		<tr>
+		<!-- deprecated -->
+		<!-- <tr>
 			<td>vs-error</td>
 			<td>This detection is raised when there is an error in the value set</td>
 			<td><select
 				ng-disabled="!isAdmin()"
 				class="validation-clasification-select form-control input-sm "
-				name="vs-error" ng-model="domainClassifications.vsError.classfication">
+				name="vs-error" ng-model="domainClassifications.vsError.classification">
 					<option value="ERROR">Error</option>
 					<option value="WARNING">Warning</option>
 					<option value="ALERT">Alert</option>
@@ -540,7 +591,7 @@ body {
 					<option value="AFFIRMATIVE">Affirmative</option>
 					<option value="SPEC_ERROR">Spec Error</option>
 			</select></td>
-		</tr>
+		</tr> -->
 		<tr>
 			<td>binding-location</td>
 			<td>This detection is raised when there is an error while resolving the binding location</td>
@@ -548,7 +599,7 @@ body {
 				ng-disabled="!isAdmin()"
 				class="validation-clasification-select form-control input-sm "
 				name="binding-location"
-				ng-model="domainClassifications.bindingLocation.classfication">
+				ng-model="domainClassifications.bindingLocation.classification">
 					<option value="ERROR">Error</option>
 					<option value="WARNING">Warning</option>
 					<option value="ALERT">Alert</option>
@@ -563,7 +614,7 @@ body {
 			<td><select
 				class="validation-clasification-select form-control input-sm " ng-disabled="!isAdmin() && !isDomainOwner()"
 				name="vs-no-validation"
-				ng-model="domainClassifications.vsNoValidation.classfication">
+				ng-model="domainClassifications.vsNoValidation.classification">
 					<option value="ERROR">Error</option>
 					<option value="WARNING">Warning</option>
 					<option value="ALERT">Alert</option>
@@ -571,20 +622,20 @@ body {
 					<option value="AFFIRMATIVE">Affirmative</option>
 			</select></td>
 		</tr>
-		<tr>
+		<!-- <tr>
 			<td>coded-element</td>
 			<td>This detection is raised when coded element validation fails</td>
 			<td><select
 				ng-disabled="!isAdmin()"
 				class="validation-clasification-select form-control input-sm "
 				name="extra"
-				ng-model="domainClassifications.codedElement.classfication">
+				ng-model="domainClassifications.codedElement.classification">
 					<option value="ERROR">Error</option>
 					<option value="WARNING">Warning</option>
 					<option value="ALERT">Alert</option>
 					<option value="INFORMATIONAL">Informational</option>
 					<option value="AFFIRMATIVE">Affirmative</option>
 			</select></td>
-		</tr>
+		</tr> -->
 	</tbody>
 </table>

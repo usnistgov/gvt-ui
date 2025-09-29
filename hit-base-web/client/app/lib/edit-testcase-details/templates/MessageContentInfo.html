@@ -1,0 +1,17 @@
+  <div class="modal-header">
+                <span style="font-weight: bold; font-size: 20px">
+                    Message Content Information
+                </span>
+    <span class="pull-right">
+                   <button class="btn btn-xs btn-primary" ng-click="close()"><i class="fa fa-times"></i>Close</button>
+                </span>
+  </div>
+  <div class="modal-body">
+    <div class="message-content-info-content">
+      <div ng-if="mcHelpInfo != null" ng-bind-html="toHTML(mcHelpInfo)">
+      </div>
+      <div ng-if="mcHelpInfo === null">
+        No information available.
+      </div>
+    </div>
+  </div>

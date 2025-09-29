@@ -1,0 +1,21 @@
+
+<div class="modal-header">Tool Scope Selection</div>
+<div class="modal-body error-dlg">
+	<div style="margin-bottom: 20px">
+		<!--<p style="color:red;text-align:center">No Tool Scope selected</p>-->
+		<!--<hr />-->
+		<span style="">Select Tool Scope:</span> <select class=""
+			name="selectedDomain" ng-change="selectDomain()"
+			ng-model="selectedDomain.domain" required>
+			<option ng-repeat="dom in appInfo.domains" value="{{dom.domain}}">{{dom.name}}
+			</option>
+		</select> Or
+		<button ng-if="isLoggedIn()" ng-click="createNewDomain()"
+			class="btn btn-primary btn-md" title="Create New Tool Scope">
+			<i class="fa fa-plus"></i>Create
+		</button>
+		<a ng-if="!isLoggedIn()" class="point" ng-click="loginReq()"> Sign In</a>
+	</div>
+
+
+</div>

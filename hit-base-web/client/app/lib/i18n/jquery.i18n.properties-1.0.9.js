@@ -252,96 +252,177 @@ function loadAndParseFile(filename, settings) {
     });
 }
 
-/** Parse .properties files */
+///** Parse .properties files */
+//function parseData(data, mode) {
+//   var parsed = '';
+//   var parameters = data.split( /\n/ );
+//   var regPlaceHolder = /(\{\d+\})/g;
+//   var regRepPlaceHolder = /\{(\d+)\}/g;
+//   var unicodeRE = /(\\u.{4})/ig;
+//   for(var i=0; i<parameters.length; i++ ) {
+//       parameters[i] = parameters[i].replace( /^\s\s*/, '' ).replace( /\s\s*$/, '' ); // trim
+//       if(parameters[i].length > 0 && parameters[i].match("^#")!="#") { // skip comments
+//           var pair = parameters[i].split('=');
+//           if(pair.length > 0) {
+//               /** Process key & value */
+//               var name = unescape(pair[0]).replace( /^\s\s*/, '' ).replace( /\s\s*$/, '' ); // trim
+//               var value = pair.length == 1 ? "" : pair[1];
+//               // process multi-line values
+//               while(value.match(/\\$/)=="\\") {
+//               		value = value.substring(0, value.length - 1);
+//               		value += parameters[++i].replace( /\s\s*$/, '' ); // right trim
+//               }               
+//               // Put values with embedded '='s back together
+//               for(var s=2;s<pair.length;s++){ value +='=' + pair[s]; }
+//               value = value.replace( /^\s\s*/, '' ).replace( /\s\s*$/, '' ); // trim
+//               
+//               /** Mode: bundle keys in a map */
+//               if(mode == 'map' || mode == 'both') {
+//                   // handle unicode chars possibly left out
+//                   var unicodeMatches = value.match(unicodeRE);
+//                   if(unicodeMatches) {
+//                     for(var u=0; u<unicodeMatches.length; u++) {
+//                        value = value.replace( unicodeMatches[u], unescapeUnicode(unicodeMatches[u]));
+//                     }
+//                   }
+//                   // add to map
+//                   $.i18n.map[name] = value;
+//               }
+//               
+//               /** Mode: bundle keys as vars/functions */
+//               if(mode == 'vars' || mode == 'both') {
+//                   value = value.replace( /"/g, '\\"' ); // escape quotation mark (")
+//                   
+//                   // make sure namespaced key exists (eg, 'some.key') 
+//                   checkKeyNamespace(name);
+//                   
+//                   // value with variable substitutions
+//                   if(regPlaceHolder.test(value)) {
+//                       var parts = value.split(regPlaceHolder);
+//                       // process function args
+//                       var first = true;
+//                       var fnArgs = '';
+//                       var usedArgs = [];
+//                       for(var p=0; p<parts.length; p++) {
+//                           if(regPlaceHolder.test(parts[p]) && (usedArgs.length == 0 || usedArgs.indexOf(parts[p]) == -1)) {
+//                               if(!first) {fnArgs += ',';}
+//                               fnArgs += parts[p].replace(regRepPlaceHolder, 'v$1');
+//                               usedArgs.push(parts[p]);
+//                               first = false;
+//                           }
+//                       }
+//                       parsed += name + '=function(' + fnArgs + '){';
+//                       // process function body
+//                       var fnExpr = '"' + value.replace(regRepPlaceHolder, '"+v$1+"') + '"';
+//                       parsed += 'return ' + fnExpr + ';' + '};';
+//                       
+//                   // simple value
+//                   }else{
+//                       parsed += name+'="'+value+'";';
+//                   }
+//               } // END: Mode: bundle keys as vars/functions
+//           } // END: if(pair.length > 0)
+//       } // END: skip comments
+//   }
+//   eval(parsed);
+//}
+//
+///** Make sure namespace exists (for keys with dots in name) */
+//// TODO key parts that start with numbers quietly fail. i.e. month.short.1=Jan
+//function checkKeyNamespace(key) {
+//	var regDot = /\./;
+//	if(regDot.test(key)) {
+//		var fullname = '';
+//		var names = key.split( /\./ );
+//		for(var i=0; i<names.length; i++) {
+//			if(i>0) {fullname += '.';}
+//			fullname += names[i];
+//			if(eval('typeof '+fullname+' == "undefined"')) {
+//				eval(fullname + '={};');
+//			}
+//		}
+//	}
+//}
+
 function parseData(data, mode) {
-   var parsed = '';
-   var parameters = data.split( /\n/ );
-   var regPlaceHolder = /(\{\d+\})/g;
-   var regRepPlaceHolder = /\{(\d+)\}/g;
-   var unicodeRE = /(\\u.{4})/ig;
-   for(var i=0; i<parameters.length; i++ ) {
-       parameters[i] = parameters[i].replace( /^\s\s*/, '' ).replace( /\s\s*$/, '' ); // trim
-       if(parameters[i].length > 0 && parameters[i].match("^#")!="#") { // skip comments
-           var pair = parameters[i].split('=');
-           if(pair.length > 0) {
-               /** Process key & value */
-               var name = unescape(pair[0]).replace( /^\s\s*/, '' ).replace( /\s\s*$/, '' ); // trim
-               var value = pair.length == 1 ? "" : pair[1];
-               // process multi-line values
-               while(value.match(/\\$/)=="\\") {
-               		value = value.substring(0, value.length - 1);
-               		value += parameters[++i].replace( /\s\s*$/, '' ); // right trim
-               }               
-               // Put values with embedded '='s back together
-               for(var s=2;s<pair.length;s++){ value +='=' + pair[s]; }
-               value = value.replace( /^\s\s*/, '' ).replace( /\s\s*$/, '' ); // trim
-               
-               /** Mode: bundle keys in a map */
-               if(mode == 'map' || mode == 'both') {
-                   // handle unicode chars possibly left out
-                   var unicodeMatches = value.match(unicodeRE);
-                   if(unicodeMatches) {
-                     for(var u=0; u<unicodeMatches.length; u++) {
-                        value = value.replace( unicodeMatches[u], unescapeUnicode(unicodeMatches[u]));
-                     }
-                   }
-                   // add to map
-                   $.i18n.map[name] = value;
-               }
-               
-               /** Mode: bundle keys as vars/functions */
-               if(mode == 'vars' || mode == 'both') {
-                   value = value.replace( /"/g, '\\"' ); // escape quotation mark (")
-                   
-                   // make sure namespaced key exists (eg, 'some.key') 
-                   checkKeyNamespace(name);
-                   
-                   // value with variable substitutions
-                   if(regPlaceHolder.test(value)) {
-                       var parts = value.split(regPlaceHolder);
-                       // process function args
-                       var first = true;
-                       var fnArgs = '';
-                       var usedArgs = [];
-                       for(var p=0; p<parts.length; p++) {
-                           if(regPlaceHolder.test(parts[p]) && (usedArgs.length == 0 || usedArgs.indexOf(parts[p]) == -1)) {
-                               if(!first) {fnArgs += ',';}
-                               fnArgs += parts[p].replace(regRepPlaceHolder, 'v$1');
-                               usedArgs.push(parts[p]);
-                               first = false;
-                           }
-                       }
-                       parsed += name + '=function(' + fnArgs + '){';
-                       // process function body
-                       var fnExpr = '"' + value.replace(regRepPlaceHolder, '"+v$1+"') + '"';
-                       parsed += 'return ' + fnExpr + ';' + '};';
-                       
-                   // simple value
-                   }else{
-                       parsed += name+'="'+value+'";';
-                   }
-               } // END: Mode: bundle keys as vars/functions
-           } // END: if(pair.length > 0)
-       } // END: skip comments
-   }
-   eval(parsed);
+    var parameters = data.split(/\n/);
+    var regPlaceHolder = /(\{\d+\})/g;
+    var regRepPlaceHolder = /\{(\d+)\}/g;
+    var unicodeRE = /(\\u.{4})/ig;
+
+    for (var i = 0; i < parameters.length; i++) {
+        parameters[i] = parameters[i].trim();
+
+        if (parameters[i].length === 0 || parameters[i].startsWith("#")) {
+            continue; // Skip comments and blank lines
+        }
+
+        var pair = parameters[i].split('=');
+        if (pair.length === 0) continue;
+
+        var name = unescape(pair[0].trim());
+        var value = pair.length === 1 ? "" : pair.slice(1).join('=').trim();
+
+        // Handle multi-line values
+        while (value.match(/\\$/) === "\\") {
+            value = value.slice(0, -1) + parameters[++i].trimEnd();
+        }
+
+        // Unicode decode
+        var unicodeMatches = value.match(unicodeRE);
+        if (unicodeMatches) {
+            for (var u = 0; u < unicodeMatches.length; u++) {
+                value = value.replace(unicodeMatches[u], unescapeUnicode(unicodeMatches[u]));
+            }
+        }
+
+        // Mode: map
+        if (mode === 'map' || mode === 'both') {
+            $.i18n.map[name] = value;
+        }
+
+        // Mode: vars (define keys as dynamic functions on global object)
+        if (mode === 'vars' || mode === 'both') {
+            assignToGlobalNamespace(name, value, regPlaceHolder, regRepPlaceHolder);
+        }
+    }
 }
 
-/** Make sure namespace exists (for keys with dots in name) */
-// TODO key parts that start with numbers quietly fail. i.e. month.short.1=Jan
 function checkKeyNamespace(key) {
-	var regDot = /\./;
-	if(regDot.test(key)) {
-		var fullname = '';
-		var names = key.split( /\./ );
-		for(var i=0; i<names.length; i++) {
-			if(i>0) {fullname += '.';}
-			fullname += names[i];
-			if(eval('typeof '+fullname+' == "undefined"')) {
-				eval(fullname + '={};');
-			}
-		}
-	}
+    var parts = key.split('.');
+    var context = window;
+
+    for (var i = 0; i < parts.length - 1; i++) {
+        var part = parts[i];
+        if (!Object.prototype.hasOwnProperty.call(context, part)) {
+            context[part] = {};
+        }
+        context = context[part];
+    }
+}
+
+
+function assignToGlobalNamespace(key, value, regPlaceHolder, regRepPlaceHolder) {
+    var parts = key.split('.');
+    var context = window;
+
+    for (var i = 0; i < parts.length - 1; i++) {
+        var part = parts[i];
+        context[part] = context[part] || {};
+        context = context[part];
+    }
+
+    var lastPart = parts[parts.length - 1];
+
+    if (regPlaceHolder.test(value)) {
+        context[lastPart] = function (...args) {
+            return value.replace(regRepPlaceHolder, function (match, index) {
+                return args[parseInt(index)] ?? `{${index}}`;
+            });
+        };
+    } else {
+        context[lastPart] = value;
+    }
 }
 
 /** Make sure filename is an array */

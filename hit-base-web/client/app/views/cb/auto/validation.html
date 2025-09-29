@@ -1,12 +1,4 @@
-<style id="antiClickjack">body{display:none !important;}</style>
-<script type="text/javascript">
-    if (self === top) {
-        var antiClickjack = document.getElementById("antiClickjack");
-        antiClickjack.parentNode.removeChild(antiClickjack);
-    } else {
-        top.location = self.location;
-    }
-</script>
+
 <div ng-controller="CBValidatorCtrl" ng-init="initValidation()">
     <div class="panel panel-info">
         <div class="panel-body">
@@ -152,7 +144,10 @@
                                 </button>
 
 
-
+                                <button title="API" type="button" class="btn btn-xs" style="background-color: #c339de; border-color: #c339de; color: white;" 
+                                         ng-click="showAPIInfo()">
+                                     <i class="fa fa-info-circle"></i>API
+                                 </button>
                                  <button title="Clear" type="button" class="btn btn-xs btn-warning"
                                          ng-hide="isTestCase() && isTestCaseCompleted()"
                                          ng-click="clearMessage()">

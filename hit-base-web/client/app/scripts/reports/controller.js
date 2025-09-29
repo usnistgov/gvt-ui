@@ -105,7 +105,7 @@ angular.module('reports')
     	    	          		}
     	    	          		Notification.success({
     	    	                    message: "Report deleted successfully!",
-    	    	                    templateUrl: "NotificationSuccessTemplate.html",
+    	    	                    templateUrl: "views/templates/NotificationSuccessTemplate.html",
     	    	                    scope: $rootScope,
     	    	                    delay: 5000
     	    	                  });
@@ -125,7 +125,7 @@ angular.module('reports')
     	    	          		}
     	    	          		Notification.success({
     	    	                    message: "Report deleted successfully!",
-    	    	                    templateUrl: "NotificationSuccessTemplate.html",
+    	    	                    templateUrl: "views/templates/NotificationSuccessTemplate.html",
     	    	                    scope: $rootScope,
     	    	                    delay: 5000
     	    	                  });

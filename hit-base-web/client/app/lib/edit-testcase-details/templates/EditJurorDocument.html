@@ -1,0 +1,21 @@
+<div class="panel panel-default">
+    <div class="panel-body">
+      <div class="pull-right">       
+      </div>
+      </div>
+
+      <br/>
+      <br/>
+          <div class="testcase-content">
+
+            <div ng-show="editMode && error != null && error != ''">
+              <div class="col-md-12">
+                <div class="alert alert-danger">{{error}}</div>
+              </div>
+            </div>
+
+            <div id="{{target}}-jurorDocument" ng-show="!editMode"></div>
+            <textarea class="form-control" ng-show="editMode" rows="30" cols="10" ng-model="value"></textarea>
+          </div>
+        </div>
+  </div>

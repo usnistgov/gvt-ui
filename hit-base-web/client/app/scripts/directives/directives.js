@@ -174,3 +174,67 @@ angular.module('hit-tool-directives').directive('selectMin', function () {
     }
   };
 });
+
+
+angular.module('hit-tool-directives').directive('slicingPopover', ['$modal', function($modal) {
+    return {
+      restrict: 'A',
+      scope: {
+        default: '=',
+        slicingOptions: '=',
+        onSlicingSelect: '&'
+      },
+      link: function(scope, element) {
+        element.on('click', function(event) {
+          event.stopPropagation();
+          
+          var modalInstance = $modal.open({
+            animation: false,
+            templateUrl: 'lib/profile-viewer/templates/slicing-modal.html',
+            controller: ['$scope', '$modalInstance', '$sce', function($scope, $modalInstance, $sce) {
+              $scope.node = scope.default;
+              $scope.options = scope.slicingOptions;
+              $scope.showingAssertion = {}; // Track which assertions are visible
+              
+              // Format XML for display
+              $scope.formatXml = function(xml) {
+                if (!xml) return '';
+                // Simple XML formatting - replace < and > with HTML entities
+                // and add line breaks for better readability
+                var formatted = xml
+                  .replace(/</g, '&lt;')
+                  .replace(/>/g, '&gt;')
+                  .replace(/(&lt;[^>]+>)(?=&lt;)/g, '$1\n');
+                return $sce.trustAsHtml(formatted);
+              };
+              
+              // Toggle assertion visibility
+              $scope.toggleAssertion = function(option, $event) {
+                $event.stopPropagation();
+                // For base slice, use 'base' as the key
+                var key = option === $scope.node.sliceParent ? 'base' : 
+                         (option.slice.ref || option.slice.name || option.slice.datatype);
+                $scope.showingAssertion[key] = !$scope.showingAssertion[key];
+              };
+              
+              $scope.select = function(option) {
+                $modalInstance.close(option);
+              };
+              
+              $scope.cancel = function() {
+                $modalInstance.dismiss('cancel');
+              };
+            }],
+            size: 'sm',
+            windowClass: 'slicing-modal'
+          });
+
+          modalInstance.result.then(function(selectedOption) {
+            scope.onSlicingSelect({ option: selectedOption, node: scope.default });
+          }, function() {
+            // Modal dismissed
+          });
+        });
+      }
+    };
+  }]);

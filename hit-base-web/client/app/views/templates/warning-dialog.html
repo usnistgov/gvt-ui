@@ -1,0 +1,9 @@
+<div class="modal-header">
+	<h3>Your session will expire soon!</h3>
+</div>
+<div idle-countdown="countdown" ng-init="countdown=30"
+	class="modal-body info-dlg">
+	<progressbar type="warning" max="30" value="30" animate="false"
+		class="progress-striped active">Your session will expire in
+	{{countdown}} second(s). </progressbar>
+</div>

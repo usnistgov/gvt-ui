@@ -1,22 +1,42 @@
 <tr pv-node  is-branch="hasRelevantChild(node)" node="node">
-        <td class="col-xs-2 col-fixed-350"
+<!--         <td ng-if="!node.hasSlice" class="col-xs-2 col-fixed-350" -->
+<!--             ng-class="{'name-concise-view concise-view':options.concise, 'expanded-view': !options.concise}"> -->
+<!--             <span class="label label-segment label-icon">S</span> -->
+
+<!--             <a class="point" -->
+<!--                ng-click="showRefSegment(node.id)" -->
+<!--                class="concise-view" ng-if="options.concise" -->
+<!--                tooltip-html="getSegmentRefNodeName(node)" tooltip-append-to-body="true" -->
+<!--                tooltip-class="constraints-tooltip" ng-bind-html="getSegmentRefNodeName(node)" -->
+<!--                tooltip-trigger tooltip-animation="false" tooltip-placement="left"></a> -->
+
+<!--             <a class="point" -->
+<!--                ng-click="showRefSegment(node.ref)" -->
+<!--                ng-if="!options.concise" class="expanded-view"> -->
+<!--                 {{::getSegmentRefNodeName(node)}} -->
+<!--             </a>            -->
+                    
+<!--         </td> -->
+         <td class="col-xs-2 col-fixed-350"
             ng-class="{'name-concise-view concise-view':options.concise, 'expanded-view': !options.concise}">
             <span class="label label-segment label-icon">S</span>
-
-            <a class="point"
+			 <a class="point"
                ng-click="showRefSegment(node.id)"
                class="concise-view" ng-if="options.concise"
                tooltip-html="getSegmentRefNodeName(node)" tooltip-append-to-body="true"
                tooltip-class="constraints-tooltip" ng-bind-html="getSegmentRefNodeName(node)"
                tooltip-trigger tooltip-animation="false" tooltip-placement="left"></a>
 
+			
             <a class="point"
                ng-click="showRefSegment(node.ref)"
-               ng-if="!options.concise" class="expanded-view">
+               ng-if="!options.concise"
+              class="expanded-view">
                 {{::getSegmentRefNodeName(node)}}
-            </a>
-
+            </a>     
+                 
         </td>
+        
         <td class="col-xs-1 col-fixed-80">
             <span ng-bind="::node.usage"></span>
              <span ng-repeat="p in node.selfPredicates">
@@ -28,6 +48,27 @@
         </td>
 
         <td class="col-xs-1 col-fixed-100 nodata">
+        </td>
+        <td class="col-xs-1 col-fixed-100 ">
+            <a class="point"
+               ng-click="showRefSegment(node.id)"
+               tooltip-html="node.ref" tooltip-append-to-body="true"
+               class="concise-view"
+               tooltip-class="constraints-tooltip"              >
+              <span>{{trim(node.ref, 8)}}</span>
+            </a>                
+            <span ng-if="node.slicingElements && node.slicingElements.length > 0"  >
+                <i class="fa fa-scissors"
+                    slicing-popover
+                    default="node"
+                    slicing-options="node.slicingElements"
+                    on-slicing-select="onSliceChange(option, node)"
+                    tooltip="Select slice"
+                    tooltip-append-to-body="true"
+                    tooltip-class="constraints-tooltip"
+                    tooltip-trigger tooltip-animation="false" tooltip-placement="right"
+                    style="cursor: pointer; font-size: 18px; padding: 2px 2px 2px 4px;"></i>
+                </span>    
         </td>
         <td class="col-xs-1 col-fixed-80 nodata">
         </td>

@@ -493,7 +493,7 @@ angular.module('account')
 				if (notification.id !== undefined) {
 					notificationService.updateNotification(notification).then(function(result) {
 						if (result.type === "success") {
-							Notification.error({ message: result.text, templateUrl: "NotificationSuccessTemplate.html", scope: $scope, delay: 50000 });
+							Notification.error({ message: result.text, templateUrl: "views/templates/NotificationSuccessTemplate.html", scope: $scope, delay: 50000 });
 						} else {
 							Notification.error({ message: result.text, templateUrl: "NotificationErrorTemplate.html", scope: $scope, delay: 50000 });
 						}
@@ -503,7 +503,7 @@ angular.module('account')
 				} else {
 					notificationService.saveNotification(notification).then(function(result) {
 						if (result.type === "success") {
-							Notification.error({ message: result.text, templateUrl: "NotificationSuccessTemplate.html", scope: $scope, delay: 50000 });
+							Notification.error({ message: result.text, templateUrl: "views/templates/NotificationSuccessTemplate.html", scope: $scope, delay: 50000 });
 							$scope.notificationList.unshift(result.data);
 						} else {
 							Notification.error({ message: result.text, templateUrl: "NotificationErrorTemplate.html", scope: $scope, delay: 50000 });
@@ -630,7 +630,7 @@ angular.module('account')
 								//should unfreeze the form
 								$scope.registered = true;
 								$location.path('/home');
-								Notification.success({ message: $rootScope.appInfo.registrationSubmittedContent, templateUrl: "NotificationSuccessTemplate.html", scope: $rootScope, delay: 30000 });
+								Notification.success({ message: $rootScope.appInfo.registrationSubmittedContent, templateUrl: "views/templates/NotificationSuccessTemplate.html", scope: $rootScope, delay: 30000 });
 							} else {
 								$scope.registered = false;
 							}

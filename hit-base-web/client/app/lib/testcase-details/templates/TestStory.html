@@ -1,0 +1,23 @@
+<div class="panel panel-info">
+    <div class="panel-body">
+      <div>
+        <div class="pull-right" ng-show="testStory && testStory.pdfPath && testStory.pdfPath !== null">
+          <button title="Download Test Story" type="button" class="btn btn-sm btn-primary"
+                  ng-click="download()">
+            <i class="fa fa-download"></i>&nbsp;Download PDF
+          </button>
+        </div>
+
+        <br/>
+        <br/>
+
+        <div class="panel panel-info">
+          <div class="panel-body">
+            <div class="testcase-content">
+              <div id="{{target}}-testStory"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

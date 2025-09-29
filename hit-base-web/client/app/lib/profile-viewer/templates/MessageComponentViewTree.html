@@ -29,7 +29,9 @@
                 <span ng-if="node.minLength || node.maxLength">[{{::node.minLength}},{{::node.maxLength}}]</span>
 				<span ng-if="!node.minLength && !node.maxLength">[ ]</span>            
         </td>
- 		<td ng-if="hasRelevantChild(node)" class="col-xs-1 col-fixed-80 nodata">              
+        <td class="col-xs-1 col-fixed-100 nodata">
+        </td>
+ 		<td ng-if="hasRelevantChild(node)" class="col-xs-1 col-fixed-100 nodata">              
         </td>
 
         <td class="col-xs-1 col-fixed-80">

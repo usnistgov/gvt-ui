@@ -13,7 +13,7 @@
                 scope: {
                     type: '@'
                 },
-                templateUrl: 'EditTestCaseDetails.html',
+                templateUrl: 'lib/edit-testcase-details/templates/EditTestCaseDetails.html',
                 controller: 'EditTestCaseDetailsCtrl'
             };
         }
@@ -27,7 +27,7 @@
                 scope: {
                     target: '@'
                 },
-                templateUrl: 'EditTestDataSpecification.html',
+                templateUrl: 'lib/edit-testcase-details/templates/EditTestDataSpecification.html',
                 controller: 'EditTestDataSpecificationCtrl'
             };
         }
@@ -40,7 +40,7 @@
                 scope: {
                     target: '@'
                 },
-                templateUrl: 'EditTestStory.html',
+                templateUrl: 'lib/edit-testcase-details/templates/EditTestStory.html',
                 controller: 'EditTestStoryCtrl'
             };
         }
@@ -54,7 +54,7 @@
                 scope: {
                     target: '@'
                 },
-                templateUrl: 'EditMessageContent.html',
+                templateUrl: 'lib/edit-testcase-details/templates/EditMessageContent.html',
                 controller: 'EditMessageContentCtrl'
             };
         }
@@ -67,7 +67,7 @@
                 scope: {
                     target: '@'
                 },
-                templateUrl: 'EditTestDescription.html',
+                templateUrl: 'lib/edit-testcase-details/templates/EditTestDescription.html',
                 controller: 'EditTestDescriptionCtrl'
             };
         }
@@ -81,7 +81,7 @@
                 scope: {
                     target: '@'
                 },
-                templateUrl: 'EditJurorDocument.html',
+                templateUrl: 'lib/edit-testcase-details/templates/EditJurorDocument.html',
                 controller: 'EditJurorDocumentCtrl'
             };
         }
@@ -94,7 +94,7 @@
                 scope: {
                     target: '@'
                 },
-                templateUrl: 'EditExampleMessage.html',
+                templateUrl: 'lib/edit-testcase-details/templates/EditExampleMessage.html',
                 controller: 'EditExampleMessageCtrl'
             };
         }
@@ -107,7 +107,7 @@
                 scope: {
                     target: '@'
                 },
-                templateUrl: 'EditSupplementDocuments.html',
+                templateUrl: 'lib/edit-testcase-details/templates/EditSupplementDocuments.html',
                 controller: 'EditSupplementDocumentsCtrl'
             };
         }
@@ -183,7 +183,7 @@
                   }
                   Notification.success({
                     message: "Juror Document saved successfully!",
-                    templateUrl: "NotificationSuccessTemplate.html",
+                    templateUrl: "views/templates/NotificationSuccessTemplate.html",
                     scope: $rootScope,
                     delay: 5000
                   });
@@ -215,7 +215,7 @@
                         delete $scope.testCase['jurorDocument'];
                         Notification.success({
                           message: "Juror Document deleted Successful!",
-                          templateUrl: "NotificationSuccessTemplate.html",
+                          templateUrl: "views/templates/NotificationSuccessTemplate.html",
                           scope: $rootScope,
                           delay: 5000
                         });
@@ -297,7 +297,7 @@
                   }
                   Notification.success({
                     message: "Test Data specification saved Successful!",
-                    templateUrl: "NotificationSuccessTemplate.html",
+                    templateUrl: "views/templates/NotificationSuccessTemplate.html",
                     scope: $rootScope,
                     delay: 5000
                   });
@@ -329,7 +329,7 @@
                         delete $scope.testCase['testDataSpecification'];
                         Notification.success({
                           message: "Test Data specification delete Successful!",
-                          templateUrl: "NotificationSuccessTemplate.html",
+                          templateUrl: "views/templates/NotificationSuccessTemplate.html",
                           scope: $rootScope,
                           delay: 5000
                         });
@@ -370,7 +370,7 @@
 
             $scope.openMcInfo = function () {
                 var modalInstance = $modal.open({
-                    templateUrl: 'MessageContentInfo.html',
+                    templateUrl: 'lib/edit-testcase-details/templates/MessageContentInfo.html',
                     windowClass: 'message-content-info-modal',
                     controller: 'MessageContentInfoCtrl',
                     keyboard: true,
@@ -421,7 +421,7 @@
                   }
                   Notification.success({
                     message: "Message content saved Successful!",
-                    templateUrl: "NotificationSuccessTemplate.html",
+                    templateUrl: "views/templates/NotificationSuccessTemplate.html",
                     scope: $rootScope,
                     delay: 5000
                   });
@@ -453,7 +453,7 @@
                         delete $scope.testCase['messageContent'];
                         Notification.success({
                           message: "Message content deleted successful!",
-                          templateUrl: "NotificationSuccessTemplate.html",
+                          templateUrl: "views/templates/NotificationSuccessTemplate.html",
                           scope: $rootScope,
                           delay: 5000
                         });
@@ -529,7 +529,7 @@
                   }
                   Notification.success({
                     message: "Test story saved successful!",
-                    templateUrl: "NotificationSuccessTemplate.html",
+                    templateUrl: "views/templates/NotificationSuccessTemplate.html",
                     scope: $rootScope,
                     delay: 5000
                   });
@@ -561,7 +561,7 @@
                         delete $scope.testCase['testStory'];
                         Notification.success({
                           message: "Test story deleted successful!",
-                          templateUrl: "NotificationSuccessTemplate.html",
+                          templateUrl: "views/templates/NotificationSuccessTemplate.html",
                           scope: $rootScope,
                           delay: 5000
                         });

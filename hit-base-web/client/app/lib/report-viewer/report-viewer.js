@@ -12,7 +12,7 @@
         scope: {
           type: '@'
         },
-        templateUrl: 'ReportViewer.html',
+        templateUrl: 'lib/report-viewer/report-viewer-tpls.html',
         replace: false,
         controller: 'ReportViewerCtrl'         
       };
@@ -55,6 +55,7 @@
       // });
 // nico commented
       destroyEvent2 = $rootScope.$on($scope.type + ':initValidationReport', function (event, report, testStep) {
+		console.log("Coucocuocucouc");
     	$scope.cfCompleteStatus = false;
         $scope.loading = true;
         $scope.error = null;
@@ -204,7 +205,7 @@
     	  	ReportService.saveValidationReport($scope.report.id).then(function (response) {
     	  		Notification.success({
                     message: "Report saved successfully!",
-                    templateUrl: "NotificationSuccessTemplate.html",
+                    templateUrl: "views/templates/NotificationSuccessTemplate.html",
                     scope: $rootScope,
                     delay: 5000
                   });

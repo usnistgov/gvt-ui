@@ -63,7 +63,7 @@ angular.module('hit-settings').controller('SettingsCtrl',['$scope', '$modalInsta
         		SettingsService.saveValidationClassifications($scope.domainClassifications,$rootScope.domain).then(function (result) {
             		Notification.success({
                         message: "Validation parameters save successfully!",
-                        templateUrl: "NotificationSuccessTemplate.html",
+                        templateUrl: "views/templates/NotificationSuccessTemplate.html",
                         scope: $rootScope,
                         delay: 3000
                       });

@@ -347,7 +347,7 @@ angular.module('upload')
                 if (result.data.status === "SUCCESS") {
                     Notification.success({
                         message: "Profile Added !",
-                        templateUrl: "NotificationSuccessTemplate.html",
+                        templateUrl: "views/templates/NotificationSuccessTemplate.html",
                         scope: $rootScope,
                         delay: 5000
                     });
@@ -385,7 +385,7 @@ angular.module('upload')
                 $scope.existingTP.selected = undefined;
                 Notification.success({
                     message: "Profiles cleared!",
-                    templateUrl: "NotificationSuccessTemplate.html",
+                    templateUrl: "views/templates/NotificationSuccessTemplate.html",
                     scope: $rootScope,
                     delay: 5000
                 });
@@ -574,7 +574,7 @@ angular.module('upload').controller('UploadTokenCtrl', ['$scope', '$http', 'CF',
             if (result.data.status === "SUCCESS") {
                 Notification.success({
                     message: "Profile saved !",
-                    templateUrl: "NotificationSuccessTemplate.html",
+                    templateUrl: "views/templates/NotificationSuccessTemplate.html",
                     scope: $rootScope,
                     delay: 5000
                 });

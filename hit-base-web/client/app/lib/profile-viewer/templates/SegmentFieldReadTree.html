@@ -12,8 +12,6 @@
                                      <span class="label label-field label-icon">F</span>
 <span>{{::getFieldNodeName(node)}}</span>
                   </span>
-
-
         </td>
 
         <td class="col-xs-1 col-fixed-80">
@@ -42,6 +40,18 @@
                      tooltip-class="constraints-tooltip"
                      ng-bind-html="model.datatypes[node.datatype].id" tooltip-trigger
                      tooltip-animation="false" tooltip-placement="left"></a>
+                     <span ng-if="node.slicingElements && node.slicingElements.length > 0" >
+                        <i class="fa fa-scissors"
+               slicing-popover
+               default="node"
+               slicing-options="node.slicingElements"
+               on-slicing-select="onSliceChange(option, node)"
+               tooltip="Select slice"
+               tooltip-append-to-body="true"
+               tooltip-class="constraints-tooltip"
+               tooltip-trigger tooltip-animation="false" tooltip-placement="right"
+               style="cursor: pointer; font-size: 18px; padding: 2px 2px 2px 4px;"></i>
+                        </span> 
         </td>
         <td class="col-xs-1 col-fixed-150">
             <div ng-if="(node.table != undefined  && node.table !== null)">

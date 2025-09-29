@@ -1,15 +1,3 @@
-<style id="antiClickjack">body {
-    display: none !important;
-}</style>
-<script type="text/javascript">
-    if (self === top) {
-        var antiClickjack = document.getElementById("antiClickjack");
-        antiClickjack.parentNode.removeChild(antiClickjack);
-    } else {
-        top.location = self.location;
-    }
-</script>
-<script type="text/ng-template" id="ManualReportViewer.html">
     <div class="row" style="margin-top: 0px">
         <div class="col-md-10">
             <div ng-show="loading" style="text-align:center">
@@ -43,5 +31,3 @@
 
         </div>
     </div>
-
-</script>

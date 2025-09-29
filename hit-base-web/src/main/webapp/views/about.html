@@ -1,12 +1,3 @@
-<style id="antiClickjack">body{display:none !important;}</style>
-<script type="text/javascript">
-    if (self === top) {
-        var antiClickjack = document.getElementById("antiClickjack");
-        antiClickjack.parentNode.removeChild(antiClickjack);
-    } else {
-        top.location = self.location;
-    }
-</script>
 <div style="margin:10px">
 
     <div style="margin-bottom: 20px">
@@ -18,7 +9,7 @@
                 </p>
 
                 <p>
-                    Deployment Date: {{appInfo.date |  date: 'MM/dd/yyyy HH:mm:ss'}}
+                    Deployment Date: {{appInfo.date |  date: 'MM/dd/yyyy' : 'UTC'}}
                 </p>
             </div>
         </div>

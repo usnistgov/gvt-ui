@@ -13,7 +13,7 @@
                 scope: {
                     type: '@'
                 },
-                templateUrl: 'TestCaseDetails.html',
+                templateUrl: 'lib/testcase-details/templates/TestCaseDetails.html',
                 controller: 'TestCaseDetailsCtrl'
             };
         }
@@ -27,7 +27,7 @@
                 scope: {
                     target: '@'
                 },
-                templateUrl: 'TestDataSpecification.html',
+                templateUrl: 'lib/testcase-details/templates/TestDataSpecification.html',
                 controller: 'TestDataSpecificationCtrl'
             };
         }
@@ -40,7 +40,7 @@
                 scope: {
                     target: '@'
                 },
-                templateUrl: 'TestStory.html',
+                templateUrl: 'lib/testcase-details/templates/TestStory.html',
                 controller: 'TestStoryCtrl'
             };
         }
@@ -54,7 +54,7 @@
                 scope: {
                     target: '@'
                 },
-                templateUrl: 'MessageContent.html',
+                templateUrl: 'lib/testcase-details/templates/MessageContent.html',
                 controller: 'MessageContentCtrl'
             };
         }
@@ -67,7 +67,7 @@
                 scope: {
                     target: '@'
                 },
-                templateUrl: 'TestDescription.html',
+                templateUrl: 'lib/testcase-details/templates/TestDescription.html',
                 controller: 'TestDescriptionCtrl'
             };
         }
@@ -81,7 +81,7 @@
                 scope: {
                     target: '@'
                 },
-                templateUrl: 'JurorDocument.html',
+                templateUrl: 'lib/testcase-details/templates/JurorDocument.html',
                 controller: 'JurorDocumentCtrl'
             };
         }
@@ -94,7 +94,7 @@
                 scope: {
                     target: '@'
                 },
-                templateUrl: 'ExampleMessage.html',
+                templateUrl: 'lib/testcase-details/templates/ExampleMessage.html',
                 controller: 'ExampleMessageCtrl'
             };
         }
@@ -107,7 +107,7 @@
                 scope: {
                     target: '@'
                 },
-                templateUrl: 'SupplementDocuments.html',
+                templateUrl: 'lib/testcase-details/templates/SupplementDocuments.html',
                 controller: 'SupplementDocumentsCtrl'
             };
         }
@@ -120,7 +120,7 @@
                 scope: {
                     target: '@'
                 },
-                templateUrl: 'CBSavedReports.html',
+                templateUrl: 'lib/testcase-details/templates/CBSavedReports.html',
                 controller: 'CBSavedReportsCtrl'
             };
         }
@@ -246,7 +246,7 @@
 
             $scope.openMcInfo = function () {
                 var modalInstance = $modal.open({
-                    templateUrl: 'MessageContentInfo.html',
+                    templateUrl: 'lib/testcase-details/templates/MessageContentInfo.html',
                     windowClass: 'message-content-info-modal',
                     controller: 'MessageContentInfoCtrl',
                     keyboard: true,
@@ -339,7 +339,7 @@
         
         $scope.deleteReport = function(report){    	    	    	     
   	      var modalInstance = $modal.open({
-  	        templateUrl: 'confirmReportDelete.html',
+  	        templateUrl: 'lib/testcase-details/templates/confirmReportDelete.html',
   	        controller: 'ConfirmDialogCtrl',
   	        size: 'md',
   	        backdrop: true,
@@ -357,14 +357,14 @@
   	    	          		}
   	    	          		Notification.success({
   	    	                    message: "Report deleted successfully!",
-  	    	                    templateUrl: "NotificationSuccessTemplate.html",
+  	    	                    templateUrl: "views/templates/NotificationSuccessTemplate.html",
   	    	                    scope: $rootScope,
   	    	                    delay: 5000
   	    	                  });
   	    	          	}, function (error) {
   	    	          		Notification.error({
   	    	                    message: "Report deletion failed! <br>If error persists, please contact the website administrator." ,
-  	    	                    templateUrl: "NotificationErrorTemplate.html",
+  	    	                    templateUrl: "views/templates/NotificationErrorTemplate.html",
   	    	                    scope: $rootScope,
   	    	                    delay: 10000
   	    	                  });
@@ -377,14 +377,14 @@
   	    	          		}
   	    	          		Notification.success({
   	    	                    message: "Report deleted successfully!",
-  	    	                    templateUrl: "NotificationSuccessTemplate.html",
+  	    	                    templateUrl: "views/templates/NotificationSuccessTemplate.html",
   	    	                    scope: $rootScope,
   	    	                    delay: 5000
   	    	                  });
   	    	          	}, function (error) {
   	    	          		Notification.error({
   	    	          			 message: "Report deletion failed! <br>If error persists, please contact the website administrator." ,
-  	    	                    templateUrl: "NotificationErrorTemplate.html",
+  	    	                    templateUrl: "views/templates/NotificationErrorTemplate.html",
   	    	                    scope: $rootScope,
   	    	                    delay: 10000
   	    	                  });
@@ -412,7 +412,7 @@
                 	$scope.selectedSavedReport = null;
                 	Notification.error({
                   	  message: "Report could not be loaded! <br>If error persists, please contact the website administrator." ,
-                        templateUrl: "NotificationErrorTemplate.html",
+                        templateUrl: "views/templates/NotificationErrorTemplate.html",
                         scope: $rootScope,
                         delay: 10000
                       });                         
@@ -431,7 +431,7 @@
                 	$scope.selectedSavedReport = null;
                 	Notification.error({
                   	  message: "Report could not be loaded! <br>If error persists, please contact the website administrator." ,
-                        templateUrl: "NotificationErrorTemplate.html",
+                        templateUrl: "views/templates/NotificationErrorTemplate.html",
                         scope: $rootScope,
                         delay: 10000
                       });                         

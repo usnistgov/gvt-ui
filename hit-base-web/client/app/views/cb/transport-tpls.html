@@ -1,14 +1,4 @@
-<style id="antiClickjack">body {
-    display: none !important;
-}</style>
-<script type="text/javascript">
-    if (self === top) {
-        var antiClickjack = document.getElementById("antiClickjack");
-        antiClickjack.parentNode.removeChild(antiClickjack);
-    } else {
-        top.location = self.location;
-    }
-</script>
+
 <script type="text/ng-template" id="PastTestStepConsole.html">
     <div class="console-dlg">
         <button title="Close" type="button" class="pull-right btn btn-xs btn-default"

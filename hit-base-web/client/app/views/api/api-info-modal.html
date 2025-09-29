@@ -1,0 +1,71 @@
+<div class="modal-header">
+    <h3 class="modal-title">API Validation Endpoint</h3>
+</div>
+<div class="modal-body">
+    <div class="form-group">
+        <label>Endpoint URL: </label> <button style="margin-bottom: 5px;" class="btn btn-default" ngclipboard data-clipboard-text="{{apiInfo.endpoint}}"
+        title="Copy to clipboard">
+        <i class="fa fa-clipboard"></i>
+    </button>
+        <div>
+            <input type="text" class="form-control" ng-model="apiInfo.endpoint" readonly>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Configuration:</label>
+        <div class="well well-sm" style="max-height: 150px; overflow-y: auto;">
+            <strong>HTTP Method:</strong> {{apiInfo.method}}
+            <div ng-repeat="(key, value) in apiInfo.headers">
+                <strong>{{key}}:</strong> {{value}}
+            </div>
+            <div style="display: flex; align-items: center;">
+                <strong>Auth:</strong>
+                <input type="text" class="form-control" ng-model="apiInfo.authtoken"
+                    style="margin-left: 10px; width: 250px; margin-top: auto; margin-bottom: auto;">
+            <a style="margin-left: 10px;" href="https://www.debugbear.com/basic-auth-header-generator"  rel="noopener noreferrer" target="_blank">
+                <strong style="margin-right: 10px;">Get your auth token</strong>
+            </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Request Body:</label>
+        <div class="well well-sm" style="overflow-y: auto;">
+            <div style="display: flex; align-items: center;">
+                <strong style="margin-right: 10px;">contextType:</strong>
+                <select style="width: 150px; margin-top: auto; margin-bottom: auto;" class="form-control"
+                    ng-model="apiInfo.parameters.contextType">
+                    <option value="Free">Context Free</option>
+                    <option value="Based">Context Based</option>
+                </select>
+            </div>
+            <div>
+                <strong>useHttp:</strong> <input type="checkbox" ng-model="apiInfo.parameters.useHttp">
+            </div>
+            <div>
+                <strong>Message:</strong> <textarea class="form-control" ng-model="apiInfo.parameters.content" rows="3"></textarea>
+            </div>
+        </div>      
+    </div> 
+    <div class="form-group">
+        <label>cURL Command Example:</label> <button style="margin-bottom: 5px;" class="btn btn-default" ngclipboard data-clipboard-text="{{curlCommand}}"
+        title="Copy to clipboard" >
+        <i class="fa fa-clipboard"></i>
+    </button> 
+        <div class="form-group">
+                <textarea class="form-control" ng-model="curlCommand" rows="3" readonly></textarea>            
+        </div>
+    </div>
+
+
+
+    <div class="form-group" ng-if="testResult">
+        <label>Test Result (Status: {{testResult.status}} {{testResult.statusText || ''}}):</label>
+        <pre class="well well-sm" style="max-height: 200px;">{{testResult.data | json}}</pre>
+    </div>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-default" ng-click="close()">Close</button>
+</div>

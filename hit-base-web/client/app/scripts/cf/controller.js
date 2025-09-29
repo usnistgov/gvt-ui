@@ -442,7 +442,7 @@ angular.module('cf')
                     $scope.execute();
                     Notification.success({
                         message: "File " + fileName + " successfully uploaded!",
-                        templateUrl: "NotificationSuccessTemplate.html",
+                        templateUrl: "views/templates/NotificationSuccessTemplate.html",
                         scope: $rootScope,
                         delay: 30000
                     });
@@ -603,6 +603,34 @@ angular.module('cf')
                 $scope.tLoading = false;
                 $scope.tError = error;
             }
+        };
+
+        $scope.showAPIInfo = function () {
+            if (!$scope.testCase || !$scope.testCase.testContext) {
+                Notification.error('No test context available');
+                return;
+            }
+        
+            $modal.open({
+                templateUrl: 'views/api/api-info-modal.html',
+                controller: 'APIInfoModalCtrl',
+                size: 'lg',
+                resolve: {
+                    testContext: function() {
+                        return angular.copy($scope.testCase.testContext);
+                    },
+                    contextType: function() {
+                        return "Free";
+                    },
+                    message: function() {
+                        return $scope.message;
+                    },
+                    useHttp: function() {
+                        return $scope.useHttp();
+                    }
+                }
+            });
+                   
         };
 
         $scope.onNodeSelect = function (node) {
@@ -818,7 +846,7 @@ angular.module('cf').controller('CFReportCtrl', ['$scope', '$sce', '$http', 'CF'
         $scope.cf = CF;
     }]);
 
-angular.module('cf').controller('CFSavedReportCtrl', ['$scope', '$sce', '$http', 'CF','ReportService','$modal', function ($scope, $sce, $http, CF,ReportService,$modal) {
+angular.module('cf').controller('CFSavedReportCtrl', ['$scope', '$sce', '$http', 'CF','ReportService','$modal','Notification', function ($scope, $sce, $http, CF,ReportService,$modal,Notification) {
 	$scope.cf = CF;
 	$scope.selectReport = function (report) {
             $scope.loading = true;			
@@ -841,7 +869,7 @@ angular.module('cf').controller('CFSavedReportCtrl', ['$scope', '$sce', '$http',
        
        $scope.deleteReport = function(report){    	    	    	     
  	      var modalInstance = $modal.open({
- 	        templateUrl: 'confirmReportDelete.html',
+ 	        templateUrl: 'views/templates/confirmReportDelete.html',
  	        controller: 'ConfirmDialogCtrl',
  	        size: 'md',
  	        backdrop: true,
@@ -852,21 +880,19 @@ angular.module('cf').controller('CFSavedReportCtrl', ['$scope', '$sce', '$http',
  	        	//Delete
  	          if (resultDiag) { 	        	  
  	        		  ReportService.deleteTSReport(report.id).then(function (result) {
- 	    	          		var index = $scope.reports.indexOf(report);
+ 	    	          		var index = $scope.cf.savedReports.indexOf(report);
  	    	          		if(index > -1){
- 	    	          			$scope.reports.splice(index, 1);
+ 	    	          			$scope.cf.savedReports.splice(index, 1);
  	    	          		}
  	    	          		Notification.success({
  	    	                    message: "Report deleted successfully!",
- 	    	                    templateUrl: "NotificationSuccessTemplate.html",
- 	    	                    scope: $rootScope,
+ 	    	                    templateUrl: "views/templates/NotificationSuccessTemplate.html", 	    	                   
  	    	                    delay: 5000
  	    	                  });
  	    	          	}, function (error) {
  	    	          		Notification.error({
  	    	                    message: "Report deletion failed! <br>If error persists, please contact the website administrator." ,
- 	    	                    templateUrl: "NotificationErrorTemplate.html",
- 	    	                    scope: $rootScope,
+ 	    	                    templateUrl: "NotificationErrorTemplate.html", 	    	                    
  	    	                    delay: 10000
  	    	                  });
  	    	          	}); 	        	  	        	  
@@ -1268,7 +1294,7 @@ angular.module('cf')
                                 $scope.testCases = null;
                                 Notification.success({
                                     message: "Profile group deleted successfully !",
-                                    templateUrl: "NotificationSuccessTemplate.html",
+                                    templateUrl: "views/templates/NotificationSuccessTemplate.html",
                                     scope: $rootScope,
                                     delay: 5000
                                 });
@@ -1304,7 +1330,7 @@ angular.module('cf')
                             if (result.status === "SUCCESS") {
                                 Notification.success({
                                     message: "Profile group deleted successfully !",
-                                    templateUrl: "NotificationSuccessTemplate.html",
+                                    templateUrl: "views/templates/NotificationSuccessTemplate.html",
                                     scope: $rootScope,
                                     delay: 5000
                                 });
@@ -1557,7 +1583,7 @@ angular.module('cf')
                                             testPlan.description = $scope.testcase['description'];
                                             Notification.success({
                                                 message: "Profile Group saved successfully!",
-                                                templateUrl: "NotificationSuccessTemplate.html",
+                                                templateUrl: "views/templates/NotificationSuccessTemplate.html",
                                                 scope: $rootScope,
                                                 delay: 5000
                                             });
@@ -1577,7 +1603,7 @@ angular.module('cf')
                                             $scope.selectGroup($scope.selectedNode);
                                             Notification.success({
                                                 message: "Profile Group has been successfully published !",
-                                                templateUrl: "NotificationSuccessTemplate.html",
+                                                templateUrl: "views/templates/NotificationSuccessTemplate.html",
                                                 scope: $rootScope,
                                                 delay: 5000
                                             });
@@ -1632,7 +1658,7 @@ angular.module('cf')
                                             testPlan.description = $scope.testcase['description'];
                                             Notification.success({
                                                 message: "Profile Group saved successfully!",
-                                                templateUrl: "NotificationSuccessTemplate.html",
+                                                templateUrl: "views/templates/NotificationSuccessTemplate.html",
                                                 scope: $rootScope,
                                                 delay: 5000
                                             });
@@ -1652,7 +1678,7 @@ angular.module('cf')
                                             $scope.selectGroup($scope.selectedNode);
                                             Notification.success({
                                                 message: "Profile Group has been successfully published !",
-                                                templateUrl: "NotificationSuccessTemplate.html",
+                                                templateUrl: "views/templates/NotificationSuccessTemplate.html",
                                                 scope: $rootScope,
                                                 delay: 5000
                                             });
@@ -1707,7 +1733,7 @@ angular.module('cf')
                                             testPlan.description = $scope.testcase['description'];
                                             Notification.success({
                                                 message: "Profile Group saved successfully!",
-                                                templateUrl: "NotificationSuccessTemplate.html",
+                                                templateUrl: "views/templates/NotificationSuccessTemplate.html",
                                                 scope: $rootScope,
                                                 delay: 5000
                                             });
@@ -1727,7 +1753,7 @@ angular.module('cf')
                                             $scope.selectGroup($scope.selectedNode);
                                             Notification.success({
                                                 message: "Profile Group has been successfully published !",
-                                                templateUrl: "NotificationSuccessTemplate.html",
+                                                templateUrl: "views/templates/NotificationSuccessTemplate.html",
                                                 scope: $rootScope,
                                                 delay: 5000
                                             });
@@ -1775,7 +1801,7 @@ angular.module('cf')
                         testPlan.description = $scope.testcase['description'];
                         Notification.success({
                             message: "Profile Group saved successfully!",
-                            templateUrl: "NotificationSuccessTemplate.html",
+                            templateUrl: "views/templates/NotificationSuccessTemplate.html",
                             scope: $rootScope,
                             delay: 5000
                         });
@@ -1817,7 +1843,7 @@ angular.module('cf')
 
                         Notification.success({
                             message: "Profile Group saved successfully!",
-                            templateUrl: "NotificationSuccessTemplate.html",
+                            templateUrl: "views/templates/NotificationSuccessTemplate.html",
                             scope: $rootScope,
                             delay: 5000
                         });
@@ -1853,7 +1879,7 @@ angular.module('cf')
 		        CFTestPlanManager.refreshTestPlanTestContextModels("hl7v2",node.id).then(function (result) {
 					Notification.success({
                        message: "Test Plan TestContext model successfully updated",
-                       templateUrl: "NotificationSuccessTemplate.html",
+                       templateUrl: "views/templates/NotificationSuccessTemplate.html",
                        scope: $rootScope,
                        delay: 5000
                    });
@@ -1869,7 +1895,7 @@ angular.module('cf')
 				CFTestPlanManager.refreshTestStepGroupTestContextModels("hl7v2",node.id).then(function (result) {
 					Notification.success({
                        message: "Test Plan TestContext model successfully updated",
-                       templateUrl: "NotificationSuccessTemplate.html",
+                       templateUrl: "views/templates/NotificationSuccessTemplate.html",
                        scope: $rootScope,
                        delay: 5000
                    });
@@ -1885,7 +1911,7 @@ angular.module('cf')
 		        CFTestPlanManager.refreshTestStepTestContextModels("hl7v2",node.id).then(function (result) {
 					Notification.success({
                        message: "Test Step TestContext model successfully updated",
-                       templateUrl: "NotificationSuccessTemplate.html",
+                       templateUrl: "views/templates/NotificationSuccessTemplate.html",
                        scope: $rootScope,
                        delay: 5000
                    });
@@ -1965,7 +1991,7 @@ angular.module('cf')
                     $scope.executionError = [];
                     Notification.success({
                         message: "Changes removed successfully!",
-                        templateUrl: "NotificationSuccessTemplate.html",
+                        templateUrl: "views/templates/NotificationSuccessTemplate.html",
                         scope: $rootScope,
                         delay: 5000
                     });
@@ -2784,7 +2810,7 @@ angular.module('cf')
             $scope.loading = true;
             Notification.success({
                 message: "Profile Added !",
-                templateUrl: "NotificationSuccessTemplate.html",
+                templateUrl: "views/templates/NotificationSuccessTemplate.html",
                 scope: $rootScope,
                 delay: 5000
             });
@@ -2913,3 +2939,4 @@ angular.module('cf').controller('CreateTestStepGroupCtrl', function ($scope, $mo
         $modalInstance.dismiss('cancel');
     };
 });
+

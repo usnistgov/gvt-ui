@@ -10,8 +10,17 @@
                         tooltip-class="constraints-tooltip"
                         tooltip-trigger tooltip-animation="false" tooltip-placement="left">
                                     <span class="label label-success label-icon">G</span>
-<span>{{::getGroupNodeName(node)}}</span>
+									<span>{{::getGroupNodeName(node)}}</span>
                   </a>
+                  <span ng-if="node.slicingElements && node.slicingElements.length > 0" >
+            <i class="fa fa-scissors"
+   slicing-popover
+   default="node"
+   slicing-options="node.slicingElements"
+   on-slicing-select="onSliceChange(option, node)"
+   style="cursor: pointer; font-size: 18px; padding: 2px 6px;"></i>
+	        </span>    
+                  
 
 
         </td>
@@ -26,6 +35,8 @@
         </td>
 
 
+        <td class="col-xs-1 col-fixed-100 nodata">
+        </td>
         <td class="col-xs-1 col-fixed-100 nodata">
         </td>
         <td class="col-xs-1 col-fixed-80 nodata">

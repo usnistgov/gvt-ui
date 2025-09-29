@@ -1,0 +1,28 @@
+
+<div class="tree-node tree-node-content">
+	<i ng-if="node.children && node.children.length > 0" data-nodrag
+		ng-click="toggle(this)"><span class="fa"
+		ng-class="{
+          'fa-caret-right': collapsed,
+          'fa-caret-down': !collapsed
+        }"></span></i>
+
+	<a data-nodrag ng-show="node.type === 'TestPlan'"
+		ng-class="{'selected': testcase != null && testcase.id === node.id && testcase.type === node.type}"
+		ng-click="selectGroup(node)" class="point">{{node.name}}</a> <a data-nodrag
+		ng-show="node.type !== 'TestPlan'"
+		ng-class="{'selected': testcase != null && testcase.id === node.id && testcase.type === node.type}"
+		ng-click="selectGroup(node)" class="point">{{node.position}}.{{node.name}}</a>
+	<a data-nodrag title="Add New Sub Profile Group"
+		ng-click="addNewTestStepGroup(node)"
+		class="point pull-right btn btn-success btn-xs" style="margin-right: 10px">
+		<i class="fa fa-plus"></i>Sub Profile Group
+	</a>
+
+
+</div>
+<ol ui-tree-nodes data-nodrop-enabled ng-model="node.children"
+	ng-class="{hidden: collapsed}">
+	<li ng-repeat="node in node.children" ui-tree-node
+		ng-include="'cf_testcase_node_render.html'"></li>
+</ol>

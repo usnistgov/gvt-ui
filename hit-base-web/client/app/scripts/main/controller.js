@@ -446,7 +446,7 @@ angular.module('main').controller('MainCtrl',
 
         $rootScope.showError = function (error) {
             var modalInstance = $modal.open({
-                templateUrl: 'ErrorDlgDetails.html',
+                templateUrl: 'views/error.html',
                 controller: 'ErrorDetailsCtrl',
                 resolve: {
                     error: function () {
@@ -504,7 +504,7 @@ angular.module('main').controller('MainCtrl',
 
         $rootScope.showError = function (error) {
             var modalInstance = $modal.open({
-                templateUrl: 'ErrorDlgDetails.html',
+                templateUrl: 'views/error.html',
                 controller: 'ErrorDetailsCtrl',
                 resolve: {
                     error: function () {
@@ -568,7 +568,7 @@ angular.module('main').controller('MainCtrl',
 
         $rootScope.openValidationResultInfo = function () {
             var modalInstance = $modal.open({
-                templateUrl: 'ValidationResultInfoCtrl.html',
+                templateUrl: 'views/templates/ValidationResultInfoCtrl.html',
                 windowClass: 'profile-modal',
                 controller: 'ValidationResultInfoCtrl'
             });
@@ -578,7 +578,7 @@ angular.module('main').controller('MainCtrl',
             StorageService.clearAll();
             if (!$rootScope.vcModalInstance || $rootScope.vcModalInstance === null || !$rootScope.vcModalInstance.opened) {
                 $rootScope.vcModalInstance = $modal.open({
-                    templateUrl: 'VersionChanged.html',
+                    templateUrl: 'views/templates/VersionChanged.html',
                     size: 'lg',
                     backdrop: 'static',
                     keyboard: 'false',
