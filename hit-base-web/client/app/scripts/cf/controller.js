@@ -2025,6 +2025,32 @@ angular.module('cf')
         };
 
 		
+			   
+	   $scope.editOldProfile = function (profile) {
+	              $modalStack.dismissAll('close');
+	              var modalInstance = $modal.open({
+	                  templateUrl: 'views/cf/manage/edit.html',
+	                  controller: 'CFEditProfileCtrl',
+	                  controllerAs: 'ctrl',
+	                  windowClass: 'upload-modal',
+	                  backdrop: 'static',
+	                  keyboard: false,
+	                  resolve: {
+	                      profile: function () {
+	                          return profile;
+	                      }
+	                  }
+	              });
+
+	              modalInstance.result.then(
+	                  function (profile) {
+//	                      item.exampleMessage = exampleMessage;
+	                  },
+	                  function (result) {
+	                  }
+	              );
+	    };
+		
         $scope.deleteOldProfile = function (profile) {
             profile.removed = true;
             $scope.tmpOldMessages = $scope.filterMessages($scope.oldProfileMessages);
@@ -2225,6 +2251,21 @@ angular.module('cf')
     ])
 ;
 
+
+angular.module('cf')
+    .controller('CFEditProfileCtrl', function ($scope, $http, $window, $modal, $filter, $rootScope, $timeout, StorageService, FileUploader, Notification, $modalInstance, profile) {
+
+        $scope.profile = profile;
+
+        $scope.save = function () {
+            $modalInstance.close($scope.profile);
+        };
+
+        $scope.cancel = function () {
+            $modalInstance.dismiss();
+        };
+
+    });
 
 angular.module('cf')
     .controller('CFManageExampleMessageCtrl', function ($scope, $http, $window, $modal, $filter, $rootScope, $timeout, StorageService, FileUploader, Notification, $modalInstance, exampleMessage) {

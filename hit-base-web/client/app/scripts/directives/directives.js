@@ -238,3 +238,29 @@ angular.module('hit-tool-directives').directive('slicingPopover', ['$modal', fun
       }
     };
   }]);
+  
+  
+angular.module('hit-tool-directives').directive('notificationPanel', function() {
+    return {
+      restrict: 'E',
+      templateUrl: 'views/notifications.html' 
+    };
+  });
+  
+angular.module('hit-tool-directives').directive('dismissNotification', function() {
+    return {
+      scope: {
+        dismissNotification: '='
+      },
+      link: function(scope, element, attrs) {
+        element.on('click', function() {
+          scope.$apply(function() {
+            scope.$parent.addToHiddenList(scope.dismissNotification);
+          });
+        });
+      }
+    };
+  });
+  
+  
+  

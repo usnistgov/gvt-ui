@@ -58,6 +58,9 @@ angular.module('hit-settings').controller('SettingsCtrl',['$scope', '$modalInsta
 
         $scope.save = function () {
         	SettingsService.set($scope.options);
+			
+			$scope.domainClassifications.oUsageComplex = angular.copy($scope.domainClassifications.oUsage);
+			$scope.domainClassifications.oUsageComplex.name = "o-usage-complex";
         	
         	if ($scope.isAdmin() || $rootScope.isDomainOwner()){
         		SettingsService.saveValidationClassifications($scope.domainClassifications,$rootScope.domain).then(function (result) {

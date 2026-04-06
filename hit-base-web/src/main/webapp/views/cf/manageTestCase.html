@@ -205,7 +205,7 @@
 
                           <div ui-tree="treeOptions" id="tree-root" data-drag-enabled="true" style="height: 500px; overflow:auto" class="wrapper">
                             <ol ui-tree-nodes="" ng-model="testCases">
-                              <li ng-repeat="node in testCases" ui-tree-node="" ng-include="'cf_testcase_node_render.html'"></li>
+                              <li ng-repeat="node in testCases" ui-tree-node="" ng-include="'views/templates/cf_testcase_node_render.html'"></li>
                             </ol>
                           </div>
 
@@ -313,6 +313,8 @@
                               </td>
                               
                               <td>
+<!--                               	<button class="btn btn-sm btn-info" ng-click="editOldProfile(item)"><i class="fa fa-edit"></i> -->
+<!--                                 </button> -->
                                 <button class="btn btn-sm btn-danger" ng-click="deleteOldProfile(item)"><i class="fa fa-trash"></i>
                                 </button>
                                 <button ng-if="isAdmin()" class="btn btn-sm btn-info" ng-click="refreshTestContextModels(item)"><i class="fa fa-refresh"></i>
