@@ -1745,6 +1745,28 @@ angular.module('doc')
       }
     };
 
+    $scope.downloadCompleteDomainDocumentation = function () {
+      if ($scope.scope != null && $scope.domain != null) {
+        var form = document.createElement("form");
+        form.action = "api/documentation/completeDomainDocumentation";
+        form.method = "POST";
+        form.target = "_target";
+        var input = document.createElement("input");
+        input.name = "domain";
+        input.value = $scope.domain;
+        form.appendChild(input);
+
+        input = document.createElement("input");
+        input.name = "scope";
+        input.value = $scope.scope;
+        form.appendChild(input);
+
+        form.style.display = 'none';
+        document.body.appendChild(form);
+        form.submit();
+      }
+    };
+
     $scope.downloadExampleMessages = function (stage) {
       if (stage != null && $scope.scope != null && $scope.domain != null) {
         var form = document.createElement("form");

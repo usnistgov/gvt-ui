@@ -250,6 +250,12 @@
       	Download Complete TestPackage (.zip)
       </button>
 
+     <button ng-if="hasWriteAccess()" title="Download Complete Domain Documentation" type="button" class="btn btn-sm btn-success"
+              ng-click="downloadCompleteDomainDocumentation()">
+        <i class="fa fa-download"></i>
+        Download Complete Documentation (.zip)
+      </button>
+
 <!--
      <button  title="Download Example Messages" type="button" class="btn btn-sm btn-info"
               ng-click="downloadExampleMessages('CB')">
