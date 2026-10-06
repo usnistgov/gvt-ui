@@ -1,0 +1,46 @@
+<div class="modal-header" style="background: lightgray">
+   <h3 class="modal-title"  id="modal-title">Change Tool Scope Owner</h3>
+</div>
+<div class="modal-body">
+  <div ng-show="loading" style="text-align: center">
+    <i class="fa fa-circle-o-notch fa-spin fa-3x"></i>
+    <p style="margin-top: 10px">Transferring ownership of the tool scope and its artifacts. This may take a moment.</p>
+  </div>
+
+  <div class="row" ng-show="!loading">
+    <form novalidate id="changeOwnerForm" name="changeOwnerForm" class="form-horizontal">
+      <div class='form-group control-group'>
+        <span class='col-md-3 control-label'>Current Owner</span>
+        <div class='controls col-md-7'>
+          <p class="form-control-static">{{domain.owner}}</p>
+        </div>
+      </div>
+      <div class='form-group control-group'>
+        <label for='newOwnerUsername' class='col-md-3 control-label'>New Owner *</label>
+        <div class='controls col-md-7'>
+          <input required
+            class='form-control' name='newOwnerUsername'
+            id='newOwnerUsername' type='text'
+            placeholder="username"
+            ng-model='newOwner'>
+        </div>
+      </div>
+    </form>
+   </div>
+  <div class="row" ng-show="!loading">
+    <div class="alert alert-warning" role="alert">
+      <span><i class="fa fa-warning"></i> This will also transfer <strong>every</strong> artifact under this tool scope to the new owner — test plans, test case groups, test cases, test steps, documents, value set libraries, value set bindings, constraints, co-constraints, conformance profiles, slicings, integration profiles, transport forms, messages, test artifacts and test contexts — including any authored by someone other than {{domain.owner}}.</span>
+    </div>
+  </div>
+  <div class="row">
+    <div class="alert alert-danger" ng-if="error != null" role="alert">
+      <span><i class="fa fa-times" ng-click="error = null"></i> {{error}}</span>
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+  <button ng-click="cancel()" ng-disabled="loading" class="btn btn-default btn-md"><i class="fa fa-times"></i>Cancel</button>
+  <button ng-click="submit()" ng-disabled="changeOwnerForm.$invalid || loading"  class="btn btn-info btn-md">
+    <i class="fa" ng-class="loading ? 'fa-circle-o-notch fa-spin' : 'fa-check'"></i>{{loading ? 'Changing Owner...' : 'Change Owner'}}
+  </button>
+</div>

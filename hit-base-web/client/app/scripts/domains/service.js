@@ -183,6 +183,18 @@ angular.module('domains').factory('DomainsManager', ['$q', '$http',
                 );
                 return delay.promise;
             },
+            changeOwner: function (id, newOwner) {
+                var delay = $q.defer();
+                $http.post('api/domains/' + id + "/changeOwner", null, {params: {'newOwner': newOwner}}).then(
+                    function (object) {
+                        delay.resolve(angular.fromJson(object.data));
+                    },
+                    function (response) {
+                        delay.reject(response.data);
+                    }
+                );
+                return delay.promise;
+            },
             create: function (name, key, scope, homeTitle) {
                 var delay = $q.defer();
                 var data = angular.fromJson({'domain': key, 'name': name, 'scope': scope, 'homeTitle': homeTitle});

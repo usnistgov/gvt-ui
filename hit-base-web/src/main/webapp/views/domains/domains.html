@@ -179,6 +179,9 @@
 												</button>	
 											</span>
 											<span class="pull-right" style="">
+												<button title="Change Owner" type="button" ng-if="isAdmin()" class="btn btn-md btn-warning" ng-click="changeOwnerDomain()">
+													<i class="fa fa-user"></i>Change Owner
+												</button>
 												<button title="Reset" type="button" ng-disabled="userDomain.scope === 'GLOBAL' && (!isAdmin() && !isPublisher())" class="btn btn-md btn-danger" ng-click="deleteDomain()">
 													<i class="fa fa-check"></i>Delete Tool Scope
 												</button>

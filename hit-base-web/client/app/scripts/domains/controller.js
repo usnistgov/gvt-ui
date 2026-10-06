@@ -182,6 +182,33 @@ angular.module('domains')
         };
 
 
+        $scope.changeOwnerDomain = function () {
+            var modalInstance = $modal.open({
+                templateUrl: 'views/domains/change-owner.html',
+                controller: 'ChangeOwnerCtrl',
+                size: 'md',
+                backdrop: 'static',
+                keyboard: false,
+                resolve: {
+                    domain: function () {
+                        return $scope.userDomain;
+                    }
+                }
+            });
+            modalInstance.result.then(
+                function (result) {
+                    if (result) {
+                        $scope.userDomain = result;
+                        $scope.originalUserDomain = angular.copy(result);
+                        $scope.setSuccessAlert("Tool scope owner changed successfully!");
+                        if ($scope.userDomain.domain === $rootScope.domain.domain) {
+                            $rootScope.domain = angular.copy(result);
+                            $rootScope.reloadPage();
+                        }
+                    }
+                });
+        };
+
         $scope.saveDomain = function () {
             $scope.loadingAction = true;
             DomainsManager.save($scope.userDomain).then(function (result) {
@@ -417,6 +444,31 @@ angular.module('domains')
 
     });
 
+
+angular.module('domains').controller('ChangeOwnerCtrl', function ($scope, $modalInstance, domain, DomainsManager) {
+
+    $scope.domain = domain;
+    $scope.newOwner = null;
+    $scope.error = null;
+    $scope.loading = false;
+
+    $scope.submit = function () {
+        if ($scope.newOwner != null && $scope.newOwner !== "") {
+            $scope.error = null;
+            $scope.loading = true;
+            DomainsManager.changeOwner(domain.id, $scope.newOwner).then(function (result) {
+                $scope.loading = false;
+                $modalInstance.close(result);
+            }, function (error) {
+                $scope.loading = false;
+                $scope.error = error.text;
+            });
+        }
+    };
+    $scope.cancel = function () {
+        $modalInstance.dismiss('cancel');
+    };
+});
 
 angular.module('domains').controller('CreateDomainCtrl', function ($scope, $modalInstance, scope, DomainsManager) {
 
